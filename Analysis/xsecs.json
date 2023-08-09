@@ -1,0 +1,45 @@
+{
+"2016":{
+ "QCD1000": {"xsec": 1127},
+ "QCD1500": {"xsec": 110},
+ "QCD2000": {"xsec": 21.98},
+ "QCD700": {"xsec": 6440},
+ "TTbarHadronic": {"xsec": 377.96},
+ "TTbarSemileptonic": {"xsec": 365.34},
+ "lumi":16800
+ },
+"2016APV":{
+ "QCD1000": {"xsec": 1127},
+ "QCD1500": {"xsec": 110},
+ "QCD2000": {"xsec": 21.98},
+ "QCD700": {"xsec": 6440},
+ "TTbarHadronic": {"xsec": 377.96},
+ "TTbarSemileptonic": {"xsec": 365.34},
+ "lumi":19500
+ },
+"2017":{
+ "QCD1000": {"xsec": 1127.0, "sumGen": 10186734}, 
+ "QCD1500": {"xsec": 110.0, "sumGen": 7701876},
+ "QCD2000": {"xsec": 21.98, "sumGen": 4112573},
+ "QCD700": {"xsec": 6440.0, "sumGen": 32934816},
+ "QCD500": {"xsec": 30310.0, "sumGen": 36194860},
+ "QCDbEn500": {"xsec": 1503.0, "sumGen": 10203561},
+ "QCDbEn700": {"xsec": 297.4, "sumGen": 1864758},
+ "QCDbEn1000": {"xsec": 48.08, "sumGen": 1385631},
+ "QCDbEn1500": {"xsec": 3.951, "sumGen": 1458069},
+ "QCDbEn2000": {"xsec": 0.6957, "sumGen": 1408971},
+ "TTbarHadronic": {"xsec": 377.96, "sumGen": 2.3172000e+08},
+ "TTbarSemileptonic": {"xsec": 365.34, "sumGen": 3.3325200e+08},
+ "XToYHTo6B_MX-2400_MY-800": {"xsec": 0.1, "sumGen": 200000},
+ "lumi":41500
+},
+ "2018":{
+ "QCD1000": {"xsec": 1127},
+ "QCD1500": {"xsec": 110},
+ "QCD2000": {"xsec": 21.98},
+ "QCD700": {"xsec": 6440},
+ "TTbarHadronic": {"xsec": 377.96},
+ "TTbarSemileptonic": {"xsec": 365.34},
+ "lumi":59800
+ }
+}
