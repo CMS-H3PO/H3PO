@@ -7,6 +7,29 @@ mass_matching_plots_semiboosted.py - creates MJJJ and MJJ mass distributions for
 HHH_samples_2016.txt - Official sample list of 2016 NanoAOD XToYHTo6B samples (Needs to copy to Lorien once production is complete)\
 HHH_samples_2017.txt - Official sample list of 2017 NanoAOD XToYHTo6B samples (Needs to copy to Lorien once production is complete)
 
+#Make plots with signal, backgrounds and data for SR(Signal Region) and VR(Validation Region):
+```git checkout -b v1.0```\
+Make path changes to your directory in ```run.sh```,```run_signal.sh```,```condor_selection.py```,```condor_signal.py```\
+To run Background and Data samples:
+```
+python condor_selection.py
+```
+To run Signal Samples:
+```
+python condor_signal.py
+```
+It should submit jobs on condor for all the samples. Wait till all jobs are done. Output rootfiles will be stored in ```Analysis``` directory.\
+To combine histograms:
+```
+python combine_histograms.py
+```
+This should combine rootfiles and store in ```rootfiles``` directory.\
+To generate boosted and semiboosted plots:
+```
+python Plot_Boosted.py
+python Plot_semiBoosted.py
+```
+
 # Example commands:
 Grid proxy needs to be initialized before running skimming to access the file on the store
 ```
