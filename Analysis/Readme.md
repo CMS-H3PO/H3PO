@@ -8,7 +8,7 @@ HHH_samples_2016.txt - Official sample list of 2016 NanoAOD XToYHTo6B samples (N
 HHH_samples_2017.txt - Official sample list of 2017 NanoAOD XToYHTo6B samples (Needs to copy to Lorien once production is complete)
 
 # Make plots with signal, backgrounds and data for SR(Signal Region) and VR(Validation Region):
-```git checkout -b v1.0```\
+```git checkout v1.0```\
 Make path changes to your directory in ```run.sh```,```run_signal.sh```,```condor_selection.py```,```condor_signal.py```\
 To run Background and Data samples:
 ```
