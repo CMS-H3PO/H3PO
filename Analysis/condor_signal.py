@@ -1,3 +1,4 @@
+from condor.paths import *
 from os import listdir, system
 from os.path import join, isfile
 
@@ -13,7 +14,7 @@ if __name__ == '__main__':
         with open('job_desc' + dataset + '.txt', 'w') as job_file:
             job_file.write('executable = run_signal.sh\n')
             job_file.write('universe    =  vanilla\n')
-            job_file.write('initialdir  =  /users/bchitrod/HHH/H3PO/Analysis\n')
+            job_file.write('initialdir  =  ' + H3_DIR  + '\n')
             job_file.write('getenv = True\n')
             
             job_file.write('log = log' + dataset + '.log\n')
