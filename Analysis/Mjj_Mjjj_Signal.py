@@ -1,3 +1,4 @@
+import os
 import uproot
 import ROOT
 import json
@@ -211,41 +212,45 @@ def plotsemiboosted(semiboostedSignalfj_0btag, semiboostedSignalfj_1btag,semiboo
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
+    
     parser = ArgumentParser(description="Do -h to see usage")
     parser.add_argument('-s', '--sample', help='Sample name', default="QCD2000")
-    parser.add_argument('-fp', '--file_path', help='File path')
+    parser.add_argument('-i', '--input', help='Input file')
+    parser.add_argument('-o', '--output', help='Output directory')
     args = parser.parse_args()
+    
     process = args.sample
-    fname = args.file_path
+    input = args.input
+    output = args.output
     year = "2017"
     oFile = process
     print(process)
-    boostedSignal_0btag, boostedSignal_1btag = Signal_boosted(fname,process,eventsToRead=None)
-    boostedCR_0btag,boostedCR_1btag = Validation_boosted(fname,process,eventsToRead=None)
-    semiboostedSignalfj_0btag, semiboostedSignalfj_1btag,semiboostedSignalj_0btag, semiboostedSignalj_1btag = Signal_semiboosted(fname,process,eventsToRead=None)
-    semiboostedCRfj_0btag,semiboostedCRfj_1btag,semiboostedCRj_0btag,semiboostedCRj_1btag = Validation_semiboosted(fname,process,eventsToRead=None)
+    boostedSignal_0btag, boostedSignal_1btag = Signal_boosted(input,process,eventsToRead=None)
+    boostedCR_0btag,boostedCR_1btag = Validation_boosted(input,process,eventsToRead=None)
+    semiboostedSignalfj_0btag, semiboostedSignalfj_1btag,semiboostedSignalj_0btag, semiboostedSignalj_1btag = Signal_semiboosted(input,process,eventsToRead=None)
+    semiboostedCRfj_0btag,semiboostedCRfj_1btag,semiboostedCRj_0btag,semiboostedCRj_1btag = Validation_semiboosted(input,process,eventsToRead=None)
     if ((process != "JetHT2017B")&(process != "JetHT2017C")&(process != "JetHT2017D")&(process != "JetHT2017E")&(process != "JetHT2017F")):
         scale = normalizeProcess(process,year)
     if ((process == "JetHT2017B")|(process == "JetHT2017C")|(process == "JetHT2017D")|(process == "JetHT2017E")|(process == "JetHT2017F")):
         scale = 1
     j3_sig0btag_hist,j3_sig1btag_hist,j3_CR0btag_hist,j3_CR1btag_hist,mjj_vs_mjjj_sig0btag,mjj_vs_mjjj_sig1btag,mjj_vs_mjjj_CR0btag,mjj_vs_mjjj_CR1btag = plotboosted(boostedSignal_0btag,boostedSignal_1btag,boostedCR_0btag,boostedCR_1btag,scale,process)
     j3_sig0btag_sb_hist,j3_sig1btag_sb_hist,j3_CR0btag_sb_hist,j3_CR1btag_sb_hist,mjj_vs_mjjj_sig0btag_sb,mjj_vs_mjjj_sig1btag_sb,mjj_vs_mjjj_CR0btag_sb,mjj_vs_mjjj_CR1btag_sb = plotsemiboosted(semiboostedSignalfj_0btag, semiboostedSignalfj_1btag,semiboostedSignalj_0btag, semiboostedSignalj_1btag,semiboostedCRfj_0btag,semiboostedCRfj_1btag,semiboostedCRj_0btag,semiboostedCRj_1btag,scale,process)
-    with uproot.recreate("{0}_Boosted_pass_50.root".format(process)) as fout:
+    with uproot.recreate(os.path.join(output, "{0}_Boosted_pass_50.root".format(process))) as fout:
         fout[f"j3_sig_hist"] = j3_sig1btag_hist
         fout[f"j3_CR_hist"] = j3_CR1btag_hist
         fout[f"mjj_vs_mjjj_sig"] = mjj_vs_mjjj_sig1btag
         fout[f"mjj_vs_mjjj_CR"] = mjj_vs_mjjj_CR1btag
-    with uproot.recreate("{0}_Boosted_fail_50.root".format(process)) as fout:
+    with uproot.recreate(os.path.join(output, "{0}_Boosted_fail_50.root".format(process))) as fout:
         fout[f"j3_sig_hist"] = j3_sig0btag_hist
         fout[f"j3_CR_hist"] = j3_CR0btag_hist
         fout[f"mjj_vs_mjjj_sig"] = mjj_vs_mjjj_sig0btag
         fout[f"mjj_vs_mjjj_CR"] =mjj_vs_mjjj_CR0btag
-    with uproot.recreate("{0}_semiBoosted_pass_50.root".format(process)) as fout:
+    with uproot.recreate(os.path.join(output, "{0}_semiBoosted_pass_50.root".format(process))) as fout:
         fout[f"j3_sig_sb_hist"] = j3_sig1btag_sb_hist
         fout[f"j3_CR_sb_hist"] = j3_CR1btag_sb_hist
         fout[f"mjj_vs_mjjj_sig_sb"] = mjj_vs_mjjj_sig1btag_sb
         fout[f"mjj_vs_mjjj_CR_sb"] = mjj_vs_mjjj_CR1btag_sb
-    with uproot.recreate("{0}_semiBoosted_fail_50.root".format(process)) as fout:
+    with uproot.recreate(os.path.join(output, "{0}_semiBoosted_fail_50.root".format(process))) as fout:
         fout[f"j3_sig_sb_hist"] = j3_sig0btag_sb_hist
         fout[f"j3_CR_sb_hist"] = j3_CR0btag_sb_hist
         fout[f"mjj_vs_mjjj_sig_sb"] = mjj_vs_mjjj_sig0btag_sb
