@@ -31,7 +31,7 @@ if __name__ == '__main__':
                 job_file.write('executable  = run.sh\n')
                 job_file.write('universe    = vanilla\n')
                 job_file.write('initialdir  = ' + initial_dir + '\n')
-                job_file.write('getenv = True\n')
+                job_file.write('getenv = False\n')
                 
                 job_file.write('log    = ' + join(condor_dir_logs, 'log-' + dataset_job + '.log') + '\n')
                 job_file.write('output = ' + join(condor_dir_logs, 'tmp-' + dataset_job + '.out') + '\n')
