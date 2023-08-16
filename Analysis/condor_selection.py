@@ -9,7 +9,7 @@ if __name__ == '__main__':
                 "JetHT2017B", "JetHT2017C", "JetHT2017D", "JetHT2017E", "JetHT2017F"]
 
     initial_dir = H3_DIR
-    condor_dir = join(initial_dir, 'condor_jobs_' + datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
+    condor_dir = join(initial_dir, 'condor_jobs_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
     condor_dir_jobs = join(condor_dir, "jobs")
     condor_dir_logs = join(condor_dir, "logs")
     os.system('mkdir -p ' + condor_dir_jobs)
