@@ -2,14 +2,27 @@ from condor.paths import *
 from os import listdir, system
 from os.path import join, isfile
 import datetime
+from optparse import OptionParser
 
 
 if __name__ == '__main__':
+    # usage description
+    usage = "Usage: python %prog [options] \nExample: python %prog -o condor_jobs"
+    
+    # input parameters
+    parser = OptionParser(usage=usage)
+
+    parser.add_option("-o", "--output", dest="output",
+                  help="Output directory name (This parameter is optional, default: condor_jobs)",
+                  default="condor_jobs")
+
+    (options, args) = parser.parse_args()
+
     datasets = ["QCD500", "QCD700", "QCD2000", "QCD1000", "QCD1500", "TTbarHadronic", "TTbarSemileptonic",
                 "JetHT2017B", "JetHT2017C", "JetHT2017D", "JetHT2017E", "JetHT2017F"]
 
     initial_dir = H3_DIR
-    condor_dir = join(initial_dir, 'condor_jobs_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
+    condor_dir = join(initial_dir, options.output + '_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
     condor_dir_jobs = join(condor_dir, "jobs")
     condor_dir_logs = join(condor_dir, "logs")
     os.system('mkdir -p ' + condor_dir_jobs)
