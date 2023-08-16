@@ -13,8 +13,9 @@ if __name__ == '__main__':
     parser = OptionParser(usage=usage)
 
     parser.add_option("-o", "--output", dest="output",
-                  help="Output directory name (This parameter is optional, default: condor_jobs)",
-                  default="condor_jobs")
+                      help="Output directory name (This parameter is optional, default: condor_jobs)",
+                      default="condor_jobs",
+                      metavar="OUTPUT_DIR")
 
     (options, args) = parser.parse_args()
     
