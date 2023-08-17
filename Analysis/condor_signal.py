@@ -39,7 +39,7 @@ if __name__ == '__main__':
         args = '-s={0} -i={1} -o={2}'.format(dataset, file_path, condor_dir)
         job_desc = join(condor_dir_jobs, 'job_desc-' + dataset + '.txt')
             
-        with open('job_desc-' + dataset + '.txt', 'w') as job_file:
+        with open(job_desc, 'w') as job_file:
             job_file.write('executable  = run_signal.sh\n')
             job_file.write('universe    = vanilla\n')
             job_file.write('initialdir  = ' + initial_dir + '\n')
@@ -50,7 +50,7 @@ if __name__ == '__main__':
             job_file.write('error  = ' + join(condor_dir_logs, 'tmp-' + dataset + '.err') + '\n')
             job_file.write('arguments = "' + args + '"\n')
             job_file.write('queue\n')
-        system('condor_submit job_desc-' + dataset + '.txt')
+        system('condor_submit ' + job_desc)
             
     # print("Waiting for all jobs to finish...")
     # for dataset in datasets:
