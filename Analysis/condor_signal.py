@@ -23,7 +23,10 @@ if __name__ == '__main__':
 
 
     initial_dir = H3_DIR
-    condor_dir = join(initial_dir, options.output + '_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
+    if options.output.startswith('/'):
+        condor_dir = options.output.rstrip('/') + '_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    else:
+        condor_dir = join(initial_dir, options.output.rstrip('/') + '_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
     condor_dir_jobs = join(condor_dir, "jobs")
     condor_dir_logs = join(condor_dir, "logs")
     os.system('mkdir -p ' + condor_dir_jobs)
