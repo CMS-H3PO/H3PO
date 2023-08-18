@@ -1,7 +1,6 @@
-import sys
 from os import listdir, getcwd, system, chdir
 from os.path import isfile, join
-from optparse import OptionParser
+from argparse import ArgumentParser
 
 
 def remove_root_files(list_of_root_files):
@@ -31,33 +30,27 @@ def combine_histograms(identifier, rmFiles=False, startsWithRegion=True, mvFiles
 
 
 if __name__ == '__main__':
-    # usage description
-    usage = "Usage: python %prog [options] \nExample: python %prog -i condor_jobs_<timestamp>"
+    # usage example
+    Description = "Example: %(prog)s -i condor_jobs_<timestamp>"
     
     # input parameters
-    parser = OptionParser(usage=usage)
+    parser = ArgumentParser(description=Description)
 
-    parser.add_option("-i", "--input", dest="input",
-                      help="Input directory name (This parameter is mandatory)",
-                      metavar="INPUT")
+    parser.add_argument("-i", "--input", dest="input",
+                      help="Input directory name",
+                      metavar="INPUT",
+                      required=True)
     
-    parser.add_option("-f", "--fit_dir", dest="fit_dir",
-                      help="Fit directory name (This parameter is optional, default: fit)",
+    parser.add_argument("-f", "--fit_dir", dest="fit_dir",
+                      help="Fit directory name (default: %(default)s)",
                       default="fit",
                       metavar="FIT_DIR")
     
-    parser.add_option("--delete", dest="delete", action='store_true',
-                      help="Delete Condor output root files",
+    parser.add_argument("--delete", dest="delete", action='store_true',
+                      help="Delete Condor output root files (default: %(default)s)",
                       default=False)
 
-    (options, args) = parser.parse_args()
-
-    # make sure all necessary input parameters are provided
-    if not options.input:
-        print('Mandatory parameters missing')
-        print('')
-        parser.print_help()
-        sys.exit(1)
+    (options, args) = parser.parse_known_args()
 
     chdir(options.input)
 

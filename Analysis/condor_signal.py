@@ -2,22 +2,22 @@ from condor.paths import *
 from os import listdir, system
 from os.path import join, isfile
 import datetime
-from optparse import OptionParser
+from argparse import ArgumentParser
 
 
 if __name__ == '__main__':
-    # usage description
-    usage = "Usage: python %prog [options] \nExample: python %prog -o condor_jobs"
+    # usage example
+    Description = "Example: %(prog)s -o condor_jobs"
     
     # input parameters
-    parser = OptionParser(usage=usage)
+    parser = ArgumentParser(description=Description)
 
-    parser.add_option("-o", "--output", dest="output",
-                      help="Output directory name (This parameter is optional, default: condor_jobs)",
+    parser.add_argument("-o", "--output", dest="output",
+                      help="Output directory name (default: %(default)s)",
                       default="condor_jobs",
                       metavar="OUTPUT_DIR")
 
-    (options, args) = parser.parse_args()
+    (options, args) = parser.parse_known_args()
     
     datasets = ["XToYHTo6B_MX-2400_MY-800"]
 
