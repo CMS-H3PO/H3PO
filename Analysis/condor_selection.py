@@ -1,4 +1,5 @@
 from condor.paths import *
+from condor.datasets import *
 from os import listdir, system
 from os.path import join, isfile
 import datetime
@@ -17,10 +18,16 @@ if __name__ == '__main__':
                       default="condor_jobs",
                       metavar="OUTPUT_DIR")
 
-    (options, args) = parser.parse_known_args()
+    parser.add_argument("-y", "--year", dest="year",
+                        help="Data taking year (default: %(default)s)",
+                        default="2017",
+                        metavar="YEAR")
 
-    datasets = ["QCD500", "QCD700", "QCD2000", "QCD1000", "QCD1500", "TTbarHadronic", "TTbarSemileptonic",
-                "JetHT2017B", "JetHT2017C", "JetHT2017D", "JetHT2017E", "JetHT2017F"]
+    parser.add_argument("--dry_run", dest="dry_run", action="store_true",
+                        help="Dry run without submitting Condor jobs (default: %(default)s)",
+                        default=False)
+
+    (options, args) = parser.parse_known_args()
 
     initial_dir = H3_DIR
     if options.output.startswith('/'):
@@ -33,8 +40,8 @@ if __name__ == '__main__':
     os.system('mkdir -p ' + condor_dir_logs)
 
     num_of_jobs = {}
-    for dataset in datasets:
-        dataset_path = join(SKIM_DIR, '2017', dataset)
+    for dataset in datasets[options.year]:
+        dataset_path = join(datasets[options.year][dataset], options.year, dataset)
         num_of_jobs[dataset] = 0
         for i, file in enumerate(listdir(dataset_path)):
             file_path = join(dataset_path, file)
@@ -55,7 +62,8 @@ if __name__ == '__main__':
                 job_file.write('error  = ' + join(condor_dir_logs, 'tmp-' + dataset_job + '.err') + '\n')
                 job_file.write('arguments = "' + args + '"\n')
                 job_file.write('queue\n')
-            system('condor_submit ' + job_desc)
+            if not options.dry_run:
+                system('condor_submit ' + job_desc)
             num_of_jobs[dataset] += 1
             
 

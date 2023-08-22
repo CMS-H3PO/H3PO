@@ -1,18 +1,10 @@
 import os
 import uproot
-import ROOT
-import json
 import awkward as ak
-import matplotlib.pyplot as plt
 import hist
 from hist import Hist
-from coffea.nanoevents import NanoEventsFactory, BaseSchema
-import coffea.processor as processor
-from coffea.processor import accumulate
-from coffea.nanoevents import NanoEventsFactory, NanoAODSchema
-import numpy as np
-import mplhep as hep
-from ACR_Selection import *
+from Selection import *
+
 
 def plotboosted(boostedSignal_0btag, boostedSignal_1btag,boostedCR_0btag,boostedCR_1btag,scale,process):
 
@@ -47,7 +39,7 @@ def plotboosted(boostedSignal_0btag, boostedSignal_1btag,boostedCR_0btag,boosted
     dijet3_mass_Signal0btag = (boostedSignal_0btag[:,1]+boostedSignal_0btag[:,2]).mass
     dijet1_mass_Signal1btag = (boostedSignal_1btag[:,0]+boostedSignal_1btag[:,1]).mass
     dijet2_mass_Signal1btag = (boostedSignal_1btag[:,0]+boostedSignal_1btag[:,2]).mass
-    dijet3_mass_Signal1btag = (boostedSignal_1btag[:,1]+boostedSignal_1btag[:,2]).mass                           
+    dijet3_mass_Signal1btag = (boostedSignal_1btag[:,1]+boostedSignal_1btag[:,2]).mass
 
     dijet1_mass_CR0btag = (boostedCR_0btag[:,0]+boostedCR_0btag[:,1]).mass
     dijet2_mass_CR0btag = (boostedCR_0btag[:,0]+boostedCR_0btag[:,2]).mass
@@ -85,6 +77,7 @@ def plotboosted(boostedSignal_0btag, boostedSignal_1btag,boostedCR_0btag,boosted
     mjj_vs_mjjj_CR1btag *= scale
 
     return j3_sig0btag_hist,j3_sig1btag_hist,j3_CR0btag_hist,j3_CR1btag_hist,mjj_vs_mjjj_sig0btag,mjj_vs_mjjj_sig1btag,mjj_vs_mjjj_CR0btag,mjj_vs_mjjj_CR1btag
+
 
 def plotsemiboosted(semiboostedSignalfj_0btag, semiboostedSignalfj_1btag,semiboostedSignalj_0btag, semiboostedSignalj_1btag,semiboostedCRfj_0btag,semiboostedCRfj_1btag,semiboostedCRj_0btag,semiboostedCRj_1btag,scale,process):
 
@@ -235,22 +228,22 @@ if __name__ == "__main__":
         scale = 1
     j3_sig0btag_hist,j3_sig1btag_hist,j3_CR0btag_hist,j3_CR1btag_hist,mjj_vs_mjjj_sig0btag,mjj_vs_mjjj_sig1btag,mjj_vs_mjjj_CR0btag,mjj_vs_mjjj_CR1btag = plotboosted(boostedSignal_0btag,boostedSignal_1btag,boostedCR_0btag,boostedCR_1btag,scale,process)                  
     j3_sig0btag_sb_hist,j3_sig1btag_sb_hist,j3_CR0btag_sb_hist,j3_CR1btag_sb_hist,mjj_vs_mjjj_sig0btag_sb,mjj_vs_mjjj_sig1btag_sb,mjj_vs_mjjj_CR0btag_sb,mjj_vs_mjjj_CR1btag_sb = plotsemiboosted(semiboostedSignalfj_0btag, semiboostedSignalfj_1btag,semiboostedSignalj_0btag, semiboostedSignalj_1btag,semiboostedCRfj_0btag,semiboostedCRfj_1btag,semiboostedCRj_0btag,semiboostedCRj_1btag,scale,process)
-    with uproot.recreate(os.path.join(output, "Boosted_pass_50_{0}-{1}".format(process, ofile))) as fout:                                                                                                                        
-        fout[f"j3_sig_hist"] = j3_sig1btag_hist                                                                                                                                       
-        fout[f"j3_CR_hist"] = j3_CR1btag_hist                                                                                                                                         
+    with uproot.recreate(os.path.join(output, "Boosted_pass_{0}-{1}".format(process, ofile))) as fout:
+        fout[f"j3_sig_hist"] = j3_sig1btag_hist
+        fout[f"j3_CR_hist"] = j3_CR1btag_hist
         fout[f"mjj_vs_mjjj_sig"] = mjj_vs_mjjj_sig1btag
         fout[f"mjj_vs_mjjj_CR"] = mjj_vs_mjjj_CR1btag
-    with uproot.recreate(os.path.join(output, "Boosted_fail_50_{0}-{1}".format(process, ofile))) as fout:
+    with uproot.recreate(os.path.join(output, "Boosted_fail_{0}-{1}".format(process, ofile))) as fout:
         fout[f"j3_sig_hist"] = j3_sig0btag_hist
         fout[f"j3_CR_hist"] = j3_CR0btag_hist
         fout[f"mjj_vs_mjjj_sig"] = mjj_vs_mjjj_sig0btag
         fout[f"mjj_vs_mjjj_CR"] =mjj_vs_mjjj_CR0btag
-    with uproot.recreate(os.path.join(output, "semiBoosted_pass_50_{0}-{1}".format(process, ofile))) as fout:
+    with uproot.recreate(os.path.join(output, "semiBoosted_pass_{0}-{1}".format(process, ofile))) as fout:
         fout[f"j3_sig_sb_hist"] = j3_sig1btag_sb_hist
         fout[f"j3_CR_sb_hist"] = j3_CR1btag_sb_hist
         fout[f"mjj_vs_mjjj_sig_sb"] = mjj_vs_mjjj_sig1btag_sb
         fout[f"mjj_vs_mjjj_CR_sb"] = mjj_vs_mjjj_CR1btag_sb
-    with uproot.recreate(os.path.join(output, "semiBoosted_fail_50_{0}-{1}".format(process, ofile))) as fout:
+    with uproot.recreate(os.path.join(output, "semiBoosted_fail_{0}-{1}".format(process, ofile))) as fout:
         fout[f"j3_sig_sb_hist"] = j3_sig0btag_sb_hist
         fout[f"j3_CR_sb_hist"] = j3_CR0btag_sb_hist
         fout[f"mjj_vs_mjjj_sig_sb"] = mjj_vs_mjjj_sig0btag_sb
