@@ -73,11 +73,19 @@ def Signal_boosted(fname,process,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
     
     fatjets = events.FatJet
-    # select good fat jets
-    good_fatjets = fatjets[precut(fatjets) & (fatjets.msoftdrop>=mass_cut[0]) & (fatjets.msoftdrop<=mass_cut[1])]
     
+    # fat jets preselection
+    good_fatjets = fatjets[precut(fatjets)]
+    
+    # select events with at least 3 preselected fat jets
+    good_fatjets = good_fatjets[ak.num(good_fatjets, axis=1)>2]
+
+    # require that the 3 leading (in pT) fat jets pass the jet mass cut
+    good_fatjets_3 = good_fatjets[:,0:3]
+    good_fatjets_3 = good_fatjets_3[(good_fatjets_3.msoftdrop>=mass_cut[0]) & (good_fatjets_3.msoftdrop<=mass_cut[1])]
+
     # select events with at least 3 good fat jets
-    good_fatjets_SR_boosted = good_fatjets[ak.num(good_fatjets, axis=1)>2]
+    good_fatjets_SR_boosted = good_fatjets[ak.num(good_fatjets_3, axis=1)>2]
 
     return FailPassCategories(good_fatjets_SR_boosted)
 
