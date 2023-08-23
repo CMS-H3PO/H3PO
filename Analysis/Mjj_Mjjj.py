@@ -6,201 +6,150 @@ from hist import Hist
 from Selection import *
 
 
-def plotboosted(boostedSignal_0btag, boostedSignal_1btag,boostedCR_0btag,boostedCR_1btag,scale,process):
+def plotboosted(boosted_SR_fail, boosted_SR_pass,boosted_VR_fail,boosted_VR_pass,scale,process):
 
-    trijet_mass_Signal0btag = (boostedSignal_0btag[:,0]+boostedSignal_0btag[:,1]+boostedSignal_0btag[:,2]).mass
-    trijet_mass_Signal1btag = (boostedSignal_1btag[:,0]+boostedSignal_1btag[:,1]+boostedSignal_1btag[:,2]).mass
+    trijet_mass_SR_fail = (boosted_SR_fail[:,0]+boosted_SR_fail[:,1]+boosted_SR_fail[:,2]).mass
+    trijet_mass_SR_pass = (boosted_SR_pass[:,0]+boosted_SR_pass[:,1]+boosted_SR_pass[:,2]).mass
 
-    trijet_mass_CR0btag = (boostedCR_0btag[:,0]+boostedCR_0btag[:,1]+boostedCR_0btag[:,2]).mass
-    trijet_mass_CR1btag = (boostedCR_1btag[:,0]+boostedCR_1btag[:,1]+boostedCR_1btag[:,2]).mass
+    trijet_mass_VR_fail = (boosted_VR_fail[:,0]+boosted_VR_fail[:,1]+boosted_VR_fail[:,2]).mass
+    trijet_mass_VR_pass = (boosted_VR_pass[:,0]+boosted_VR_pass[:,1]+boosted_VR_pass[:,2]).mass
 
-    j3_sig0btag_bin = hist.axis.Regular(label="Boosted Signal Trijet Mass with 0 btagged fatjet [GeV]", name="trijet_mass_sig0btag", bins=120, start=0, stop=6000)
-    j3_sig0btag_hist = Hist(j3_sig0btag_bin)
-    j3_sig0btag_hist.fill(trijet_mass_sig0btag=trijet_mass_Signal0btag)
-    j3_sig0btag_hist *= scale
+    j3_SR_fail_bin = hist.axis.Regular(label="Boosted Signal Fail Trijet Mass [GeV]", name="trijet_mass_SR_fail", bins=120, start=0, stop=6000)
+    j3_SR_fail_hist = Hist(j3_SR_fail_bin)
+    j3_SR_fail_hist.fill(trijet_mass_SR_fail=trijet_mass_SR_fail)
+    j3_SR_fail_hist *= scale
 
-    j3_sig1btag_bin = hist.axis.Regular(label="Boosted Signal Trijet Mass with atleast 1 btagged fatjet [GeV]", name="trijet_mass_sig1btag", bins=120, start=0, stop=6000)
-    j3_sig1btag_hist = Hist(j3_sig1btag_bin)
-    j3_sig1btag_hist.fill(trijet_mass_sig1btag=trijet_mass_Signal1btag)
-    j3_sig1btag_hist *= scale
+    j3_SR_pass_bin = hist.axis.Regular(label="Boosted Signal Pass Trijet Mass [GeV]", name="trijet_mass_SR_pass", bins=120, start=0, stop=6000)
+    j3_SR_pass_hist = Hist(j3_SR_pass_bin)
+    j3_SR_pass_hist.fill(trijet_mass_SR_pass=trijet_mass_SR_pass)
+    j3_SR_pass_hist *= scale
 
-    j3_CR0btag_bin = hist.axis.Regular(label="Boosted Validation Trijet Mass with 0 btagged fatjet [GeV]", name="trijet_mass_CR0btag", bins=120, start=0, stop=6000)
-    j3_CR0btag_hist = Hist(j3_CR0btag_bin)
-    j3_CR0btag_hist.fill(trijet_mass_CR0btag=trijet_mass_CR0btag)
-    j3_CR0btag_hist *= scale
+    j3_VR_fail_bin = hist.axis.Regular(label="Boosted Validation Fail Trijet Mass [GeV]", name="trijet_mass_VR_fail", bins=120, start=0, stop=6000)
+    j3_VR_fail_hist = Hist(j3_VR_fail_bin)
+    j3_VR_fail_hist.fill(trijet_mass_VR_fail=trijet_mass_VR_fail)
+    j3_VR_fail_hist *= scale
 
-    j3_CR1btag_bin = hist.axis.Regular(label="Boosted Validation Trijet Mass with atleast 1 btagged fatjet [GeV]", name="trijet_mass_CR1btag", bins=120, start=0, stop=6000)
-    j3_CR1btag_hist = Hist(j3_CR1btag_bin)
-    j3_CR1btag_hist.fill(trijet_mass_CR1btag=trijet_mass_CR1btag)
-    j3_CR1btag_hist *= scale
+    j3_VR_pass_bin = hist.axis.Regular(label="Boosted Validation Pass Trijet Mass [GeV]", name="trijet_mass_VR_pass", bins=120, start=0, stop=6000)
+    j3_VR_pass_hist = Hist(j3_VR_pass_bin)
+    j3_VR_pass_hist.fill(trijet_mass_VR_pass=trijet_mass_VR_pass)
+    j3_VR_pass_hist *= scale
 
-    dijet1_mass_Signal0btag = (boostedSignal_0btag[:,0]+boostedSignal_0btag[:,1]).mass
-    dijet2_mass_Signal0btag = (boostedSignal_0btag[:,0]+boostedSignal_0btag[:,2]).mass
-    dijet3_mass_Signal0btag = (boostedSignal_0btag[:,1]+boostedSignal_0btag[:,2]).mass
-    dijet1_mass_Signal1btag = (boostedSignal_1btag[:,0]+boostedSignal_1btag[:,1]).mass
-    dijet2_mass_Signal1btag = (boostedSignal_1btag[:,0]+boostedSignal_1btag[:,2]).mass
-    dijet3_mass_Signal1btag = (boostedSignal_1btag[:,1]+boostedSignal_1btag[:,2]).mass
+    dijet1_mass_SR_fail = (boosted_SR_fail[:,0]+boosted_SR_fail[:,1]).mass
+    dijet2_mass_SR_fail = (boosted_SR_fail[:,0]+boosted_SR_fail[:,2]).mass
+    dijet3_mass_SR_fail = (boosted_SR_fail[:,1]+boosted_SR_fail[:,2]).mass
+    dijet1_mass_SR_pass = (boosted_SR_pass[:,0]+boosted_SR_pass[:,1]).mass
+    dijet2_mass_SR_pass = (boosted_SR_pass[:,0]+boosted_SR_pass[:,2]).mass
+    dijet3_mass_SR_pass = (boosted_SR_pass[:,1]+boosted_SR_pass[:,2]).mass
 
-    dijet1_mass_CR0btag = (boostedCR_0btag[:,0]+boostedCR_0btag[:,1]).mass
-    dijet2_mass_CR0btag = (boostedCR_0btag[:,0]+boostedCR_0btag[:,2]).mass
-    dijet3_mass_CR0btag = (boostedCR_0btag[:,1]+boostedCR_0btag[:,2]).mass
-    dijet1_mass_CR1btag = (boostedCR_1btag[:,0]+boostedCR_1btag[:,1]).mass
-    dijet2_mass_CR1btag = (boostedCR_1btag[:,0]+boostedCR_1btag[:,2]).mass
-    dijet3_mass_CR1btag = (boostedCR_1btag[:,1]+boostedCR_1btag[:,2]).mass
+    dijet1_mass_VR_fail = (boosted_VR_fail[:,0]+boosted_VR_fail[:,1]).mass
+    dijet2_mass_VR_fail = (boosted_VR_fail[:,0]+boosted_VR_fail[:,2]).mass
+    dijet3_mass_VR_fail = (boosted_VR_fail[:,1]+boosted_VR_fail[:,2]).mass
+    dijet1_mass_VR_pass = (boosted_VR_pass[:,0]+boosted_VR_pass[:,1]).mass
+    dijet2_mass_VR_pass = (boosted_VR_pass[:,0]+boosted_VR_pass[:,2]).mass
+    dijet3_mass_VR_pass = (boosted_VR_pass[:,1]+boosted_VR_pass[:,2]).mass
 
-    j2_sig0btag_bin = hist.axis.Regular(label="Dijet Mass [GeV]", name="dijet_mass", bins=80, start=0, stop=4000)
-    mjj_vs_mjjj_sig0btag = Hist(j3_sig0btag_bin, j2_sig0btag_bin)
-    mjj_vs_mjjj_sig0btag.fill(dijet_mass=dijet1_mass_Signal0btag,trijet_mass_sig0btag=trijet_mass_Signal0btag)
-    mjj_vs_mjjj_sig0btag.fill(dijet_mass=dijet2_mass_Signal0btag,trijet_mass_sig0btag=trijet_mass_Signal0btag)
-    mjj_vs_mjjj_sig0btag.fill(dijet_mass=dijet3_mass_Signal0btag,trijet_mass_sig0btag=trijet_mass_Signal0btag)
-    mjj_vs_mjjj_sig0btag *= scale
+    j2_SR_fail_bin = hist.axis.Regular(label="Boosted Signal Fail Dijet Mass [GeV]", name="dijet_mass_SR_fail", bins=80, start=0, stop=4000)
+    mjj_vs_mjjj_SR_fail = Hist(j3_SR_fail_bin, j2_SR_fail_bin)
+    mjj_vs_mjjj_SR_fail.fill(dijet_mass_SR_fail=dijet1_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
+    mjj_vs_mjjj_SR_fail.fill(dijet_mass_SR_fail=dijet2_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
+    mjj_vs_mjjj_SR_fail.fill(dijet_mass_SR_fail=dijet3_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
+    mjj_vs_mjjj_SR_fail *= scale
 
-    j2_sig1btag_bin = hist.axis.Regular(label="Dijet Mass [GeV]", name="dijet_mass", bins=80, start=0, stop=4000)
-    mjj_vs_mjjj_sig1btag = Hist(j3_sig1btag_bin, j2_sig1btag_bin)
-    mjj_vs_mjjj_sig1btag.fill(dijet_mass=dijet1_mass_Signal1btag,trijet_mass_sig1btag=trijet_mass_Signal1btag)
-    mjj_vs_mjjj_sig1btag.fill(dijet_mass=dijet2_mass_Signal1btag,trijet_mass_sig1btag=trijet_mass_Signal1btag)
-    mjj_vs_mjjj_sig1btag.fill(dijet_mass=dijet3_mass_Signal1btag,trijet_mass_sig1btag=trijet_mass_Signal1btag)
-    mjj_vs_mjjj_sig1btag *= scale
+    j2_SR_pass_bin = hist.axis.Regular(label="Boosted Signal Pass Dijet Mass [GeV]", name="dijet_mass_SR_pass", bins=80, start=0, stop=4000)
+    mjj_vs_mjjj_SR_pass = Hist(j3_SR_pass_bin, j2_SR_pass_bin)
+    mjj_vs_mjjj_SR_pass.fill(dijet_mass_SR_pass=dijet1_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
+    mjj_vs_mjjj_SR_pass.fill(dijet_mass_SR_pass=dijet2_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
+    mjj_vs_mjjj_SR_pass.fill(dijet_mass_SR_pass=dijet3_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
+    mjj_vs_mjjj_SR_pass *= scale
 
-    j2_CR0btag_bin = hist.axis.Regular(label="Dijet Mass [GeV]", name="dijet_mass", bins=80, start=0, stop=4000)
-    mjj_vs_mjjj_CR0btag = Hist(j3_CR0btag_bin, j2_CR0btag_bin)
-    mjj_vs_mjjj_CR0btag.fill(dijet_mass=dijet1_mass_CR0btag,trijet_mass_CR0btag=trijet_mass_CR0btag)
-    mjj_vs_mjjj_CR0btag.fill(dijet_mass=dijet2_mass_CR0btag,trijet_mass_CR0btag=trijet_mass_CR0btag)
-    mjj_vs_mjjj_CR0btag.fill(dijet_mass=dijet3_mass_CR0btag,trijet_mass_CR0btag=trijet_mass_CR0btag)
-    mjj_vs_mjjj_CR0btag *= scale
+    j2_VR_fail_bin = hist.axis.Regular(label="Boosted Validation Fail Dijet Mass [GeV]", name="dijet_mass_VR_fail", bins=80, start=0, stop=4000)
+    mjj_vs_mjjj_VR_fail = Hist(j3_VR_fail_bin, j2_VR_fail_bin)
+    mjj_vs_mjjj_VR_fail.fill(dijet_mass_VR_fail=dijet1_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
+    mjj_vs_mjjj_VR_fail.fill(dijet_mass_VR_fail=dijet2_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
+    mjj_vs_mjjj_VR_fail.fill(dijet_mass_VR_fail=dijet3_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
+    mjj_vs_mjjj_VR_fail *= scale
 
-    j2_CR1btag_bin = hist.axis.Regular(label="Dijet Mass [GeV]", name="dijet_mass", bins=80, start=0, stop=4000)
-    mjj_vs_mjjj_CR1btag = Hist(j3_CR1btag_bin, j2_CR1btag_bin)
-    mjj_vs_mjjj_CR1btag.fill(dijet_mass=dijet1_mass_CR1btag,trijet_mass_CR1btag=trijet_mass_CR1btag)
-    mjj_vs_mjjj_CR1btag.fill(dijet_mass=dijet2_mass_CR1btag,trijet_mass_CR1btag=trijet_mass_CR1btag)
-    mjj_vs_mjjj_CR1btag.fill(dijet_mass=dijet3_mass_CR1btag,trijet_mass_CR1btag=trijet_mass_CR1btag)
-    mjj_vs_mjjj_CR1btag *= scale
+    j2_VR_pass_bin = hist.axis.Regular(label="Boosted Validation Pass Dijet Mass [GeV]", name="dijet_mass_VR_pass", bins=80, start=0, stop=4000)
+    mjj_vs_mjjj_VR_pass = Hist(j3_VR_pass_bin, j2_VR_pass_bin)
+    mjj_vs_mjjj_VR_pass.fill(dijet_mass_VR_pass=dijet1_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
+    mjj_vs_mjjj_VR_pass.fill(dijet_mass_VR_pass=dijet2_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
+    mjj_vs_mjjj_VR_pass.fill(dijet_mass_VR_pass=dijet3_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
+    mjj_vs_mjjj_VR_pass *= scale
 
-    return j3_sig0btag_hist,j3_sig1btag_hist,j3_CR0btag_hist,j3_CR1btag_hist,mjj_vs_mjjj_sig0btag,mjj_vs_mjjj_sig1btag,mjj_vs_mjjj_CR0btag,mjj_vs_mjjj_CR1btag
+    return j3_SR_fail_hist,j3_SR_pass_hist,j3_VR_fail_hist,j3_VR_pass_hist,mjj_vs_mjjj_SR_fail,mjj_vs_mjjj_SR_pass,mjj_vs_mjjj_VR_fail,mjj_vs_mjjj_VR_pass
 
 
-def plotsemiboosted(semiboostedSignalfj_0btag, semiboostedSignalfj_1btag,semiboostedSignalj_0btag, semiboostedSignalj_1btag,semiboostedCRfj_0btag,semiboostedCRfj_1btag,semiboostedCRj_0btag,semiboostedCRj_1btag,scale,process):
+def plotsemiboosted(semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet,semiboosted_SR_fail_jet, semiboosted_SR_pass_jet,semiboosted_VR_fail_fatjet,semiboosted_VR_pass_fatjet,semiboosted_VR_fail_jet,semiboosted_VR_pass_jet,scale,process):
 
-    tri_mass_Signal0btag = (semiboostedSignalfj_0btag[:,0]+semiboostedSignalfj_0btag[:,1]+semiboostedSignalj_0btag['i0']+semiboostedSignalj_0btag['i1']).mass
-    tri_mass_Signal1btag = (semiboostedSignalfj_1btag[:,0]+semiboostedSignalfj_1btag[:,1]+semiboostedSignalj_1btag['i0']+semiboostedSignalj_1btag['i1']).mass
+    trijet_mass_SR_fail = (semiboosted_SR_fail_fatjet[:,0]+semiboosted_SR_fail_fatjet[:,1]+semiboosted_SR_fail_jet[:,0]+semiboosted_SR_fail_jet[:,1]).mass
+    trijet_mass_SR_pass = (semiboosted_SR_pass_fatjet[:,0]+semiboosted_SR_pass_fatjet[:,1]+semiboosted_SR_pass_jet[:,0]+semiboosted_SR_pass_jet[:,1]).mass
 
-    tri_mass_CR0btag = (semiboostedCRfj_0btag[:,0]+semiboostedCRfj_0btag[:,1]+semiboostedCRj_0btag['i0']+semiboostedCRj_0btag['i1']).mass
-    tri_mass_CR1btag = (semiboostedCRfj_1btag[:,0]+semiboostedCRfj_1btag[:,1]+semiboostedCRj_1btag['i0']+semiboostedCRj_1btag['i1']).mass
+    trijet_mass_VR_fail = (semiboosted_VR_fail_fatjet[:,0]+semiboosted_VR_fail_fatjet[:,1]+semiboosted_VR_fail_jet[:,0]+semiboosted_VR_fail_jet[:,1]).mass
+    trijet_mass_VR_pass = (semiboosted_VR_pass_fatjet[:,0]+semiboosted_VR_pass_fatjet[:,1]+semiboosted_VR_pass_jet[:,0]+semiboosted_VR_pass_jet[:,1]).mass
 
-    trijet_mass_Signal0btag = []
-    trijet_mass_Signal1btag = []
-    trijet_mass_CR0btag = []
-    trijet_mass_CR1btag = []
-    for t in tri_mass_Signal0btag:
-        for i in t:
-            trijet_mass_Signal0btag.append(i)
-    for t in tri_mass_Signal1btag:
-        for i in t:
-            trijet_mass_Signal1btag.append(i)
-    for t in tri_mass_CR0btag:
-        for i in t:
-            trijet_mass_CR0btag.append(i)
-    for t in tri_mass_CR1btag:
-        for i in t:
-            trijet_mass_CR1btag.append(i)
+    j3_SR_fail_bin = hist.axis.Regular(label="semiBoosted Signal Fail Trijet Mass [GeV]", name="trijet_mass_SR_fail", bins=120, start=0, stop=6000)
+    j3_SR_fail_hist = Hist(j3_SR_fail_bin)
+    j3_SR_fail_hist.fill(trijet_mass_SR_fail=trijet_mass_SR_fail)
+    j3_SR_fail_hist *= scale
 
-    j3_sig0btag_bin = hist.axis.Regular(label="semiBoosted Signal Trijet Mass with 0 btagged fatjet [GeV]", name="trijet_mass_sig0btag", bins=120, start=0, stop=6000)
-    j3_sig0btag_hist = Hist(j3_sig0btag_bin)
-    j3_sig0btag_hist.fill(trijet_mass_sig0btag=trijet_mass_Signal0btag)
-    j3_sig0btag_hist *= scale
+    j3_SR_pass_bin = hist.axis.Regular(label="semiBoosted Signal Pass Trijet Mass [GeV]", name="trijet_mass_SR_pass", bins=120, start=0, stop=6000)
+    j3_SR_pass_hist = Hist(j3_SR_pass_bin)
+    j3_SR_pass_hist.fill(trijet_mass_SR_pass=trijet_mass_SR_pass)
+    j3_SR_pass_hist *= scale
 
-    j3_sig1btag_bin = hist.axis.Regular(label="semiBoosted Signal Trijet Mass with atleast 1 btagged fatjet [GeV]", name="trijet_mass_sig1btag", bins=120, start=0, stop=6000)
-    j3_sig1btag_hist = Hist(j3_sig1btag_bin)
-    j3_sig1btag_hist.fill(trijet_mass_sig1btag=trijet_mass_Signal1btag)
-    j3_sig1btag_hist *= scale
+    j3_VR_fail_bin = hist.axis.Regular(label="semiBoosted Validation Fail Trijet Mass [GeV]", name="trijet_mass_VR_fail", bins=120, start=0, stop=6000)
+    j3_VR_fail_hist = Hist(j3_VR_fail_bin)
+    j3_VR_fail_hist.fill(trijet_mass_VR_fail=trijet_mass_VR_fail)
+    j3_VR_fail_hist *= scale
 
-    j3_CR0btag_bin = hist.axis.Regular(label="semiBoosted Validation Trijet Mass with 0 btagged fatjet [GeV]", name="trijet_mass_CR0btag", bins=120, start=0, stop=6000)
-    j3_CR0btag_hist = Hist(j3_CR0btag_bin)
-    j3_CR0btag_hist.fill(trijet_mass_CR0btag=trijet_mass_CR0btag)
-    j3_CR0btag_hist *= scale
+    j3_VR_pass_bin = hist.axis.Regular(label="semiBoosted Validation Pass Trijet Mass [GeV]", name="trijet_mass_VR_pass", bins=120, start=0, stop=6000)
+    j3_VR_pass_hist = Hist(j3_VR_pass_bin)
+    j3_VR_pass_hist.fill(trijet_mass_VR_pass=trijet_mass_VR_pass)
+    j3_VR_pass_hist *= scale
 
-    j3_CR1btag_bin = hist.axis.Regular(label="semiBoosted Validation Trijet Mass with atleast 1 btagged fatjet [GeV]", name="trijet_mass_CR1btag", bins=120, start=0, stop=6000)
-    j3_CR1btag_hist = Hist(j3_CR1btag_bin)
-    j3_CR1btag_hist.fill(trijet_mass_CR1btag=trijet_mass_CR1btag)
-    j3_CR1btag_hist *= scale
+    dijet1_mass_SR_fail = (semiboosted_SR_fail_fatjet[:,0]+semiboosted_SR_fail_fatjet[:,1]).mass
+    dijet2_mass_SR_fail = (semiboosted_SR_fail_fatjet[:,0]+semiboosted_SR_fail_jet[:,0]+semiboosted_SR_fail_jet[:,1]).mass
+    dijet3_mass_SR_fail = (semiboosted_SR_fail_fatjet[:,1]+semiboosted_SR_fail_jet[:,0]+semiboosted_SR_fail_jet[:,1]).mass
+    dijet1_mass_SR_pass = (semiboosted_SR_pass_fatjet[:,0]+semiboosted_SR_pass_fatjet[:,1]).mass
+    dijet2_mass_SR_pass = (semiboosted_SR_pass_fatjet[:,0]+semiboosted_SR_pass_jet[:,0]+semiboosted_SR_pass_jet[:,1]).mass
+    dijet3_mass_SR_pass = (semiboosted_SR_pass_fatjet[:,1]+semiboosted_SR_pass_jet[:,0]+semiboosted_SR_pass_jet[:,1]).mass
 
-    dijet1_mass_Signal0btag = (semiboostedSignalfj_0btag[:,0]+semiboostedSignalfj_0btag[:,1]).mass
-    di2_mass_Signal0btag = (semiboostedSignalfj_0btag[:,0]+semiboostedSignalj_0btag['i0']+semiboostedSignalj_0btag['i1']).mass
-    di3_mass_Signal0btag = (semiboostedSignalfj_0btag[:,1]+semiboostedSignalj_0btag['i0']+semiboostedSignalj_0btag['i1']).mass
-    dijet1_mass_Signal1btag = (semiboostedSignalfj_1btag[:,0]+semiboostedSignalfj_1btag[:,1]).mass
-    di2_mass_Signal1btag = (semiboostedSignalfj_1btag[:,0]+semiboostedSignalj_1btag['i0']+semiboostedSignalj_1btag['i1']).mass
-    di3_mass_Signal1btag = (semiboostedSignalfj_1btag[:,1]+semiboostedSignalj_1btag['i0']+semiboostedSignalj_1btag['i1']).mass
+    dijet1_mass_VR_fail = (semiboosted_VR_fail_fatjet[:,0]+semiboosted_VR_fail_fatjet[:,1]).mass
+    dijet2_mass_VR_fail = (semiboosted_VR_fail_fatjet[:,0]+semiboosted_VR_fail_jet[:,0]+semiboosted_VR_fail_jet[:,1]).mass
+    dijet3_mass_VR_fail = (semiboosted_VR_fail_fatjet[:,1]+semiboosted_VR_fail_jet[:,0]+semiboosted_VR_fail_jet[:,1]).mass
+    dijet1_mass_VR_pass = (semiboosted_VR_pass_fatjet[:,0]+semiboosted_VR_pass_fatjet[:,1]).mass
+    dijet2_mass_VR_pass = (semiboosted_VR_pass_fatjet[:,0]+semiboosted_VR_pass_jet[:,0]+semiboosted_VR_pass_jet[:,1]).mass
+    dijet3_mass_VR_pass = (semiboosted_VR_pass_fatjet[:,1]+semiboosted_VR_pass_jet[:,0]+semiboosted_VR_pass_jet[:,1]).mass
 
-    dijet1_mass_CR0btag = (semiboostedCRfj_0btag[:,0]+semiboostedCRfj_0btag[:,1]).mass
-    di2_mass_CR0btag = (semiboostedCRfj_0btag[:,0]+semiboostedCRj_0btag['i0']+semiboostedCRj_0btag['i1']).mass
-    di3_mass_CR0btag = (semiboostedCRfj_0btag[:,1]+semiboostedCRj_0btag['i0']+semiboostedCRj_0btag['i1']).mass
-    dijet1_mass_CR1btag = (semiboostedCRfj_1btag[:,0]+semiboostedCRfj_1btag[:,1]).mass
-    di2_mass_CR1btag = (semiboostedCRfj_1btag[:,0]+semiboostedCRj_1btag['i0']+semiboostedCRj_1btag['i1']).mass
-    di3_mass_CR1btag = (semiboostedCRfj_1btag[:,1]+semiboostedCRj_1btag['i0']+semiboostedCRj_1btag['i1']).mass
+    j2_SR_fail_bin = hist.axis.Regular(label="Semiboosted Signal Fail Dijet Mass [GeV]", name="dijet_mass_SR_fail", bins=80, start=0, stop=4000)
+    mjj_vs_mjjj_SR_fail = Hist(j3_SR_fail_bin, j2_SR_fail_bin)
+    mjj_vs_mjjj_SR_fail.fill(dijet_mass_SR_fail=dijet1_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
+    mjj_vs_mjjj_SR_fail.fill(dijet_mass_SR_fail=dijet2_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
+    mjj_vs_mjjj_SR_fail.fill(dijet_mass_SR_fail=dijet3_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
+    mjj_vs_mjjj_SR_fail *= scale
 
-    dijet2_mass_Signal0btag = []
-    dijet3_mass_Signal0btag = []
-    dijet2_mass_Signal1btag = []
-    dijet3_mass_Signal1btag = []
-    dijet2_mass_CR0btag = []
-    dijet3_mass_CR0btag = []
-    dijet2_mass_CR1btag = []
-    dijet3_mass_CR1btag = []
+    j2_SR_pass_bin = hist.axis.Regular(label="Semiboosted Signal Pass Dijet Mass [GeV]", name="dijet_mass_SR_pass", bins=80, start=0, stop=4000)
+    mjj_vs_mjjj_SR_pass = Hist(j3_SR_pass_bin, j2_SR_pass_bin)
+    mjj_vs_mjjj_SR_pass.fill(dijet_mass_SR_pass=dijet1_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
+    mjj_vs_mjjj_SR_pass.fill(dijet_mass_SR_pass=dijet2_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
+    mjj_vs_mjjj_SR_pass.fill(dijet_mass_SR_pass=dijet3_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
+    mjj_vs_mjjj_SR_pass *= scale
 
-    for d in di2_mass_Signal0btag:
-        for i in d:
-            dijet2_mass_Signal0btag.append(i)
-    for d in di3_mass_Signal0btag:
-        for i in d:
-            dijet3_mass_Signal0btag.append(i)
-    for d in di2_mass_Signal1btag:
-        for i in d:
-            dijet2_mass_Signal1btag.append(i)
-    for d in di3_mass_Signal1btag:
-        for i in d:
-            dijet3_mass_Signal1btag.append(i)
-    for d in di2_mass_CR0btag:
-        for i in d:
-            dijet2_mass_CR0btag.append(i)
-    for d in di3_mass_CR0btag:
-        for i in d:
-            dijet3_mass_CR0btag.append(i)
-    for d in di2_mass_CR1btag:
-        for i in d:
-            dijet2_mass_CR1btag.append(i)
-    for d in di3_mass_CR1btag:
-        for i in d:
-            dijet3_mass_CR1btag.append(i)
-    
-    j2_sig0btag_bin = hist.axis.Regular(label="Dijet Mass [GeV]", name="dijet_mass", bins=80, start=0, stop=4000)
-    mjj_vs_mjjj_sig0btag = Hist(j3_sig0btag_bin, j2_sig0btag_bin)
-    mjj_vs_mjjj_sig0btag.fill(dijet_mass=dijet1_mass_Signal0btag,trijet_mass_sig0btag=trijet_mass_Signal0btag)
-    mjj_vs_mjjj_sig0btag.fill(dijet_mass=dijet2_mass_Signal0btag,trijet_mass_sig0btag=trijet_mass_Signal0btag)
-    mjj_vs_mjjj_sig0btag.fill(dijet_mass=dijet3_mass_Signal0btag,trijet_mass_sig0btag=trijet_mass_Signal0btag)
-    mjj_vs_mjjj_sig0btag *= scale
+    j2_VR_fail_bin = hist.axis.Regular(label="Semiboosted Validation Fail Dijet Mass [GeV]", name="dijet_mass_VR_fail", bins=80, start=0, stop=4000)
+    mjj_vs_mjjj_VR_fail = Hist(j3_VR_fail_bin, j2_VR_fail_bin)
+    mjj_vs_mjjj_VR_fail.fill(dijet_mass_VR_fail=dijet1_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
+    mjj_vs_mjjj_VR_fail.fill(dijet_mass_VR_fail=dijet2_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
+    mjj_vs_mjjj_VR_fail.fill(dijet_mass_VR_fail=dijet3_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
+    mjj_vs_mjjj_VR_fail *= scale
 
-    j2_sig1btag_bin = hist.axis.Regular(label="Dijet Mass [GeV]", name="dijet_mass", bins=80, start=0, stop=4000)
-    mjj_vs_mjjj_sig1btag = Hist(j3_sig1btag_bin, j2_sig1btag_bin)
-    mjj_vs_mjjj_sig1btag.fill(dijet_mass=dijet1_mass_Signal1btag,trijet_mass_sig1btag=trijet_mass_Signal1btag)
-    mjj_vs_mjjj_sig1btag.fill(dijet_mass=dijet2_mass_Signal1btag,trijet_mass_sig1btag=trijet_mass_Signal1btag)
-    mjj_vs_mjjj_sig1btag.fill(dijet_mass=dijet3_mass_Signal1btag,trijet_mass_sig1btag=trijet_mass_Signal1btag)
-    mjj_vs_mjjj_sig1btag *= scale
+    j2_VR_pass_bin = hist.axis.Regular(label="Semiboosted Validation Pass Dijet Mass [GeV]", name="dijet_mass_VR_pass", bins=80, start=0, stop=4000)
+    mjj_vs_mjjj_VR_pass = Hist(j3_VR_pass_bin, j2_VR_pass_bin)
+    mjj_vs_mjjj_VR_pass.fill(dijet_mass_VR_pass=dijet1_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
+    mjj_vs_mjjj_VR_pass.fill(dijet_mass_VR_pass=dijet2_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
+    mjj_vs_mjjj_VR_pass.fill(dijet_mass_VR_pass=dijet3_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
+    mjj_vs_mjjj_VR_pass *= scale
 
-    j2_CR0btag_bin = hist.axis.Regular(label="Dijet Mass [GeV]", name="dijet_mass", bins=80, start=0, stop=4000)
-    mjj_vs_mjjj_CR0btag = Hist(j3_CR0btag_bin, j2_CR0btag_bin)
-    mjj_vs_mjjj_CR0btag.fill(dijet_mass=dijet1_mass_CR0btag,trijet_mass_CR0btag=trijet_mass_CR0btag)
-    mjj_vs_mjjj_CR0btag.fill(dijet_mass=dijet2_mass_CR0btag,trijet_mass_CR0btag=trijet_mass_CR0btag)
-    mjj_vs_mjjj_CR0btag.fill(dijet_mass=dijet3_mass_CR0btag,trijet_mass_CR0btag=trijet_mass_CR0btag)
-    mjj_vs_mjjj_CR0btag *= scale
-
-    j2_CR1btag_bin = hist.axis.Regular(label="Dijet Mass [GeV]", name="dijet_mass", bins=80, start=0, stop=4000)
-    mjj_vs_mjjj_CR1btag = Hist(j3_CR1btag_bin, j2_CR1btag_bin)
-    mjj_vs_mjjj_CR1btag.fill(dijet_mass=dijet1_mass_CR1btag,trijet_mass_CR1btag=trijet_mass_CR1btag)
-    mjj_vs_mjjj_CR1btag.fill(dijet_mass=dijet2_mass_CR1btag,trijet_mass_CR1btag=trijet_mass_CR1btag)
-    mjj_vs_mjjj_CR1btag.fill(dijet_mass=dijet3_mass_CR1btag,trijet_mass_CR1btag=trijet_mass_CR1btag)
-    mjj_vs_mjjj_CR1btag *= scale
-
-    return j3_sig0btag_hist,j3_sig1btag_hist,j3_CR0btag_hist,j3_CR1btag_hist,mjj_vs_mjjj_sig0btag,mjj_vs_mjjj_sig1btag,mjj_vs_mjjj_CR0btag,mjj_vs_mjjj_CR1btag
+    return j3_SR_fail_hist,j3_SR_pass_hist,j3_VR_fail_hist,j3_VR_pass_hist,mjj_vs_mjjj_SR_fail,mjj_vs_mjjj_SR_pass,mjj_vs_mjjj_VR_fail,mjj_vs_mjjj_VR_pass
 
 
 if __name__ == "__main__":
@@ -218,33 +167,33 @@ if __name__ == "__main__":
     ofile = os.path.basename(input)
     print(process)
     year = "2017"
-    boostedSignal_0btag, boostedSignal_1btag = Signal_boosted(input,process,eventsToRead=None)                                                                                              
-    boostedCR_0btag,boostedCR_1btag = Validation_boosted(input,process,eventsToRead=None)                                                                                                   
-    semiboostedSignalfj_0btag, semiboostedSignalfj_1btag,semiboostedSignalj_0btag, semiboostedSignalj_1btag = Signal_semiboosted(input,process,eventsToRead=None)
-    semiboostedCRfj_0btag,semiboostedCRfj_1btag,semiboostedCRj_0btag,semiboostedCRj_1btag = Validation_semiboosted(input,process,eventsToRead=None)
+    boosted_SR_fail, boosted_SR_pass = Signal_boosted(input,process,eventsToRead=None)                                                                                              
+    boosted_VR_fail,boosted_VR_pass = Validation_boosted(input,process,eventsToRead=None)                                                                                                   
+    semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet,semiboosted_SR_fail_jet, semiboosted_SR_pass_jet = Signal_semiboosted(input,process,eventsToRead=None)
+    semiboosted_VR_fail_fatjet,semiboosted_VR_pass_fatjet,semiboosted_VR_fail_jet,semiboosted_VR_pass_jet = Validation_semiboosted(input,process,eventsToRead=None)
     if ((process != "JetHT2017B")&(process != "JetHT2017C")&(process != "JetHT2017D")&(process != "JetHT2017E")&(process != "JetHT2017F")):
         scale = normalizeProcess(process,year)
     if ((process == "JetHT2017B")|(process == "JetHT2017C")|(process == "JetHT2017D")|(process == "JetHT2017E")|(process == "JetHT2017F")):
         scale = 1
-    j3_sig0btag_hist,j3_sig1btag_hist,j3_CR0btag_hist,j3_CR1btag_hist,mjj_vs_mjjj_sig0btag,mjj_vs_mjjj_sig1btag,mjj_vs_mjjj_CR0btag,mjj_vs_mjjj_CR1btag = plotboosted(boostedSignal_0btag,boostedSignal_1btag,boostedCR_0btag,boostedCR_1btag,scale,process)                  
-    j3_sig0btag_sb_hist,j3_sig1btag_sb_hist,j3_CR0btag_sb_hist,j3_CR1btag_sb_hist,mjj_vs_mjjj_sig0btag_sb,mjj_vs_mjjj_sig1btag_sb,mjj_vs_mjjj_CR0btag_sb,mjj_vs_mjjj_CR1btag_sb = plotsemiboosted(semiboostedSignalfj_0btag, semiboostedSignalfj_1btag,semiboostedSignalj_0btag, semiboostedSignalj_1btag,semiboostedCRfj_0btag,semiboostedCRfj_1btag,semiboostedCRj_0btag,semiboostedCRj_1btag,scale,process)
+    j3_SR_fail_hist,j3_SR_pass_hist,j3_VR_fail_hist,j3_VR_pass_hist,mjj_vs_mjjj_SR_fail,mjj_vs_mjjj_SR_pass,mjj_vs_mjjj_VR_fail,mjj_vs_mjjj_VR_pass = plotboosted(boosted_SR_fail,boosted_SR_pass,boosted_VR_fail,boosted_VR_pass,scale,process)                  
+    j3_SR_fail_sb_hist,j3_SR_pass_sb_hist,j3_VR_fail_sb_hist,j3_VR_pass_sb_hist,mjj_vs_mjjj_SR_fail_sb,mjj_vs_mjjj_SR_pass_sb,mjj_vs_mjjj_VR_fail_sb,mjj_vs_mjjj_VR_pass_sb = plotsemiboosted(semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet,semiboosted_SR_fail_jet, semiboosted_SR_pass_jet,semiboosted_VR_fail_fatjet,semiboosted_VR_pass_fatjet,semiboosted_VR_fail_jet,semiboosted_VR_pass_jet,scale,process)
     with uproot.recreate(os.path.join(output, "Boosted_pass_{0}-{1}".format(process, ofile))) as fout:
-        fout[f"j3_sig_hist"] = j3_sig1btag_hist
-        fout[f"j3_CR_hist"] = j3_CR1btag_hist
-        fout[f"mjj_vs_mjjj_sig"] = mjj_vs_mjjj_sig1btag
-        fout[f"mjj_vs_mjjj_CR"] = mjj_vs_mjjj_CR1btag
+        fout[f"j3_sig_hist"] = j3_SR_pass_hist
+        fout[f"j3_CR_hist"] = j3_VR_pass_hist
+        fout[f"mjj_vs_mjjj_sig"] = mjj_vs_mjjj_SR_pass
+        fout[f"mjj_vs_mjjj_CR"] = mjj_vs_mjjj_VR_pass
     with uproot.recreate(os.path.join(output, "Boosted_fail_{0}-{1}".format(process, ofile))) as fout:
-        fout[f"j3_sig_hist"] = j3_sig0btag_hist
-        fout[f"j3_CR_hist"] = j3_CR0btag_hist
-        fout[f"mjj_vs_mjjj_sig"] = mjj_vs_mjjj_sig0btag
-        fout[f"mjj_vs_mjjj_CR"] =mjj_vs_mjjj_CR0btag
+        fout[f"j3_sig_hist"] = j3_SR_fail_hist
+        fout[f"j3_CR_hist"] = j3_VR_fail_hist
+        fout[f"mjj_vs_mjjj_sig"] = mjj_vs_mjjj_SR_fail
+        fout[f"mjj_vs_mjjj_CR"] =mjj_vs_mjjj_VR_fail
     with uproot.recreate(os.path.join(output, "semiBoosted_pass_{0}-{1}".format(process, ofile))) as fout:
-        fout[f"j3_sig_sb_hist"] = j3_sig1btag_sb_hist
-        fout[f"j3_CR_sb_hist"] = j3_CR1btag_sb_hist
-        fout[f"mjj_vs_mjjj_sig_sb"] = mjj_vs_mjjj_sig1btag_sb
-        fout[f"mjj_vs_mjjj_CR_sb"] = mjj_vs_mjjj_CR1btag_sb
+        fout[f"j3_sig_sb_hist"] = j3_SR_pass_sb_hist
+        fout[f"j3_CR_sb_hist"] = j3_VR_pass_sb_hist
+        fout[f"mjj_vs_mjjj_sig_sb"] = mjj_vs_mjjj_SR_pass_sb
+        fout[f"mjj_vs_mjjj_CR_sb"] = mjj_vs_mjjj_VR_pass_sb
     with uproot.recreate(os.path.join(output, "semiBoosted_fail_{0}-{1}".format(process, ofile))) as fout:
-        fout[f"j3_sig_sb_hist"] = j3_sig0btag_sb_hist
-        fout[f"j3_CR_sb_hist"] = j3_CR0btag_sb_hist
-        fout[f"mjj_vs_mjjj_sig_sb"] = mjj_vs_mjjj_sig0btag_sb
-        fout[f"mjj_vs_mjjj_CR_sb"] =mjj_vs_mjjj_CR0btag_sb
+        fout[f"j3_sig_sb_hist"] = j3_SR_fail_sb_hist
+        fout[f"j3_CR_sb_hist"] = j3_VR_fail_sb_hist
+        fout[f"mjj_vs_mjjj_sig_sb"] = mjj_vs_mjjj_SR_fail_sb
+        fout[f"mjj_vs_mjjj_CR_sb"] =mjj_vs_mjjj_VR_fail_sb

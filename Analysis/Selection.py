@@ -81,7 +81,7 @@ def Validation_boosted(fname,process,eventsToRead=None):
     # apply fat jet preselection and require that the 2 leading (in pT) fat jets fail the jet mass cut
     good_fatjets = fatjets[precut(fatjets) & ((fatjets[:,0].msoftdrop<mass_cut[0]) | (fatjets.msoftdrop[:,0]>mass_cut[1])) & (fatjets[:,0].msoftdrop>min_jet_mass) 
                            & (fatjets[:,1].msoftdrop>min_jet_mass) & ((fatjets[:,1].msoftdrop<mass_cut[0]) | (fatjets[:,1].msoftdrop>mass_cut[1])) 
-                           & (fatjets[:,2:].msoftdrop>=mass_cut[0]) & (fatjets[:,2:].msoftdrop<=mass_cut[1])]
+                           & (fatjets[:,2].msoftdrop>=mass_cut[0]) & (fatjets[:,2].msoftdrop<=mass_cut[1])]
 
     # select events with at least 3 good fat jets
     events_boosted = events[ak.num(good_fatjets, axis=1)>2]
