@@ -41,6 +41,7 @@ def HbbvsQCD(fatjet):
 def precut(fatjets):
     return (fatjets.pt>ptcut) & (np.absolute(fatjets.eta)<etacut)
 
+
 def normalizeProcess(process,year):
     json_file = open("xsecs.json")
     config = json.load(json_file)
@@ -53,48 +54,47 @@ def normalizeProcess(process,year):
 
 def Signal_boosted(fname,process,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
+    
     fatjets = events.FatJet
+    good_fatjets = fatjets[precut(fatjets) & (fatjets.msoftdrop>=mass_cut[0]) & (fatjets.msoftdrop<=mass_cut[1])]
+    
+    # select events with at least 3 good fat jets
+    events_boosted = events[ak.num(good_fatjets, axis=1)>2]
 
-    good_fatjets = fatjets[precut(fatjets)&(fatjets.msoftdrop>=mass_cut[0]) & (fatjets.msoftdrop<=mass_cut[1])]
-    Signal_btag = good_fatjets[ak.num(good_fatjets, axis=1)> 2]
+    # sort fat jets in descending pNet HbbvsQCD score
+    sorted_fatjets = events_boosted.FatJet[ak.argsort(-HbbvsQCD(events_boosted.FatJet),axis=-1)]
 
-    Pnet = HbbvsQCD(Signal_btag)
-    indices = ak.argsort(-Pnet,axis=-1)
-    Signal_btag = Signal_btag[indices]
+    # fail region: 0 fat jets passing the pNet cut
+    events_boosted_fail = events_boosted[HbbvsQCD(sorted_fatjets[:,0])<pNet_cut]
+    # pass region: at least 1 fat jets passing the pNet cut
+    events_boosted_pass = events_boosted[HbbvsQCD(sorted_fatjets[:,0])>pNet_cut]
 
-    #Pnet0 = Signal_btag[HbbvsQCD(Signal_btag[:,2])<pNet_cut]
-    Pnet0 = Signal_btag
-    boostedSignal_0btag = Signal_btag[ak.num(Pnet0, axis=1)> 2]
-
-    Pnet1 = Signal_btag[HbbvsQCD(Signal_btag[:,0])>pNet_cut]
-    boostedSignal_1btag = Signal_btag[ak.num(Pnet1, axis=1)> 2]
-
-    return boostedSignal_0btag, boostedSignal_1btag
+    return events_boosted_fail.FatJet, events_boosted_pass.FatJet
 
 
 def Validation_boosted(fname,process,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
 
-    fatjets = events.FatJet[ak.num(events.FatJet, axis=1)> 2]
+    # request that there are at least 3 fat jets present in the event
+    fatjets = events.FatJet[ak.num(events.FatJet, axis=1)>2]
 
+    # apply fat jet preselection and require that the 2 leading (in pT) fat jets fail the jet mass cut
     good_fatjets = fatjets[precut(fatjets) & ((fatjets[:,0].msoftdrop<mass_cut[0]) | (fatjets.msoftdrop[:,0]>mass_cut[1])) & (fatjets[:,0].msoftdrop>min_jet_mass) 
                            & (fatjets[:,1].msoftdrop>min_jet_mass) & ((fatjets[:,1].msoftdrop<mass_cut[0]) | (fatjets[:,1].msoftdrop>mass_cut[1])) 
                            & (fatjets[:,2].msoftdrop>=mass_cut[0]) & (fatjets[:,2].msoftdrop<=mass_cut[1])]
 
-    ACR_btag = good_fatjets[ak.num(good_fatjets, axis=1)> 2]
+    # select events with at least 3 good fat jets
+    events_boosted = events[ak.num(good_fatjets, axis=1)>2]
+    
+    # sort fat jets in descending pNet HbbvsQCD score
+    sorted_fatjets = events_boosted.FatJet[ak.argsort(-HbbvsQCD(events_boosted.FatJet),axis=-1)]
 
-    Pnet = HbbvsQCD(ACR_btag)
-    indices = ak.argsort(-Pnet,axis=-1)
-    ACR_btag = ACR_btag[indices]
+    # fail region: 0 fat jets passing the pNet cut
+    events_boosted_fail = events_boosted[HbbvsQCD(sorted_fatjets[:,0])<pNet_cut]
+    # pass region: at least 1 fat jets passing the pNet cut
+    events_boosted_pass = events_boosted[HbbvsQCD(sorted_fatjets[:,0])>pNet_cut]
 
-    #Pnet0 = ACR_btag[HbbvsQCD(ACR_btag[:,2])<pNet_cut]
-    Pnet0 = ACR_btag
-    boostedCR_0btag = ACR_btag[ak.num(Pnet0, axis=1)> 2]
-
-    Pnet1 = ACR_btag[HbbvsQCD(ACR_btag[:,0])>pNet_cut]
-    boostedCR_1btag = ACR_btag[ak.num(Pnet1, axis=1)> 2]
-
-    return boostedCR_0btag, boostedCR_1btag
+    return events_boosted_fail.FatJet, events_boosted_pass.FatJet
 
 
 def Signal_semiboosted(fname,process,eventsToRead=None):
