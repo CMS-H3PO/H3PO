@@ -66,6 +66,7 @@ def Signal_boosted(fname,process,eventsToRead=None):
 
     # fail region: 0 fat jets passing the pNet cut
     events_boosted_fail = events_boosted[HbbvsQCD(sorted_fatjets[:,0])<pNet_cut]
+
     # pass region: at least 1 fat jets passing the pNet cut
     events_boosted_pass = events_boosted[HbbvsQCD(sorted_fatjets[:,0])>pNet_cut]
 
@@ -91,9 +92,10 @@ def Validation_boosted(fname,process,eventsToRead=None):
 
     # fail region: 0 fat jets passing the pNet cut
     events_boosted_fail = events_boosted[HbbvsQCD(sorted_fatjets[:,0])<pNet_cut]
+
     # pass region: at least 1 fat jets passing the pNet cut
     events_boosted_pass = events_boosted[HbbvsQCD(sorted_fatjets[:,0])>pNet_cut]
-
+    
     return events_boosted_fail.FatJet, events_boosted_pass.FatJet
 
 
@@ -135,10 +137,11 @@ def Signal_semiboosted(fname,process,eventsToRead=None):
     sorted_fatjets = events_semiboosted.FatJet[ak.argsort(-HbbvsQCD(events_semiboosted.FatJet),axis=-1)]
 
     # fail region: 0 fat jets passing the pNet cut
-    events_semiboosted_fail = events_semiboosted[HbbvsQCD(sorted_fatjets[:,0])<pNet_cut]
-
+    events_semiboosted_failed = events_semiboosted[HbbvsQCD(sorted_fatjets[:,0])<pNet_cut]
+    events_semiboosted_fail = events_semiboosted_failed[ak.num(events_semiboosted_failed.FatJet,axis=1)==2]
     # pass region: at least 1 fat jets passing the pNet cut
-    events_semiboosted_pass = events_semiboosted[HbbvsQCD(sorted_fatjets[:,0])>pNet_cut]
+    events_semiboosted_passed = events_semiboosted[HbbvsQCD(sorted_fatjets[:,0])>pNet_cut]
+    events_semiboosted_pass = events_semiboosted_passed[ak.num(events_semiboosted_passed.FatJet,axis=1)==2]
 
 
     return events_semiboosted_fail.FatJet,events_semiboosted_pass.FatJet,events_semiboosted_fail.Jet,events_semiboosted_pass.Jet
@@ -183,10 +186,12 @@ def Validation_semiboosted(fname,process,eventsToRead=None):
     sorted_fatjets = events_semiboosted.FatJet[ak.argsort(-HbbvsQCD(events_semiboosted.FatJet),axis=-1)]
 
     # fail region: 0 fat jets passing the pNet cut
-    events_semiboosted_fail = events_semiboosted[HbbvsQCD(sorted_fatjets[:,0])<pNet_cut]
+    events_semiboosted_failed = events_semiboosted[HbbvsQCD(sorted_fatjets[:,0])<pNet_cut]
+    events_semiboosted_fail = events_semiboosted_failed[ak.num(events_semiboosted_failed.FatJet,axis=1)==2]
 
     # pass region: at least 1 fat jets passing the pNet cut
-    events_semiboosted_pass = events_semiboosted[HbbvsQCD(sorted_fatjets[:,0])>pNet_cut]
-
+    events_semiboosted_passed = events_semiboosted[HbbvsQCD(sorted_fatjets[:,0])>pNet_cut]
+    events_semiboosted_pass = events_semiboosted_passed[ak.num(events_semiboosted_passed.FatJet,axis=1)==2]
+    
     return events_semiboosted_fail.FatJet,events_semiboosted_pass.FatJet,events_semiboosted_fail.Jet,events_semiboosted_pass.Jet
 
