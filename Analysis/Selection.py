@@ -157,9 +157,9 @@ def Region_semiboosted(mask,N_req,N_sel,fname,process,eventsToRead=None):
     
     # select events with at least 1 good dijet (by construction there can be at most 1 per event)
     good_fatjets = good_fatjets[ak.num(good_dijets, axis=1)>0]
-    good_jets    =    good_jets[ak.num(good_dijets, axis=1)>0]
+    good_dijets  =  good_dijets[ak.num(good_dijets, axis=1)>0]
 
-    return FailPassCategories(good_fatjets, good_jets)
+    return FailPassCategories(good_fatjets, good_dijets)
 
 
 def Signal_semiboosted(fname,process,eventsToRead=None):

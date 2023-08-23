@@ -81,11 +81,11 @@ def plotboosted(boosted_SR_fail, boosted_SR_pass,boosted_VR_fail,boosted_VR_pass
 
 def plotsemiboosted(semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet,semiboosted_SR_fail_jet, semiboosted_SR_pass_jet,semiboosted_VR_fail_fatjet,semiboosted_VR_pass_fatjet,semiboosted_VR_fail_jet,semiboosted_VR_pass_jet,scale,process):
 
-    trijet_mass_SR_fail = (semiboosted_SR_fail_fatjet[:,0]+semiboosted_SR_fail_fatjet[:,1]+semiboosted_SR_fail_jet[:,0]+semiboosted_SR_fail_jet[:,1]).mass
-    trijet_mass_SR_pass = (semiboosted_SR_pass_fatjet[:,0]+semiboosted_SR_pass_fatjet[:,1]+semiboosted_SR_pass_jet[:,0]+semiboosted_SR_pass_jet[:,1]).mass
+    trijet_mass_SR_fail = (semiboosted_SR_fail_fatjet[:,0]+semiboosted_SR_fail_fatjet[:,1]+semiboosted_SR_fail_jet[:,0]['i0']+semiboosted_SR_fail_jet[:,0]['i1']).mass
+    trijet_mass_SR_pass = (semiboosted_SR_pass_fatjet[:,0]+semiboosted_SR_pass_fatjet[:,1]+semiboosted_SR_pass_jet[:,0]['i0']+semiboosted_SR_pass_jet[:,0]['i1']).mass
 
-    trijet_mass_VR_fail = (semiboosted_VR_fail_fatjet[:,0]+semiboosted_VR_fail_fatjet[:,1]+semiboosted_VR_fail_jet[:,0]+semiboosted_VR_fail_jet[:,1]).mass
-    trijet_mass_VR_pass = (semiboosted_VR_pass_fatjet[:,0]+semiboosted_VR_pass_fatjet[:,1]+semiboosted_VR_pass_jet[:,0]+semiboosted_VR_pass_jet[:,1]).mass
+    trijet_mass_VR_fail = (semiboosted_VR_fail_fatjet[:,0]+semiboosted_VR_fail_fatjet[:,1]+semiboosted_VR_fail_jet[:,0]['i0']+semiboosted_VR_fail_jet[:,0]['i1']).mass
+    trijet_mass_VR_pass = (semiboosted_VR_pass_fatjet[:,0]+semiboosted_VR_pass_fatjet[:,1]+semiboosted_VR_pass_jet[:,0]['i0']+semiboosted_VR_pass_jet[:,0]['i1']).mass
 
     j3_SR_fail_bin = hist.axis.Regular(label="semiBoosted Signal Fail Trijet Mass [GeV]", name="trijet_mass_SR_fail", bins=120, start=0, stop=6000)
     j3_SR_fail_hist = Hist(j3_SR_fail_bin)
@@ -108,18 +108,18 @@ def plotsemiboosted(semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet,semib
     j3_VR_pass_hist *= scale
 
     dijet1_mass_SR_fail = (semiboosted_SR_fail_fatjet[:,0]+semiboosted_SR_fail_fatjet[:,1]).mass
-    dijet2_mass_SR_fail = (semiboosted_SR_fail_fatjet[:,0]+semiboosted_SR_fail_jet[:,0]+semiboosted_SR_fail_jet[:,1]).mass
-    dijet3_mass_SR_fail = (semiboosted_SR_fail_fatjet[:,1]+semiboosted_SR_fail_jet[:,0]+semiboosted_SR_fail_jet[:,1]).mass
+    dijet2_mass_SR_fail = (semiboosted_SR_fail_fatjet[:,0]+semiboosted_SR_fail_jet[:,0]['i0']+semiboosted_SR_fail_jet[:,0]['i1']).mass
+    dijet3_mass_SR_fail = (semiboosted_SR_fail_fatjet[:,1]+semiboosted_SR_fail_jet[:,0]['i0']+semiboosted_SR_fail_jet[:,0]['i1']).mass
     dijet1_mass_SR_pass = (semiboosted_SR_pass_fatjet[:,0]+semiboosted_SR_pass_fatjet[:,1]).mass
-    dijet2_mass_SR_pass = (semiboosted_SR_pass_fatjet[:,0]+semiboosted_SR_pass_jet[:,0]+semiboosted_SR_pass_jet[:,1]).mass
-    dijet3_mass_SR_pass = (semiboosted_SR_pass_fatjet[:,1]+semiboosted_SR_pass_jet[:,0]+semiboosted_SR_pass_jet[:,1]).mass
+    dijet2_mass_SR_pass = (semiboosted_SR_pass_fatjet[:,0]+semiboosted_SR_pass_jet[:,0]['i0']+semiboosted_SR_pass_jet[:,0]['i1']).mass
+    dijet3_mass_SR_pass = (semiboosted_SR_pass_fatjet[:,1]+semiboosted_SR_pass_jet[:,0]['i0']+semiboosted_SR_pass_jet[:,0]['i1']).mass
 
     dijet1_mass_VR_fail = (semiboosted_VR_fail_fatjet[:,0]+semiboosted_VR_fail_fatjet[:,1]).mass
-    dijet2_mass_VR_fail = (semiboosted_VR_fail_fatjet[:,0]+semiboosted_VR_fail_jet[:,0]+semiboosted_VR_fail_jet[:,1]).mass
-    dijet3_mass_VR_fail = (semiboosted_VR_fail_fatjet[:,1]+semiboosted_VR_fail_jet[:,0]+semiboosted_VR_fail_jet[:,1]).mass
+    dijet2_mass_VR_fail = (semiboosted_VR_fail_fatjet[:,0]+semiboosted_VR_fail_jet[:,0]['i0']+semiboosted_VR_fail_jet[:,0]['i1']).mass
+    dijet3_mass_VR_fail = (semiboosted_VR_fail_fatjet[:,1]+semiboosted_VR_fail_jet[:,0]['i0']+semiboosted_VR_fail_jet[:,0]['i1']).mass
     dijet1_mass_VR_pass = (semiboosted_VR_pass_fatjet[:,0]+semiboosted_VR_pass_fatjet[:,1]).mass
-    dijet2_mass_VR_pass = (semiboosted_VR_pass_fatjet[:,0]+semiboosted_VR_pass_jet[:,0]+semiboosted_VR_pass_jet[:,1]).mass
-    dijet3_mass_VR_pass = (semiboosted_VR_pass_fatjet[:,1]+semiboosted_VR_pass_jet[:,0]+semiboosted_VR_pass_jet[:,1]).mass
+    dijet2_mass_VR_pass = (semiboosted_VR_pass_fatjet[:,0]+semiboosted_VR_pass_jet[:,0]['i0']+semiboosted_VR_pass_jet[:,0]['i1']).mass
+    dijet3_mass_VR_pass = (semiboosted_VR_pass_fatjet[:,1]+semiboosted_VR_pass_jet[:,0]['i0']+semiboosted_VR_pass_jet[:,0]['i1']).mass
 
     j2_SR_fail_bin = hist.axis.Regular(label="Semiboosted Signal Fail Dijet Mass [GeV]", name="dijet_mass_SR_fail", bins=80, start=0, stop=4000)
     mjj_vs_mjjj_SR_fail = Hist(j3_SR_fail_bin, j2_SR_fail_bin)
@@ -185,7 +185,7 @@ if __name__ == "__main__":
         fout[f"j3_SR_fail_boosted"] = j3_SR_fail_boosted
         fout[f"j3_VR_fail_boosted"] = j3_VR_fail_boosted
         fout[f"mjj_vs_mjjj_SR_fail_boosted"] = mjj_vs_mjjj_SR_fail_boosted
-        fout[f"mjj_vs_mjjj_VR_fail_boosted"] =mjj_vs_mjjj_VR_fail_boosted
+        fout[f"mjj_vs_mjjj_VR_fail_boosted"] = mjj_vs_mjjj_VR_fail_boosted
         fout[f"j3_SR_pass_semiboosted"] = j3_SR_pass_semiboosted
         fout[f"j3_VR_pass_semiboosted"] = j3_VR_pass_semiboosted
         fout[f"mjj_vs_mjjj_SR_pass_semiboosted"] = mjj_vs_mjjj_SR_pass_semiboosted
@@ -193,4 +193,4 @@ if __name__ == "__main__":
         fout[f"j3_SR_fail_semiboosted"] = j3_SR_fail_semiboosted
         fout[f"j3_VR_fail_semiboosted"] = j3_VR_fail_semiboosted
         fout[f"mjj_vs_mjjj_SR_fail_semiboosted"] = mjj_vs_mjjj_SR_fail_semiboosted
-        fout[f"mjj_vs_mjjj_VR_fail_semiboosted"] =mjj_vs_mjjj_VR_fail_semiboosted
+        fout[f"mjj_vs_mjjj_VR_fail_semiboosted"] = mjj_vs_mjjj_VR_fail_semiboosted
