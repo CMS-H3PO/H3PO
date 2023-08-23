@@ -66,7 +66,6 @@ def Signal_boosted(fname,process,eventsToRead=None):
 
     # fail region: 0 fat jets passing the pNet cut
     events_boosted_fail = events_boosted[HbbvsQCD(sorted_fatjets[:,0])<pNet_cut]
-
     # pass region: at least 1 fat jets passing the pNet cut
     events_boosted_pass = events_boosted[HbbvsQCD(sorted_fatjets[:,0])>pNet_cut]
 
@@ -92,10 +91,9 @@ def Validation_boosted(fname,process,eventsToRead=None):
 
     # fail region: 0 fat jets passing the pNet cut
     events_boosted_fail = events_boosted[HbbvsQCD(sorted_fatjets[:,0])<pNet_cut]
-
     # pass region: at least 1 fat jets passing the pNet cut
     events_boosted_pass = events_boosted[HbbvsQCD(sorted_fatjets[:,0])>pNet_cut]
-    
+
     return events_boosted_fail.FatJet, events_boosted_pass.FatJet
 
 
