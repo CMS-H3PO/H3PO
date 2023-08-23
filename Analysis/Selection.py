@@ -116,48 +116,47 @@ def Signal_semiboosted(fname,process,eventsToRead=None):
 
     fatjets = events.FatJet
 
+    # Apply presection on Fatjets
     good_fatjets = fatjets[precut(fatjets) & (fatjets.msoftdrop>=mass_cut[0]) & (fatjets.msoftdrop<=mass_cut[1])]
-    pre_semiboosted_fatjets = good_fatjets[ak.num(good_fatjets, axis=1) == 2]
-    pre_semiboosted_events = events[ak.num(good_fatjets, axis=1) == 2]
 
-    res_jets = pre_semiboosted_events.Jet
+    # Require that there are exactly 2 fatjets present in the event
+    events_semiboosted_fatjets = events[ak.num(good_fatjets, axis=1) == 2]
 
-    good_pre_jets = res_jets[(res_jets.pt > res_ptcut) & (np.absolute(res_jets.eta) < res_etacut) & (res_jets.btagDeepB>res_deepBcut)]
+    # Select jets array from selected events with 2 fatjets
+    jets = events_semiboosted_fatjets.Jet
 
-    good_semiboosted_jets = good_pre_jets[ak.num(good_pre_jets)>1]
-    good_semiboosted_fatjets = pre_semiboosted_fatjets[ak.num(good_pre_jets)>1]
-    good_semiboosted_events = pre_semiboosted_events[ak.num(good_pre_jets)>1]
+    # Apply preselection on resolved jets
+    good_jets = jets[(jets.pt > res_ptcut) & (np.absolute(jets.eta) < res_etacut) & (jets.btagDeepB>res_deepBcut)]
 
-    good_pairs = good_semiboosted_jets.nearest(good_semiboosted_fatjets).delta_r(good_semiboosted_jets)>delta_r_cut
-    good_paired_jets = good_semiboosted_jets[good_pairs]
+    # Require that there are atleast two jets present in the event
+    events_semiboosted_jets = events_semiboosted_fatjets[ak.num(good_jets)>1]
 
-    min_paired_jets = good_paired_jets[ak.num(good_paired_jets, axis=1) >= 2]
-    min_paired_fatjets = good_semiboosted_fatjets[ak.num(good_paired_jets, axis=1) >= 2]
-    min_paired_events = good_semiboosted_events[ak.num(good_paired_jets, axis=1) >= 2]
+    # Require jets to be away from fatjets, delta_r = 0.8
+    good_pairs = events_semiboosted_jets.Jet.nearest(events_semiboosted_jets.FatJet).delta_r(events_semiboosted_jets.Jet)>delta_r_cut
+    good_paired_jets = events_semiboosted_jets.Jet[good_pairs]
 
-    dijets = ak.combinations(min_paired_jets, 2, fields=['i0', 'i1'])
+    events_semiboosted_pairs = events_semiboosted_jets[ak.num(good_paired_jets, axis=1) >= 2]
+
+    # Calculate mass of jet pairs and select the pair which has closest mass to higgs - 125
+    dijets = ak.combinations(events_semiboosted_pairs.Jet, 2, fields=['i0', 'i1'])
     dijet_masses = (dijets['i0'] + dijets['i1']).mass
     is_closest = closest(dijet_masses)
     closest_dijets = dijets[is_closest]
     mass_jets = closest_dijets[((closest_dijets['i0'] + closest_dijets['i1']).mass>=res_mass_cut[0]) & ((closest_dijets['i0'] + closest_dijets['i1']).mass<=res_mass_cut[1])]
-    selected_jets = mass_jets[ak.num(mass_jets,axis=1)>0]
-    selected_fatjets = min_paired_fatjets[ak.num(mass_jets,axis=1)>0]
-    selected_events = min_paired_events[ak.num(mass_jets,axis=1)>0]
+    events_semiboosted = events_semiboosted_pairs[ak.num(mass_jets,axis=1)>0]
 
-    Pnet = HbbvsQCD(selected_fatjets)
-    indices = ak.argsort(-Pnet,axis=-1)
-    selected_fatjets = selected_fatjets[indices]
+    # sort fat jets in descending pNet HbbvsQCD score
+    sorted_fatjets = events_semiboosted.FatJet[ak.argsort(-HbbvsQCD(events_semiboosted.FatJet),axis=-1)]
 
-    Pnet0 = selected_fatjets
-    #Pnet0 = selected_fatjets[HbbvsQCD(selected_fatjets[:,1])<pNet_cut]
-    semiboostedSignal_0btag_fatjets = selected_fatjets[ak.num(Pnet0, axis=1)== 2]
-    semiboostedSignal_0btag_jets = selected_jets[ak.num(Pnet0, axis=1)== 2]
+    # fail region: 0 fat jets passing the pNet cut
+    events_semiboosted_failed = events_semiboosted[HbbvsQCD(sorted_fatjets[:,0])<pNet_cut]
+    events_semiboosted_fail = events_semiboosted_failed[ak.num(events_semiboosted_failed.FatJet,axis=1)==2]
+    # pass region: at least 1 fat jets passing the pNet cut
+    events_semiboosted_passed = events_semiboosted[HbbvsQCD(sorted_fatjets[:,0])>pNet_cut]
+    events_semiboosted_pass = events_semiboosted_passed[ak.num(events_semiboosted_passed.FatJet,axis=1)==2]
 
-    Pnet1 = selected_fatjets[HbbvsQCD(selected_fatjets[:,0])>pNet_cut]
-    semiboostedSignal_1btag_fatjets = selected_fatjets[ak.num(Pnet1, axis=1)== 2]
-    semiboostedSignal_1btag_jets = selected_jets[ak.num(Pnet1, axis=1)== 2]
 
-    return semiboostedSignal_0btag_fatjets,semiboostedSignal_1btag_fatjets,semiboostedSignal_0btag_jets,semiboostedSignal_1btag_jets
+    return events_semiboosted_fail.FatJet,events_semiboosted_pass.FatJet,events_semiboosted_fail.Jet,events_semiboosted_pass.Jet
 
 
 def Validation_semiboosted(fname,process,eventsToRead=None):
@@ -165,130 +164,46 @@ def Validation_semiboosted(fname,process,eventsToRead=None):
 
     fatjets = events.FatJet
 
-    good_fatjets = fatjets[precut(fatjets)]
-    pre_semiboosted_fatjets = good_fatjets[ak.num(good_fatjets, axis=1) == 2]
-    pre_semiboosted_events = events[ak.num(good_fatjets, axis=1) == 2]
-
-    res_jets = pre_semiboosted_events.Jet
-
-    good_pre_jets = res_jets[(res_jets.pt > res_ptcut) & (np.absolute(res_jets.eta) < res_etacut) & (res_jets.btagDeepB>res_deepBcut)]
-
-    good_semiboosted_jets = good_pre_jets[ak.num(good_pre_jets)>1]
-    good_semiboosted_fatjets = pre_semiboosted_fatjets[ak.num(good_pre_jets)>1]
-    good_semiboosted_events = pre_semiboosted_events[ak.num(good_pre_jets)>1]
-
-    good_pairs = good_semiboosted_jets.nearest(good_semiboosted_fatjets).delta_r(good_semiboosted_jets)>delta_r_cut
-    good_paired_jets = good_semiboosted_jets[good_pairs]
-
-    min_paired_jets = good_paired_jets[ak.num(good_paired_jets, axis=1) >= 2]
-    min_paired_fatjets = good_semiboosted_fatjets[ak.num(good_paired_jets, axis=1) >= 2]
-    min_paired_events = good_semiboosted_events[ak.num(good_paired_jets, axis=1) >= 2]
-
-    dijets = ak.combinations(min_paired_jets, 2, fields=['i0', 'i1'])
-    dijet_masses = (dijets['i0'] + dijets['i1']).mass
-    is_closest = closest(dijet_masses)
-    closest_dijets = dijets[is_closest]
-
-    resolved_pt = (closest_dijets['i0'] + closest_dijets['i1']).pt
-    n=0
-    resH = 0
-    h=0
-    for i in resolved_pt:
-        if (resolved_pt[n] < min_paired_fatjets[n,1].pt):
-            mass_fatjets = min_paired_fatjets[((min_paired_fatjets[:,0].msoftdrop < mass_cut[0]) | (min_paired_fatjets[:,0].msoftdrop>mass_cut[1])) & (min_paired_fatjets[:,0].msoftdrop>min_jet_mass) & (min_paired_fatjets[:,1].msoftdrop>min_jet_mass) & ((min_paired_fatjets[:,1].msoftdrop < mass_cut[0]) | (min_paired_fatjets[:,1].msoftdrop>mass_cut[1]))]
-            mass_bfatjets = min_paired_fatjets[ak.num(mass_fatjets,axis=1)==2]
-            mass_bjets = closest_dijets[ak.num(mass_fatjets,axis=1)==2]
-            mass_events = min_paired_events[ak.num(mass_fatjets,axis=1)==2]
-            mass_jets = mass_bjets[((mass_bjets['i0'] + mass_bjets['i1']).mass>=res_mass_cut[0]) & ((mass_bjets['i0'] + mass_bjets['i1']).mass<=res_mass_cut[1])]
-            n=n+1
-            h=h+1
-        else:
-            mass_fatjets = min_paired_fatjets[((min_paired_fatjets[:,0].msoftdrop < mass_cut[0] )| (min_paired_fatjets[:,0].msoftdrop>mass_cut[1])) & (min_paired_fatjets[:,0].msoftdrop>min_jet_mass) & ((min_paired_fatjets[:,1].msoftdrop>= mass_cut[0]) & (min_paired_fatjets[:,1].msoftdrop<=mass_cut[1]))]
-            mass_bfatjets = min_paired_fatjets[ak.num(mass_fatjets,axis=1)==2]
-            mass_bjets = closest_dijets[ak.num(mass_fatjets,axis=1)==2]
-            mass_events = min_paired_events[ak.num(mass_fatjets,axis=1)==2]
-            mass_jets = mass_bjets[(((mass_bjets['i0'] + mass_bjets['i1']).mass<res_mass_cut[0]) | ((mass_bjets['i0'] + mass_bjets['i1']).mass>res_mass_cut[1]))& ((mass_bjets['i0'] + mass_bjets['i1']).mass>min_jet_mass)]
-            n=n+1
-            resH=resH+1
-
-    selected_jets = mass_bjets[ak.num(mass_jets,axis=1)>0]
-    selected_fatjets = mass_bfatjets[ak.num(mass_jets,axis=1)>0]
-    selected_events = mass_events[ak.num(mass_jets,axis=1)>0]
-
-    print("resH = ",resH)
-    print("h = ",h)
-
-    Pnet = HbbvsQCD(selected_fatjets)
-    indices = ak.argsort(-Pnet,axis=-1)
-    selected_fatjets = selected_fatjets[indices]
-
-    #Pnet0 = selected_fatjets[HbbvsQCD(selected_fatjets[:,1])<pNet_cut]
-    Pnet0 = selected_fatjets
-    semiboostedCR_0btag_fatjets = selected_fatjets[ak.num(Pnet0, axis=1)== 2]
-    semiboostedCR_0btag_jets = selected_jets[ak.num(Pnet0, axis=1)== 2]
-
-    Pnet1 = selected_fatjets[HbbvsQCD(selected_fatjets[:,0])>pNet_cut]
-    semiboostedCR_1btag_fatjets = selected_fatjets[ak.num(Pnet1, axis=1)== 2]
-    semiboostedCR_1btag_jets = selected_jets[ak.num(Pnet1, axis=1)== 2]
-
-    return semiboostedCR_0btag_fatjets,semiboostedCR_1btag_fatjets,semiboostedCR_0btag_jets,semiboostedCR_1btag_jets
+    # Apply presection on Fatjets and require mass to be outside Higgs mass window for validation region
+    good_fatjets = fatjets[precut(fatjets) & ((fatjets.msoftdrop<mass_cut[0]) | (fatjets.msoftdrop>mass_cut[1])) & (fatjets.msoftdrop>min_jet_mass)]
 
 
-def boosted(fname,oFile,processLabel="signal",eventsToRead=None):	
-    events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset": "testSignal"},entry_stop=eventsToRead).events()
+    # Require that there are exactly 2 fatjets present in the event
+    events_semiboosted_fatjets = events[ak.num(good_fatjets, axis=1) == 2]
 
-    fatjets = events.FatJet
+    # Select jets array from selected events with 2 fatjets
+    jets = events_semiboosted_fatjets.Jet
 
-    good_fatjets = fatjets[(fatjets.pt>ptcut) & (np.absolute(fatjets.eta)<etacut) & (fatjets.msoftdrop>=mass_cut[0]) & (fatjets.msoftdrop<=mass_cut[1])]
-    pre_boosted_fatjets = good_fatjets[ak.num(good_fatjets, axis=1)> 2]
-    pre_boosted_events = events[ak.num(good_fatjets, axis=1)> 2]
-    #Btag cut applied at the end
-    btag_boosted = pre_boosted_fatjets[HbbvsQCD(pre_boosted_fatjets)>=pNet_cut]
-    btag_boosted_fatjets = btag_boosted[ak.num(btag_boosted, axis=1)> 2]
-    btag_boosted_events = pre_boosted_events[ak.num(btag_boosted, axis=1)> 2]
+    # Apply preselection on resolved jets
+    good_jets = jets[(jets.pt > res_ptcut) & (np.absolute(jets.eta) < res_etacut) & (jets.btagDeepB>res_deepBcut)]
 
-    return btag_boosted_fatjets
+    # Require that there are atleast two jets present in the event
+    events_semiboosted_jets = events_semiboosted_fatjets[ak.num(good_jets)>1]
 
+    # Require jets to be away from fatjets, delta_r = 0.8
+    good_pairs = events_semiboosted_jets.Jet.nearest(events_semiboosted_jets.FatJet).delta_r(events_semiboosted_jets.Jet)>delta_r_cut
+    good_paired_jets = events_semiboosted_jets.Jet[good_pairs]
 
-def semiboosted(fname,oFile,processLabel="signal",eventsToRead=None):
-    events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset": "testSignal"},entry_stop=eventsToRead).events()
+    events_semiboosted_pairs = events_semiboosted_jets[ak.num(good_paired_jets, axis=1) >= 2]
 
-    fatjets = events.FatJet
-    
-    good_fatjets = fatjets[(fatjets.pt>ptcut) & (np.absolute(fatjets.eta)<etacut) & (fatjets.msoftdrop>=mass_cut[0]) & (fatjets.msoftdrop<=mass_cut[1])]
-    pre_semiboosted_fatjets = good_fatjets[ak.num(good_fatjets, axis=1) == 2]
-    pre_semiboosted_events = events[ak.num(good_fatjets, axis=1) == 2]
-    #Btag cut for fatjets applied after pre selection
-    btag_semiboosted = pre_semiboosted_fatjets[HbbvsQCD(pre_semiboosted_fatjets)>=pNet_cut]
-    btag_semiboosted_fatjets = btag_semiboosted[ak.num(btag_semiboosted, axis=1) == 2]
-    btag_semiboosted_events = pre_semiboosted_events[ak.num(btag_semiboosted, axis=1) == 2]
-
-    #getting jets from selected fatjet events
-    res_jets = btag_semiboosted_events.Jet
-
-    good_pre_jets = res_jets[(res_jets.pt > res_ptcut) & (np.absolute(res_jets.eta) < res_etacut) & (res_jets.btagDeepB>res_deepBcut)]
-    #Applying selection to all objects
-    good_semiboosted_jets = good_pre_jets[ak.num(good_pre_jets)>1]
-    good_semiboosted_fatjets = btag_semiboosted_fatjets[ak.num(good_pre_jets)>1]
-    good_semiboosted_events = btag_semiboosted_events[ak.num(good_pre_jets)>1]
-    
-    #veto jets overlaping with fatjet
-    good_pairs = good_semiboosted_jets.nearest(good_semiboosted_fatjets).delta_r(good_semiboosted_jets)>delta_r_cut
-    good_paired_jets = good_semiboosted_jets[good_pairs]
-    
-    #make sure there are atleast 2 selected resolved jets in an event
-    min_paired_jets = good_paired_jets[ak.num(good_paired_jets, axis=1) >= 2]
-    min_paired_fatjets = good_semiboosted_fatjets[ak.num(good_paired_jets, axis=1) >= 2]
-    min_paired_events = good_semiboosted_events[ak.num(good_paired_jets, axis=1) >= 2]
-
-    #selecting jet pair whose mass is closest to Higgs mass
-    dijets = ak.combinations(min_paired_jets, 2, fields=['i0', 'i1'])
+    # Calculate mass of jet pairs and select the pair which has closest mass to higgs - 125
+    dijets = ak.combinations(events_semiboosted_pairs.Jet, 2, fields=['i0', 'i1'])
     dijet_masses = (dijets['i0'] + dijets['i1']).mass
     is_closest = closest(dijet_masses)
     closest_dijets = dijets[is_closest]
     mass_jets = closest_dijets[((closest_dijets['i0'] + closest_dijets['i1']).mass>=res_mass_cut[0]) & ((closest_dijets['i0'] + closest_dijets['i1']).mass<=res_mass_cut[1])]
-    selected_jets = mass_jets[ak.num(mass_jets,axis=1)>0]
-    selected_fatjets = min_paired_fatjets[ak.num(mass_jets,axis=1)>0]
-    selected_events = min_paired_events[ak.num(mass_jets,axis=1)>0]
+    events_semiboosted = events_semiboosted_pairs[ak.num(mass_jets,axis=1)>0]
 
-    return selected_fatjets,selected_jets
+    # sort fat jets in descending pNet HbbvsQCD score
+    sorted_fatjets = events_semiboosted.FatJet[ak.argsort(-HbbvsQCD(events_semiboosted.FatJet),axis=-1)]
+
+    # fail region: 0 fat jets passing the pNet cut
+    events_semiboosted_failed = events_semiboosted[HbbvsQCD(sorted_fatjets[:,0])<pNet_cut]
+    events_semiboosted_fail = events_semiboosted_failed[ak.num(events_semiboosted_failed.FatJet,axis=1)==2]
+
+    # pass region: at least 1 fat jets passing the pNet cut
+    events_semiboosted_passed = events_semiboosted[HbbvsQCD(sorted_fatjets[:,0])>pNet_cut]
+    events_semiboosted_pass = events_semiboosted_passed[ak.num(events_semiboosted_passed.FatJet,axis=1)==2]
+    
+    return events_semiboosted_fail.FatJet,events_semiboosted_pass.FatJet,events_semiboosted_fail.Jet,events_semiboosted_pass.Jet
+
