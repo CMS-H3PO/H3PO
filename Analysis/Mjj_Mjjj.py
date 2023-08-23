@@ -175,25 +175,22 @@ if __name__ == "__main__":
         scale = normalizeProcess(process,year)
     if ((process == "JetHT2017B")|(process == "JetHT2017C")|(process == "JetHT2017D")|(process == "JetHT2017E")|(process == "JetHT2017F")):
         scale = 1
-    j3_SR_fail_hist,j3_SR_pass_hist,j3_VR_fail_hist,j3_VR_pass_hist,mjj_vs_mjjj_SR_fail,mjj_vs_mjjj_SR_pass,mjj_vs_mjjj_VR_fail,mjj_vs_mjjj_VR_pass = plotboosted(boosted_SR_fail,boosted_SR_pass,boosted_VR_fail,boosted_VR_pass,scale,process)                  
-    j3_SR_fail_sb_hist,j3_SR_pass_sb_hist,j3_VR_fail_sb_hist,j3_VR_pass_sb_hist,mjj_vs_mjjj_SR_fail_sb,mjj_vs_mjjj_SR_pass_sb,mjj_vs_mjjj_VR_fail_sb,mjj_vs_mjjj_VR_pass_sb = plotsemiboosted(semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet,semiboosted_SR_fail_jet, semiboosted_SR_pass_jet,semiboosted_VR_fail_fatjet,semiboosted_VR_pass_fatjet,semiboosted_VR_fail_jet,semiboosted_VR_pass_jet,scale,process)
-    with uproot.recreate(os.path.join(output, "Boosted_pass_{0}-{1}".format(process, ofile))) as fout:
-        fout[f"j3_sig_hist"] = j3_SR_pass_hist
-        fout[f"j3_CR_hist"] = j3_VR_pass_hist
-        fout[f"mjj_vs_mjjj_sig"] = mjj_vs_mjjj_SR_pass
-        fout[f"mjj_vs_mjjj_CR"] = mjj_vs_mjjj_VR_pass
-    with uproot.recreate(os.path.join(output, "Boosted_fail_{0}-{1}".format(process, ofile))) as fout:
-        fout[f"j3_sig_hist"] = j3_SR_fail_hist
-        fout[f"j3_CR_hist"] = j3_VR_fail_hist
-        fout[f"mjj_vs_mjjj_sig"] = mjj_vs_mjjj_SR_fail
-        fout[f"mjj_vs_mjjj_CR"] =mjj_vs_mjjj_VR_fail
-    with uproot.recreate(os.path.join(output, "semiBoosted_pass_{0}-{1}".format(process, ofile))) as fout:
-        fout[f"j3_sig_sb_hist"] = j3_SR_pass_sb_hist
-        fout[f"j3_CR_sb_hist"] = j3_VR_pass_sb_hist
-        fout[f"mjj_vs_mjjj_sig_sb"] = mjj_vs_mjjj_SR_pass_sb
-        fout[f"mjj_vs_mjjj_CR_sb"] = mjj_vs_mjjj_VR_pass_sb
-    with uproot.recreate(os.path.join(output, "semiBoosted_fail_{0}-{1}".format(process, ofile))) as fout:
-        fout[f"j3_sig_sb_hist"] = j3_SR_fail_sb_hist
-        fout[f"j3_CR_sb_hist"] = j3_VR_fail_sb_hist
-        fout[f"mjj_vs_mjjj_sig_sb"] = mjj_vs_mjjj_SR_fail_sb
-        fout[f"mjj_vs_mjjj_CR_sb"] =mjj_vs_mjjj_VR_fail_sb
+    j3_SR_fail_boosted,j3_SR_pass_boosted,j3_VR_fail_boosted,j3_VR_pass_boosted,mjj_vs_mjjj_SR_fail_boosted,mjj_vs_mjjj_SR_pass_boosted,mjj_vs_mjjj_VR_fail_boosted,mjj_vs_mjjj_VR_pass_boosted = plotboosted(boosted_SR_fail,boosted_SR_pass,boosted_VR_fail,boosted_VR_pass,scale,process)                  
+    j3_SR_fail_semiboosted,j3_SR_pass_semiboosted,j3_VR_fail_semiboosted,j3_VR_pass_semiboosted,mjj_vs_mjjj_SR_fail_semiboosted,mjj_vs_mjjj_SR_pass_semiboosted,mjj_vs_mjjj_VR_fail_semiboosted,mjj_vs_mjjj_VR_pass_semiboosted = plotsemiboosted(semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet,semiboosted_SR_fail_jet, semiboosted_SR_pass_jet,semiboosted_VR_fail_fatjet,semiboosted_VR_pass_fatjet,semiboosted_VR_fail_jet,semiboosted_VR_pass_jet,scale,process)
+    with uproot.recreate(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile))) as fout:
+        fout[f"j3_SR_pass_boosted"] = j3_SR_pass_boosted
+        fout[f"j3_VR_pass_boosted"] = j3_VR_pass_boosted
+        fout[f"mjj_vs_mjjj_SR_pass_boosted"] = mjj_vs_mjjj_SR_pass_boosted
+        fout[f"mjj_vs_mjjj_VR_pass_boosted"] = mjj_vs_mjjj_VR_pass_boosted
+        fout[f"j3_SR_fail_boosted"] = j3_SR_fail_boosted
+        fout[f"j3_VR_fail_boosted"] = j3_VR_fail_boosted
+        fout[f"mjj_vs_mjjj_SR_fail_boosted"] = mjj_vs_mjjj_SR_fail_boosted
+        fout[f"mjj_vs_mjjj_VR_fail_boosted"] =mjj_vs_mjjj_VR_fail_boosted
+        fout[f"j3_SR_pass_semiboosted"] = j3_SR_pass_semiboosted
+        fout[f"j3_VR_pass_semiboosted"] = j3_VR_pass_semiboosted
+        fout[f"mjj_vs_mjjj_SR_pass_semiboosted"] = mjj_vs_mjjj_SR_pass_semiboosted
+        fout[f"mjj_vs_mjjj_VR_pass_semiboosted"] = mjj_vs_mjjj_VR_pass_semiboosted
+        fout[f"j3_SR_fail_semiboosted"] = j3_SR_fail_semiboosted
+        fout[f"j3_VR_fail_semiboosted"] = j3_VR_fail_semiboosted
+        fout[f"mjj_vs_mjjj_SR_fail_semiboosted"] = mjj_vs_mjjj_SR_fail_semiboosted
+        fout[f"mjj_vs_mjjj_VR_fail_semiboosted"] =mjj_vs_mjjj_VR_fail_semiboosted

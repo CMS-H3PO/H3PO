@@ -11,7 +11,7 @@ def remove_root_files(list_of_root_files):
 
 def combine_histograms(identifier, rmFiles=False, startsWithRegion=True, mvFiles=False, fit_dir="fit", startsWithId=False):
     
-    regions = ["semiBoosted_pass","semiBoosted_fail","Boosted_pass","Boosted_fail"]
+    regions = ["Histograms"]
     
     for region in regions:
         list_of_root_files = []
