@@ -4,7 +4,7 @@ import awkward as ak
 import hist
 from hist import Hist
 from Selection import *
-
+from Util import *
 
 def plotboosted(boosted_SR_fail, boosted_SR_pass,boosted_VR_fail,boosted_VR_pass,scale,process):
 
@@ -171,10 +171,15 @@ if __name__ == "__main__":
     boosted_VR_fail,boosted_VR_pass = Validation_boosted(input,process,eventsToRead=None)                                                                                                   
     semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet,semiboosted_SR_fail_jet, semiboosted_SR_pass_jet = Signal_semiboosted(input,process,eventsToRead=None)
     semiboosted_VR_fail_fatjet,semiboosted_VR_pass_fatjet,semiboosted_VR_fail_jet,semiboosted_VR_pass_jet = Validation_semiboosted(input,process,eventsToRead=None)
-    if ((process != "JetHT2017B")&(process != "JetHT2017C")&(process != "JetHT2017D")&(process != "JetHT2017E")&(process != "JetHT2017F")):
-        scale = normalizeProcess(process,year)
-    if ((process == "JetHT2017B")|(process == "JetHT2017C")|(process == "JetHT2017D")|(process == "JetHT2017E")|(process == "JetHT2017F")):
-        scale = 1
+
+    scale = 1
+    numberOfGenEvents = 0.
+    if ("JetHT" not in process):
+        numberOfGenEvents = getNumberOfGenEvents(input)
+    numberOfGenEventsAxis = hist.axis.Integer(0, 1, underflow=False, overflow=False)
+    numberOfGenEventsHisto = Hist(numberOfGenEventsAxis)
+    numberOfGenEventsHisto[0] = numberOfGenEvents
+    
     j3_SR_fail_boosted,j3_SR_pass_boosted,j3_VR_fail_boosted,j3_VR_pass_boosted,mjj_vs_mjjj_SR_fail_boosted,mjj_vs_mjjj_SR_pass_boosted,mjj_vs_mjjj_VR_fail_boosted,mjj_vs_mjjj_VR_pass_boosted = plotboosted(boosted_SR_fail,boosted_SR_pass,boosted_VR_fail,boosted_VR_pass,scale,process)                  
     j3_SR_fail_semiboosted,j3_SR_pass_semiboosted,j3_VR_fail_semiboosted,j3_VR_pass_semiboosted,mjj_vs_mjjj_SR_fail_semiboosted,mjj_vs_mjjj_SR_pass_semiboosted,mjj_vs_mjjj_VR_fail_semiboosted,mjj_vs_mjjj_VR_pass_semiboosted = plotsemiboosted(semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet,semiboosted_SR_fail_jet, semiboosted_SR_pass_jet,semiboosted_VR_fail_fatjet,semiboosted_VR_pass_fatjet,semiboosted_VR_fail_jet,semiboosted_VR_pass_jet,scale,process)
     with uproot.recreate(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile))) as fout:
@@ -194,3 +199,4 @@ if __name__ == "__main__":
         fout[f"j3_VR_fail_semiboosted"] = j3_VR_fail_semiboosted
         fout[f"mjj_vs_mjjj_SR_fail_semiboosted"] = mjj_vs_mjjj_SR_fail_semiboosted
         fout[f"mjj_vs_mjjj_VR_fail_semiboosted"] = mjj_vs_mjjj_VR_fail_semiboosted
+        fout[f"numberOfGenEventsHisto"] = numberOfGenEventsHisto
