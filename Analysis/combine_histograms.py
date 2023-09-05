@@ -127,15 +127,23 @@ if __name__ == '__main__':
     chdir(options.input)
     
     if (options.normalize):
+        print ("Performing normalization...")
         for dataset in datasets[options.year]:
             if ("JetHT" in dataset):
-                print ("Skipping JetHT")
+                print ("Skipping {0} during normalization".format(dataset))
                 continue
+            print ("Processing {0}".format(dataset))
             normalize_histograms(dataset, options.year)
+        print ("Normalization done")
 
+    print ("Merging dataset files...")
     for dataset in datasets[options.year]:
+        print ("Processing {0}".format(dataset))
         combine_histograms(dataset, options.delete)
+    print ("Merging dataset files done")
 
+    print ("Merging process files...")
     for process in options.processes:
+        print ("Processing {0}".format(process))
         combine_histograms(process, False, False, True, options.fit_dir, True)
-
+    print ("Merging process files done")
