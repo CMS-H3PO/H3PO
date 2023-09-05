@@ -17,9 +17,10 @@ def get_dataset_scaling_factor(process,year,sumGen):
 def get_number_of_events_in_dataset(list_of_root_files):
     nev = 0
     for root_fname in list_of_root_files:
-        froot = ROOT.TFile.Open(root_fname)
-        nevHisto = ROOT.gDirectory.Get("numberOfGenEventsHisto")
+        froot = ROOT.TFile.Open(root_fname, 'READ')
+        nevHisto = froot.Get("numberOfGenEventsHisto")
         nev += nevHisto.GetBinContent(1)
+        froot.Close()
     return nev
 
 def normalize_histograms(identifier, year, startsWithRegion=True, startsWithId=False):
@@ -28,7 +29,7 @@ def normalize_histograms(identifier, year, startsWithRegion=True, startsWithId=F
     for region in regions:
         list_of_root_files = []
         cwd = getcwd()
-        list_of_root_files = get_listof_root_files(cwd, identifier, region, startsWithRegion, startsWithId)
+        list_of_root_files = get_list_of_root_files(cwd, identifier, region, startsWithRegion, startsWithId)
         nev_in_sample = get_number_of_events_in_dataset(list_of_root_files)
         scale = get_dataset_scaling_factor(identifier, year, nev_in_sample)
         for root_fname in list_of_root_files:
@@ -39,15 +40,16 @@ def normalize_histograms(identifier, year, startsWithRegion=True, startsWithId=F
                     hname = myKey.GetName()
                     if (hname == "numberOfGenEventsHisto"):
                         continue                    
-                    h = ROOT.gDirectory.Get(hname)
-                    h.SetDirectory(0)
+                    h = froot.Get(hname)
                     h.Scale(scale)
                     scaled_histos.append(h)
-                    
+
+            froot.cd() # probably not really needed
             for h in scaled_histos:
-                h.Write("", ROOT.TObject.kOverwrite);
+                h.Write("", ROOT.TObject.kOverwrite)
+            froot.Close()
         
-def get_listof_root_files(cwd, identifier, region, startsWithRegion, startsWithId):
+def get_list_of_root_files(cwd, identifier, region, startsWithRegion, startsWithId):
     list_of_root_files = []
     for file in listdir(cwd):
         if not isfile(join(cwd, file)):
@@ -70,7 +72,7 @@ def combine_histograms(identifier, rmFiles=False, startsWithRegion=True, mvFiles
         list_of_root_files = []
         cwd = getcwd()
 
-        list_of_root_files = get_listof_root_files(cwd, identifier, region, startsWithRegion, startsWithId)
+        list_of_root_files = get_list_of_root_files(cwd, identifier, region, startsWithRegion, startsWithId)
         filename = "{0}_{1}.root".format(identifier,region)
 
         # in case of only one source file, make sure that the source and target files do not have identical names. Otherwise, hadding is not needed
