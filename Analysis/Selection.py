@@ -69,17 +69,6 @@ def VR_boosted_mask(fatjets):
 def VR_semiboosted_mask(fatjets):
     return ((fatjets.msoftdrop<mass_cut[0]) | (fatjets.msoftdrop>mass_cut[1])) & (fatjets.msoftdrop>min_jet_mass)
 
-
-def normalizeProcess(process,year):
-    json_file = open("xsecs.json")
-    config = json.load(json_file)
-    xsec    = config[year][process]["xsec"]
-    luminosity  = config[year]["lumi"]
-    sumGen     = config[year][process]["sumGen"]
-    scaling     = (xsec*luminosity)/sumGen
-    return scaling
-
-
 def Region_boosted(mask,fname,process,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
     
