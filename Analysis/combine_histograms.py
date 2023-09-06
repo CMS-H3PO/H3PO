@@ -5,6 +5,7 @@ from condor.datasets import *
 import ROOT
 import json
 import re 
+import copy
 
 def get_dataset_scaling_factor(process,year,sumGen):
     json_file = open(H3_DIR + "/xsecs.json")
@@ -34,19 +35,15 @@ def normalize_histograms(identifier, year, startsWithRegion=True, startsWithId=F
         scale = get_dataset_scaling_factor(identifier, year, nev_in_sample)
         for root_fname in list_of_root_files:
             froot = ROOT.TFile.Open(root_fname, 'UPDATE')
-            scaled_histos = []
-            for myKey in ROOT.gDirectory.GetListOfKeys():
+            list_of_keys = copy.deepcopy(froot.GetListOfKeys()) # without deepcopy the processing time explodes, no idea why
+            for myKey in list_of_keys:
                 if re.match ('TH', myKey.GetClassName()):
                     hname = myKey.GetName()
                     if (hname == "numberOfGenEventsHisto"):
                         continue                    
                     h = froot.Get(hname)
                     h.Scale(scale)
-                    scaled_histos.append(h)
-
-            froot.cd() # probably not really needed
-            for h in scaled_histos:
-                h.Write("", ROOT.TObject.kOverwrite)
+                    h.Write("", ROOT.TObject.kOverwrite)
             froot.Close()
         
 def get_list_of_root_files(cwd, identifier, region, startsWithRegion, startsWithId):
