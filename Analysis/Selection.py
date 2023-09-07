@@ -48,7 +48,7 @@ def FailPassCategories(fatjets, jets=None):
 
     # fail region: 0 fat jets passing the pNet cut
     # pass region: at least 1 fat jets passing the pNet cut
-    fail_mask = (HbbvsQCD(sorted_fatjets[:,0])<pNet_cut)
+    fail_mask = (HbbvsQCD(sorted_fatjets[:,0])<=pNet_cut)
     pass_mask = (HbbvsQCD(sorted_fatjets[:,0])>pNet_cut)
     if jets is not None:
         return fatjets[fail_mask], fatjets[pass_mask], jets[fail_mask], jets[pass_mask]
