@@ -69,8 +69,10 @@ def VR_boosted_mask(fatjets):
 def VR_semiboosted_mask(fatjets):
     return ((fatjets.msoftdrop<mass_cut[0]) | (fatjets.msoftdrop>mass_cut[1])) & (fatjets.msoftdrop>min_jet_mass)
 
-def Region_boosted(mask,fname,process,eventsToRead=None):
+def Region_boosted(mask,fname,process,event_counts,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
+    
+    event_counts["Skim"] = len(events)
     
     fatjets = events.FatJet
     
@@ -79,6 +81,8 @@ def Region_boosted(mask,fname,process,eventsToRead=None):
     
     # select events with at least 3 preselected fat jets
     good_fatjets = good_fatjets[ak.num(good_fatjets, axis=1)>2]
+    
+    event_counts["Preselection"] = len(good_fatjets)
 
     # apply jet mass cuts to the 3 leading (in pT) fat jets
     good_fatjets = good_fatjets[:,0:3]
@@ -87,19 +91,23 @@ def Region_boosted(mask,fname,process,eventsToRead=None):
     # select events with at least 3 good fat jets
     good_fatjets = good_fatjets[ak.num(good_fatjets, axis=1)>2]
 
+    event_counts["Mass_cut"] = len(good_fatjets)
+
     return FailPassCategories(good_fatjets)
 
 
-def Signal_boosted(fname,process,eventsToRead=None):
-    return Region_boosted(SR_mask,fname,process,eventsToRead=None)
+def Signal_boosted(fname,process,event_counts,eventsToRead=None):
+    return Region_boosted(SR_mask,fname,process,event_counts,eventsToRead=None)
 
 
-def Validation_boosted(fname,process,eventsToRead=None):
-    return Region_boosted(VR_boosted_mask,fname,process,eventsToRead=None)
+def Validation_boosted(fname,process,event_counts,eventsToRead=None):
+    return Region_boosted(VR_boosted_mask,fname,process,event_counts,eventsToRead=None)
 
 
-def Region_semiboosted(mask,N_req,N_sel,fname,process,eventsToRead=None):
+def Region_semiboosted(mask,N_req,N_sel,fname,process,event_counts,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
+
+    event_counts["Skim"] = len(events)
 
     fatjets = events.FatJet
 
@@ -110,6 +118,8 @@ def Region_semiboosted(mask,N_req,N_sel,fname,process,eventsToRead=None):
     events_preselection =       events[ak.num(good_fatjets, axis=1)>2]
     good_fatjets        = good_fatjets[ak.num(good_fatjets, axis=1)>2]
 
+    event_counts["Preselection_fatjets"] = len(good_fatjets)
+
     # apply the jet mass cut to the 3 leading (in pT) fat jets
     good_fatjets = good_fatjets[:,0:3]
     good_fatjets = good_fatjets[mask(good_fatjets)]
@@ -117,6 +127,8 @@ def Region_semiboosted(mask,N_req,N_sel,fname,process,eventsToRead=None):
     # select events with exactly N_req good fat jets and select N_sel leading good fat jets
     events_semiboosted_fatjets = events_preselection[ak.num(good_fatjets, axis=1)==N_req]
     good_fatjets               =       (good_fatjets[ak.num(good_fatjets, axis=1)==N_req])[:,0:N_sel]
+
+    event_counts["Mass_cut_fatjets"] = len(good_fatjets)
 
     # select jets from selected events with exactly N_req good fat jets
     jets = events_semiboosted_fatjets.Jet
@@ -128,6 +140,8 @@ def Region_semiboosted(mask,N_req,N_sel,fname,process,eventsToRead=None):
     good_fatjets = good_fatjets[ak.num(good_jets, axis=1)>1]
     good_jets    =    good_jets[ak.num(good_jets, axis=1)>1]
 
+    event_counts["Preselection_jets"] = len(good_jets)
+
     # require jets to be away from fat jets
     away_jets_mask = good_jets.nearest(good_fatjets).delta_r(good_jets)>delta_r_cut
     good_jets = good_jets[away_jets_mask]
@@ -135,6 +149,8 @@ def Region_semiboosted(mask,N_req,N_sel,fname,process,eventsToRead=None):
     # require that there are at least 2 good away jets present in the event
     good_fatjets = good_fatjets[ak.num(good_jets, axis=1)>1]
     good_jets    =    good_jets[ak.num(good_jets, axis=1)>1]
+
+    event_counts["Away_jets"] = len(good_jets)
 
     # calculate mass of all possible jet pairs and select the pair which has the mass closest to the Higgs boson mass
     dijets = ak.combinations(good_jets, 2, fields=['i0', 'i1'])
@@ -148,12 +164,14 @@ def Region_semiboosted(mask,N_req,N_sel,fname,process,eventsToRead=None):
     good_fatjets = good_fatjets[ak.num(good_dijets, axis=1)>0]
     good_dijets  =  good_dijets[ak.num(good_dijets, axis=1)>0]
 
+    event_counts["Good_dijet"] = len(good_dijets)
+
     return FailPassCategories(good_fatjets, good_dijets)
 
 
-def Signal_semiboosted(fname,process,eventsToRead=None):
-    return Region_semiboosted(SR_mask,2,2,fname,process,eventsToRead=None)
+def Signal_semiboosted(fname,process,event_counts,eventsToRead=None):
+    return Region_semiboosted(SR_mask,2,2,fname,process,event_counts,eventsToRead=None)
 
 
-def Validation_semiboosted(fname,process,eventsToRead=None):
-    return Region_semiboosted(VR_semiboosted_mask,3,2,fname,process,eventsToRead=None)
+def Validation_semiboosted(fname,process,event_counts,eventsToRead=None):
+    return Region_semiboosted(VR_semiboosted_mask,3,2,fname,process,event_counts,eventsToRead=None)
