@@ -167,18 +167,43 @@ if __name__ == "__main__":
     ofile = os.path.basename(input)
     print(process)
     year = "2017"
-    boosted_SR_fail, boosted_SR_pass = Signal_boosted(input,process,eventsToRead=None)                                                                                              
-    boosted_VR_fail,boosted_VR_pass = Validation_boosted(input,process,eventsToRead=None)                                                                                                   
-    semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet,semiboosted_SR_fail_jet, semiboosted_SR_pass_jet = Signal_semiboosted(input,process,eventsToRead=None)
-    semiboosted_VR_fail_fatjet,semiboosted_VR_pass_fatjet,semiboosted_VR_fail_jet,semiboosted_VR_pass_jet = Validation_semiboosted(input,process,eventsToRead=None)
-
+   
     scale = 1
     numberOfGenEvents = 0.
     if ("JetHT" not in process):
         numberOfGenEvents = getNumberOfGenEvents(input)
-    numberOfGenEventsAxis = hist.axis.Integer(0, 1, underflow=False, overflow=False)
+    numberOfGenEventsAxis = hist.axis.Integer(0, 1, label="Number of generated events", underflow=False, overflow=False)
     numberOfGenEventsHisto = Hist(numberOfGenEventsAxis)
     numberOfGenEventsHisto[0] = numberOfGenEvents
+
+    event_counts = {}
+    first_bin = ("Total" if "JetHT" not in process else "Trigger_and_skim")
+    
+    regions = ["SR_boosted", "VR_boosted", "SR_semiboosted", "VR_semiboosted"]
+    for r in regions:
+        event_counts[r] = {}
+        event_counts[r][first_bin] = (numberOfGenEvents if "JetHT" not in process else getNumberOfEvents(input))   
+    
+    boosted_SR_fail, boosted_SR_pass = Signal_boosted(input,process,event_counts["SR_boosted"],eventsToRead=None)                                                                                              
+    boosted_VR_fail, boosted_VR_pass = Validation_boosted(input,process,event_counts["VR_boosted"],eventsToRead=None)                                                                                                   
+    semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet, semiboosted_SR_fail_jet, semiboosted_SR_pass_jet = Signal_semiboosted(input,process,event_counts["SR_semiboosted"],eventsToRead=None)
+    semiboosted_VR_fail_fatjet, semiboosted_VR_pass_fatjet, semiboosted_VR_fail_jet, semiboosted_VR_pass_jet = Validation_semiboosted(input,process,event_counts["VR_semiboosted"],eventsToRead=None)
+
+    event_counts["SR_boosted"]["Fail"] = len(boosted_SR_fail)
+    event_counts["SR_boosted"]["Pass"] = len(boosted_SR_pass)
+    event_counts["VR_boosted"]["Fail"] = len(boosted_VR_fail)
+    event_counts["VR_boosted"]["Pass"] = len(boosted_VR_pass)
+    event_counts["SR_semiboosted"]["Fail"] = len(semiboosted_SR_fail_fatjet)
+    event_counts["SR_semiboosted"]["Pass"] = len(semiboosted_SR_pass_fatjet)
+    event_counts["VR_semiboosted"]["Fail"] = len(semiboosted_VR_fail_fatjet)
+    event_counts["VR_semiboosted"]["Pass"] = len(semiboosted_VR_pass_fatjet)
+
+    cutFlowHistos = {}
+    for r in regions:
+        cutFlowHistos[r] = ROOT.TH1F(f"cutFlowHisto_{r}", f"{r};Cut flow;Number of events", len(event_counts[r].keys()), 0., float(len(event_counts[r].keys())))
+        for i, key in enumerate(event_counts[r].keys()):
+            cutFlowHistos[r].SetBinContent(i+1, event_counts[r][key])
+            cutFlowHistos[r].GetXaxis().SetBinLabel(i+1, key)
     
     j3_SR_fail_boosted,j3_SR_pass_boosted,j3_VR_fail_boosted,j3_VR_pass_boosted,mjj_vs_mjjj_SR_fail_boosted,mjj_vs_mjjj_SR_pass_boosted,mjj_vs_mjjj_VR_fail_boosted,mjj_vs_mjjj_VR_pass_boosted = plotboosted(boosted_SR_fail,boosted_SR_pass,boosted_VR_fail,boosted_VR_pass,scale,process)                  
     j3_SR_fail_semiboosted,j3_SR_pass_semiboosted,j3_VR_fail_semiboosted,j3_VR_pass_semiboosted,mjj_vs_mjjj_SR_fail_semiboosted,mjj_vs_mjjj_SR_pass_semiboosted,mjj_vs_mjjj_VR_fail_semiboosted,mjj_vs_mjjj_VR_pass_semiboosted = plotsemiboosted(semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet,semiboosted_SR_fail_jet, semiboosted_SR_pass_jet,semiboosted_VR_fail_fatjet,semiboosted_VR_pass_fatjet,semiboosted_VR_fail_jet,semiboosted_VR_pass_jet,scale,process)
@@ -199,4 +224,14 @@ if __name__ == "__main__":
         fout[f"j3_VR_fail_semiboosted"] = j3_VR_fail_semiboosted
         fout[f"mjj_vs_mjjj_SR_fail_semiboosted"] = mjj_vs_mjjj_SR_fail_semiboosted
         fout[f"mjj_vs_mjjj_VR_fail_semiboosted"] = mjj_vs_mjjj_VR_fail_semiboosted
-        fout[f"numberOfGenEventsHisto"] = numberOfGenEventsHisto
+        if ("JetHT" not in process):
+            fout[f"numberOfGenEventsHisto"] = numberOfGenEventsHisto
+        # for r in regions:
+            # fout[f"cutFlowHisto_{r}"] = cutFlowHistos[r] # this does not work properly (see [*])
+    
+    # [*] uproot has some issues with storing histograms with labelled bins (apparently only the first bin is stored) so resorting to plain ROOT here
+    fout = ROOT.TFile.Open(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile)), 'UPDATE')
+    for r in regions:
+        cutFlowHistos[r].Write()
+    fout.Close()
+    
