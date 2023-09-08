@@ -183,7 +183,7 @@ if __name__ == "__main__":
 
     cutFlowHistos = {}
     for r in regions:
-        cutFlowHistos[r] = ROOT.TH1F(f"cutFlowHisto_{r}", f"{r};Cut flow;Number of events", len(event_counts[r].keys()), 0., float(len(event_counts[r].keys())))
+        cutFlowHistos[r] = ROOT.TH1D(f"cutFlowHisto_{r}", f"{r};Cut flow;Number of events", len(event_counts[r].keys()), 0., float(len(event_counts[r].keys())))
         for i, key in enumerate(event_counts[r].keys()):
             cutFlowHistos[r].SetBinContent(i+1, event_counts[r][key])
             cutFlowHistos[r].GetXaxis().SetBinLabel(i+1, key)
