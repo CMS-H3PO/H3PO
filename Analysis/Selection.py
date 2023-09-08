@@ -77,7 +77,7 @@ def Region_boosted(mask,fname,process,event_counts,eventsToRead=None):
     
     fatjets = events.FatJet
     
-    # fat jets preselection
+    # fat jet preselection
     fatjets = fatjets[precut(fatjets)]
     
     # select events with at least 3 preselected fat jets
@@ -112,7 +112,7 @@ def Region_semiboosted(mask,N_req,N_sel,fname,process,event_counts,eventsToRead=
 
     fatjets = events.FatJet
 
-    # fat jets preselection
+    # fat jet preselection
     fatjets = fatjets[precut(fatjets)]
     
     # select events with at least 3 preselected fat jets
@@ -162,8 +162,8 @@ def Region_semiboosted(mask,N_req,N_sel,fname,process,event_counts,eventsToRead=
     good_dijets = closest_dijets[((closest_dijets['i0'] + closest_dijets['i1']).mass>=res_mass_cut[0]) & ((closest_dijets['i0'] + closest_dijets['i1']).mass<=res_mass_cut[1])]
     
     # select events with at least 1 good dijet (by construction there can be at most 1 per event)
-    fatjets = fatjets[ak.num(good_dijets, axis=1)>0]
-    good_dijets  =  good_dijets[ak.num(good_dijets, axis=1)>0]
+    fatjets     =     fatjets[ak.num(good_dijets, axis=1)>0]
+    good_dijets = good_dijets[ak.num(good_dijets, axis=1)>0]
 
     event_counts["Good_dijet"] = len(good_dijets)
 
