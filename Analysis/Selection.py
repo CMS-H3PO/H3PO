@@ -71,7 +71,7 @@ def VR_b_JetMass_evtMask(fatjets):
           & (fatjets[:,2].msoftdrop>=mass_cut[0]) & (fatjets[:,2].msoftdrop<=mass_cut[1]))
 
 
-def Region_boosted(mask,fname,process,event_counts,eventsToRead=None):
+def Signal_boosted(fname,process,event_counts,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
     
     event_counts["Skim"] = len(events)
@@ -86,27 +86,45 @@ def Region_boosted(mask,fname,process,event_counts,eventsToRead=None):
     
     event_counts["Preselection"] = len(fatjets)
 
-    # apply jet mass cuts to the 3 leading (in pT) fat jets
-    fatjets = fatjets[:,0:3]
-    fatjets = fatjets[mask(fatjets)]
+    # apply the SR jet mass cut to preselected fat jets
+    fatjets = fatjets[HiggsMassCut(fatjets)]
 
-    # select events with at least 3 good fat jets
-    fatjets = fatjets[ak.num(fatjets, axis=1)>2]
+    # select events with at least 3 good fat jets. Pass on only the 3 leading fat jets (to avoid events passing or failing due to the 4th or higher leading fat jet)
+    fatjets = fatjets[ak.num(fatjets, axis=1)>2][:,0:3]
 
     event_counts["Mass_cut"] = len(fatjets)
 
     return FailPassCategories(fatjets)
 
 
-def Signal_boosted(fname,process,event_counts,eventsToRead=None):
-    return Region_boosted(HiggsMassCut,fname,process,event_counts,eventsToRead=None)
-
-
 def Validation_boosted(fname,process,event_counts,eventsToRead=None):
-    return Region_boosted(VR_b_JetMass_evtMask,fname,process,event_counts,eventsToRead=None)
+    events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
+    
+    event_counts["Skim"] = len(events)
+    
+    fatjets = events.FatJet
+    
+    # fat jet preselection
+    fatjets = fatjets[precut(fatjets)]
+    
+    # select events with at least 3 preselected fat jets
+    fatjets = fatjets[ak.num(fatjets, axis=1)>2]
+    
+    event_counts["Preselection"] = len(fatjets)
+
+    # for handling overlap with the SR
+    fatjets_SR = fatjets
+    fatjets_SR = fatjets_SR[HiggsMassCut(fatjets_SR)]
+    # apply the VR jet mass cuts to the 3 leading (in pT) fat jets and reject overlap with the SR.
+    # Pass on only the 3 leading fat jets (to avoid events passing or failing due to the pNet score of the 4th or higher leading fat jet)
+    fatjets = fatjets[VR_b_JetMass_evtMask(fatjets) & ~(ak.num(fatjets_SR, axis=1)>2)][:,0:3]
+
+    event_counts["Mass_cut"] = len(fatjets)
+
+    return FailPassCategories(fatjets)
 
 
-def Region_semiboosted(mask,N_req,N_sel,fname,process,event_counts,eventsToRead=None):
+def Region_semiboosted(isSignal,fname,process,event_counts,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
 
     event_counts["Skim"] = len(events)
@@ -121,21 +139,33 @@ def Region_semiboosted(mask,N_req,N_sel,fname,process,event_counts,eventsToRead=
     fatjets             = fatjets[ak.num(fatjets, axis=1)>2]
 
     event_counts["Preselection_fatjets"] = len(fatjets)
+    
+    # for handling overlap with the boosted selection
+    fatjets_SR_boosted = fatjets
+    if not isSignal:
+        fatjets_SR_boosted = fatjets_SR_boosted[HiggsMassCut(fatjets_SR_boosted)]
+    fatjets_VR_boosted = fatjets
+    # apply the jet mass cut to preselected fat jets
+    if isSignal:
+        fatjets = fatjets[HiggsMassCut(fatjets)]
+    else:
+        fatjets = fatjets[:,0:2]
+        fatjets = fatjets[HiggsMassVeto(fatjets)]
 
-    # apply the jet mass cut to the 3 leading (in pT) fat jets
-    fatjets = fatjets[:,0:3]
-    fatjets = fatjets[mask(fatjets)]
-
-    # select events with exactly N_req good fat jets and select N_sel leading good fat jets
-    events_semiboosted_fatjets = events_preselection[ak.num(fatjets, axis=1)==N_req]
-    fatjets                    =             fatjets[ak.num(fatjets, axis=1)==N_req][:,0:N_sel]
+    # select events with exactly 2 good fat jets and reject overlap with the SR and the boosted selection
+    if isSignal:
+        events_semiboosted_fatjets = events_preselection[(ak.num(fatjets, axis=1)==2) & ~(VR_b_JetMass_evtMask(fatjets_VR_boosted))]
+        fatjets                    =             fatjets[(ak.num(fatjets, axis=1)==2) & ~(VR_b_JetMass_evtMask(fatjets_VR_boosted))]
+    else:
+        events_semiboosted_fatjets = events_preselection[(ak.num(fatjets, axis=1)==2) & ~(VR_b_JetMass_evtMask(fatjets_VR_boosted) | (ak.num(fatjets_SR_boosted, axis=1)>=2))]
+        fatjets                    =             fatjets[(ak.num(fatjets, axis=1)==2) & ~(VR_b_JetMass_evtMask(fatjets_VR_boosted) | (ak.num(fatjets_SR_boosted, axis=1)>=2))]
 
     event_counts["Mass_cut_fatjets"] = len(fatjets)
 
-    # select jets from selected events with exactly N_req good fat jets
+    # get resolved jets from selected events
     jets = events_semiboosted_fatjets.Jet
 
-    # apply preselection on the resolved jets
+    # apply preselection to the resolved jets
     jets = jets[(jets.pt > res_ptcut) & (np.absolute(jets.eta) < res_etacut) & (jets.btagDeepB>res_deepBcut)]
 
     # require that there are at least 2 good jets present in the event
@@ -172,8 +202,80 @@ def Region_semiboosted(mask,N_req,N_sel,fname,process,event_counts,eventsToRead=
 
 
 def Signal_semiboosted(fname,process,event_counts,eventsToRead=None):
-    return Region_semiboosted(HiggsMassCut,2,2,fname,process,event_counts,eventsToRead=None)
+    return Region_semiboosted(True,fname,process,event_counts,eventsToRead=None)
 
 
 def Validation_semiboosted(fname,process,event_counts,eventsToRead=None):
-    return Region_semiboosted(HiggsMassVeto,3,2,fname,process,event_counts,eventsToRead=None)
+    return Region_semiboosted(False,fname,process,event_counts,eventsToRead=None)
+
+
+def Region_semiboosted_eq2(mask,fname,process,event_counts,eventsToRead=None):
+    events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
+
+    event_counts["Skim"] = len(events)
+
+    fatjets = events.FatJet
+
+    # fat jet preselection
+    fatjets = fatjets[precut(fatjets)]
+    
+    # select events with exactly 2 preselected fat jets (by construction orthogonal to the boosted selection)
+    events_preselection =  events[ak.num(fatjets, axis=1)==2]
+    fatjets             = fatjets[ak.num(fatjets, axis=1)==2]
+
+    event_counts["Preselection_fatjets"] = len(fatjets)
+    
+    # apply the jet mass cut to preselected fat jets
+    fatjets = fatjets[mask(fatjets)]
+
+    # select events with exactly 2 good fat jets
+    events_semiboosted_fatjets = events_preselection[ak.num(fatjets, axis=1)==2]
+    fatjets                    =             fatjets[ak.num(fatjets, axis=1)==2]
+
+    event_counts["Mass_cut_fatjets"] = len(fatjets)
+    
+    # get resolved jets from selected events
+    jets = events_semiboosted_fatjets.Jet
+
+    # apply preselection to the resolved jets
+    jets = jets[(jets.pt > res_ptcut) & (np.absolute(jets.eta) < res_etacut) & (jets.btagDeepB>res_deepBcut)]
+
+    # require that there are at least 2 good jets present in the event
+    fatjets = fatjets[ak.num(jets, axis=1)>1]
+    jets    =    jets[ak.num(jets, axis=1)>1]
+
+    event_counts["Preselection_jets"] = len(jets)
+
+    # require jets to be away from fat jets
+    away_jets_mask = jets.nearest(fatjets).delta_r(jets)>delta_r_cut
+    jets = jets[away_jets_mask]
+
+    # require that there are at least 2 good away jets present in the event
+    fatjets = fatjets[ak.num(jets, axis=1)>1]
+    jets    =    jets[ak.num(jets, axis=1)>1]
+
+    event_counts["Away_jets"] = len(jets)
+
+    # calculate mass of all possible jet pairs and select the pair which has the mass closest to the Higgs boson mass
+    dijets = ak.combinations(jets, 2, fields=['i0', 'i1'])
+    dijet_masses = (dijets['i0'] + dijets['i1']).mass
+    is_closest = closest(dijet_masses)
+    closest_dijets = dijets[is_closest]
+    # apply the jet mass cut to the closest dijets
+    good_dijets = closest_dijets[((closest_dijets['i0'] + closest_dijets['i1']).mass>=res_mass_cut[0]) & ((closest_dijets['i0'] + closest_dijets['i1']).mass<=res_mass_cut[1])]
+    
+    # select events with at least 1 good dijet (by construction there can be at most 1 per event)
+    fatjets     =     fatjets[ak.num(good_dijets, axis=1)>0]
+    good_dijets = good_dijets[ak.num(good_dijets, axis=1)>0]
+
+    event_counts["Good_dijet"] = len(good_dijets)
+
+    return FailPassCategories(fatjets, good_dijets)
+
+
+def Signal_semiboosted_eq2(fname,process,event_counts,eventsToRead=None):
+    return Region_semiboosted_eq2(HiggsMassCut,fname,process,event_counts,eventsToRead=None)
+
+
+def Validation_semiboosted_eq2(fname,process,event_counts,eventsToRead=None):
+    return Region_semiboosted_eq2(HiggsMassVeto,fname,process,event_counts,eventsToRead=None)
