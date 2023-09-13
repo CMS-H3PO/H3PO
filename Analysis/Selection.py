@@ -71,7 +71,7 @@ def VR_b_JetMass_evtMask(fatjets):
           & (fatjets[:,2].msoftdrop>=mass_cut[0]) & (fatjets[:,2].msoftdrop<=mass_cut[1]))
 
 
-def get_dijets(fatjets, jets, event_counts):
+def get_dijets(fatjets, jets, event_counts, addCounts=False):
     # apply preselection to the resolved jets
     jets = jets[(jets.pt > res_ptcut) & (np.absolute(jets.eta) < res_etacut) & (jets.btagDeepB>res_deepBcut)]
 
@@ -79,7 +79,10 @@ def get_dijets(fatjets, jets, event_counts):
     fatjets = fatjets[ak.num(jets, axis=1)>1]
     jets    =    jets[ak.num(jets, axis=1)>1]
 
-    event_counts["Preselection_jets"] = len(fatjets)
+    if addCounts:
+        event_counts["Preselection_jets"] += len(fatjets)
+    else:
+        event_counts["Preselection_jets"] = len(fatjets)
 
     # require jets to be away from fat jets
     away_jets_mask = jets.nearest(fatjets).delta_r(jets)>delta_r_cut
@@ -89,7 +92,10 @@ def get_dijets(fatjets, jets, event_counts):
     fatjets = fatjets[ak.num(jets, axis=1)>1]
     jets    =    jets[ak.num(jets, axis=1)>1]
 
-    event_counts["Away_jets"] = len(fatjets)
+    if addCounts:
+        event_counts["Away_jets"] += len(fatjets)
+    else:
+        event_counts["Away_jets"] = len(fatjets)
 
     # calculate mass of all possible jet pairs and select the pair which has the mass closest to the Higgs boson mass
     dijets = ak.combinations(jets, 2, fields=['i0', 'i1'])
@@ -103,7 +109,10 @@ def get_dijets(fatjets, jets, event_counts):
     fatjets     =     fatjets[ak.num(good_dijets, axis=1)>0]
     good_dijets = good_dijets[ak.num(good_dijets, axis=1)>0]
     
-    event_counts["Good_dijet"] = len(fatjets)
+    if addCounts:
+        event_counts["Good_dijet"] += len(fatjets)
+    else:
+        event_counts["Good_dijet"] = len(fatjets)
     
     return fatjets, good_dijets
     
@@ -128,10 +137,8 @@ def Event_selection(fname,process,event_counts,eventsToRead=None):
     fatjets             = fatjets[ak.num(fatjets, axis=1)>2]
 
     for r in event_counts.keys():
-        if 'eq2' in r:
-            event_counts[r]["Preselection_fatjets"] = len(fatjets_eq2)
-        elif 'semiboosted' in r:
-            event_counts[r]["Preselection_fatjets"] = len(fatjets)
+        if 'semiboosted' in r:
+            event_counts[r]["Preselection_fatjets"] = (len(fatjets) + len(fatjets_eq2))
         else:
             event_counts[r]["Preselection"] = len(fatjets)
     
@@ -190,10 +197,10 @@ def Event_selection(fname,process,event_counts,eventsToRead=None):
     # get resolved jets from selected events
     jets_SR_sb_eq2 = events_SR_sb_eq2.Jet
 
-    event_counts["SR_semiboosted_eq2"]["Mass_cut_fatjets"] = len(fatjets_SR_sb_eq2)
+    event_counts["SR_semiboosted"]["Mass_cut_fatjets"] += len(fatjets_SR_sb_eq2)
 
     # get good dijets
-    fatjets_SR_sb_eq2, good_dijets_SR_sb_eq2 = get_dijets(fatjets_SR_sb_eq2, jets_SR_sb_eq2, event_counts["SR_semiboosted_eq2"])
+    fatjets_SR_sb_eq2, good_dijets_SR_sb_eq2 = get_dijets(fatjets_SR_sb_eq2, jets_SR_sb_eq2, event_counts["SR_semiboosted"], True)
 
     # VR semiboosted (==2 fatjets)
     # apply the jet mass cut to preselected fat jets
@@ -204,9 +211,9 @@ def Event_selection(fname,process,event_counts,eventsToRead=None):
     # get resolved jets from selected events
     jets_VR_sb_eq2 = events_VR_sb_eq2.Jet
 
-    event_counts["VR_semiboosted_eq2"]["Mass_cut_fatjets"] = len(fatjets_VR_sb_eq2)
+    event_counts["VR_semiboosted"]["Mass_cut_fatjets"] += len(fatjets_VR_sb_eq2)
 
     # get good dijets
-    fatjets_VR_sb_eq2, good_dijets_VR_sb_eq2 = get_dijets(fatjets_VR_sb_eq2, jets_VR_sb_eq2, event_counts["VR_semiboosted_eq2"])
+    fatjets_VR_sb_eq2, good_dijets_VR_sb_eq2 = get_dijets(fatjets_VR_sb_eq2, jets_VR_sb_eq2, event_counts["VR_semiboosted"], True)
 
     return *FailPassCategories(fatjets_SR_b), *FailPassCategories(fatjets_VR_b), *FailPassCategories(fatjets_SR_sb, good_dijets_SR_sb), *FailPassCategories(fatjets_VR_sb, good_dijets_VR_sb), *FailPassCategories(fatjets_SR_sb_eq2, good_dijets_SR_sb_eq2), *FailPassCategories(fatjets_VR_sb_eq2, good_dijets_VR_sb_eq2)
