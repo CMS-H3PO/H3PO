@@ -176,12 +176,7 @@ if __name__ == "__main__":
         event_counts[r] = {}
         event_counts[r][first_bin] = (numberOfGenEvents if "JetHT" not in process else getNumberOfEvents(input))   
     
-    boosted_SR_fail, boosted_SR_pass = Signal_boosted(input,process,event_counts["SR_boosted"],eventsToRead=None)                                                                                              
-    boosted_VR_fail, boosted_VR_pass = Validation_boosted(input,process,event_counts["VR_boosted"],eventsToRead=None)                                                                                                   
-    semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet, semiboosted_SR_fail_jet, semiboosted_SR_pass_jet = Signal_semiboosted(input,process,event_counts["SR_semiboosted"],eventsToRead=None)
-    semiboosted_VR_fail_fatjet, semiboosted_VR_pass_fatjet, semiboosted_VR_fail_jet, semiboosted_VR_pass_jet = Validation_semiboosted(input,process,event_counts["VR_semiboosted"],eventsToRead=None)
-    semiboosted_eq2_SR_fail_fatjet, semiboosted_eq2_SR_pass_fatjet, semiboosted_eq2_SR_fail_jet, semiboosted_eq2_SR_pass_jet = Signal_semiboosted_eq2(input,process,event_counts["SR_semiboosted_eq2"],eventsToRead=None)
-    semiboosted_eq2_VR_fail_fatjet, semiboosted_eq2_VR_pass_fatjet, semiboosted_eq2_VR_fail_jet, semiboosted_eq2_VR_pass_jet = Validation_semiboosted_eq2(input,process,event_counts["VR_semiboosted_eq2"],eventsToRead=None)
+    boosted_SR_fail, boosted_SR_pass, boosted_VR_fail, boosted_VR_pass, semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet, semiboosted_SR_fail_jet, semiboosted_SR_pass_jet, semiboosted_VR_fail_fatjet, semiboosted_VR_pass_fatjet, semiboosted_VR_fail_jet, semiboosted_VR_pass_jet, semiboosted_eq2_SR_fail_fatjet, semiboosted_eq2_SR_pass_fatjet, semiboosted_eq2_SR_fail_jet, semiboosted_eq2_SR_pass_jet, semiboosted_eq2_VR_fail_fatjet, semiboosted_eq2_VR_pass_fatjet, semiboosted_eq2_VR_fail_jet, semiboosted_eq2_VR_pass_jet = Event_selection(input,process,event_counts,eventsToRead=None)
     
     event_counts["SR_boosted"]["Fail"] = len(boosted_SR_fail)
     event_counts["SR_boosted"]["Pass"] = len(boosted_SR_pass)
