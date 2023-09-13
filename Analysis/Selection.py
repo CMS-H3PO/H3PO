@@ -56,19 +56,20 @@ def FailPassCategories(fatjets, jets=None):
         return fatjets[fail_mask], fatjets[pass_mask]
 
 # this is a jet mask
-def FatJetMassCut_SR(fatjets):
+def HiggsMassCut(fatjets):
     return (fatjets.msoftdrop>=mass_cut[0]) & (fatjets.msoftdrop<=mass_cut[1])
 
+# this is a jet mask
+def HiggsMassVeto(fatjets):
+    return ((fatjets.msoftdrop<mass_cut[0]) | (fatjets.msoftdrop>mass_cut[1])) & (fatjets.msoftdrop>min_jet_mass)
+
 # this is an event mask
-def FatJetMassCut_VR_boosted(fatjets):
+def VR_b_JetMass_evtMask(fatjets):
     # jet mass window inverted for the 2 leading jets, applied to the 3rd one
     return (((fatjets[:,0].msoftdrop<mass_cut[0]) | (fatjets.msoftdrop[:,0]>mass_cut[1])) & (fatjets[:,0].msoftdrop>min_jet_mass) 
           & ((fatjets[:,1].msoftdrop<mass_cut[0]) | (fatjets[:,1].msoftdrop>mass_cut[1])) & (fatjets[:,1].msoftdrop>min_jet_mass)  
           & (fatjets[:,2].msoftdrop>=mass_cut[0]) & (fatjets[:,2].msoftdrop<=mass_cut[1]))
 
-# this is a jet mask
-def FatJetMassCut_VR_semiboosted(fatjets):
-    return ((fatjets.msoftdrop<mass_cut[0]) | (fatjets.msoftdrop>mass_cut[1])) & (fatjets.msoftdrop>min_jet_mass)
 
 def Region_boosted(mask,fname,process,event_counts,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
@@ -98,11 +99,11 @@ def Region_boosted(mask,fname,process,event_counts,eventsToRead=None):
 
 
 def Signal_boosted(fname,process,event_counts,eventsToRead=None):
-    return Region_boosted(FatJetMassCut_SR,fname,process,event_counts,eventsToRead=None)
+    return Region_boosted(HiggsMassCut,fname,process,event_counts,eventsToRead=None)
 
 
 def Validation_boosted(fname,process,event_counts,eventsToRead=None):
-    return Region_boosted(FatJetMassCut_VR_boosted,fname,process,event_counts,eventsToRead=None)
+    return Region_boosted(VR_b_JetMass_evtMask,fname,process,event_counts,eventsToRead=None)
 
 
 def Region_semiboosted(mask,N_req,N_sel,fname,process,event_counts,eventsToRead=None):
@@ -171,8 +172,8 @@ def Region_semiboosted(mask,N_req,N_sel,fname,process,event_counts,eventsToRead=
 
 
 def Signal_semiboosted(fname,process,event_counts,eventsToRead=None):
-    return Region_semiboosted(FatJetMassCut_SR,2,2,fname,process,event_counts,eventsToRead=None)
+    return Region_semiboosted(HiggsMassCut,2,2,fname,process,event_counts,eventsToRead=None)
 
 
 def Validation_semiboosted(fname,process,event_counts,eventsToRead=None):
-    return Region_semiboosted(FatJetMassCut_VR_semiboosted,3,2,fname,process,event_counts,eventsToRead=None)
+    return Region_semiboosted(HiggsMassVeto,3,2,fname,process,event_counts,eventsToRead=None)
