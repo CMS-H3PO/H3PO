@@ -1,6 +1,4 @@
 import os
-import copy
-import re
 import uproot
 import awkward as ak
 import hist
@@ -178,7 +176,7 @@ if __name__ == "__main__":
         event_counts[r] = {}
         event_counts[r][first_bin] = (numberOfGenEvents if "JetHT" not in process else getNumberOfEvents(input))   
     
-    boosted_SR_fail, boosted_SR_pass, boosted_VR_fail, boosted_VR_pass, semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet, semiboosted_SR_fail_jet, semiboosted_SR_pass_jet, semiboosted_VR_fail_fatjet, semiboosted_VR_pass_fatjet, semiboosted_VR_fail_jet, semiboosted_VR_pass_jet, semiboosted_eq2_SR_fail_fatjet, semiboosted_eq2_SR_pass_fatjet, semiboosted_eq2_SR_fail_jet, semiboosted_eq2_SR_pass_jet, semiboosted_eq2_VR_fail_fatjet, semiboosted_eq2_VR_pass_fatjet, semiboosted_eq2_VR_fail_jet, semiboosted_eq2_VR_pass_jet = Event_selection(input,process,event_counts,eventsToRead=None)
+    boosted_SR_fail, boosted_SR_pass, boosted_VR_fail, boosted_VR_pass, semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet, semiboosted_SR_fail_jet, semiboosted_SR_pass_jet, semiboosted_VR_fail_fatjet, semiboosted_VR_pass_fatjet, semiboosted_VR_fail_jet, semiboosted_VR_pass_jet = Event_selection(input,process,event_counts,eventsToRead=None)
     
     event_counts["SR_boosted"]["Fail"] = len(boosted_SR_fail)
     event_counts["SR_boosted"]["Pass"] = len(boosted_SR_pass)
@@ -188,10 +186,6 @@ if __name__ == "__main__":
     event_counts["SR_semiboosted"]["Pass"] = len(semiboosted_SR_pass_fatjet)
     event_counts["VR_semiboosted"]["Fail"] = len(semiboosted_VR_fail_fatjet)
     event_counts["VR_semiboosted"]["Pass"] = len(semiboosted_VR_pass_fatjet)
-    event_counts["SR_semiboosted"]["Fail"] += len(semiboosted_eq2_SR_fail_fatjet)
-    event_counts["SR_semiboosted"]["Pass"] += len(semiboosted_eq2_SR_pass_fatjet)
-    event_counts["VR_semiboosted"]["Fail"] += len(semiboosted_eq2_VR_fail_fatjet)
-    event_counts["VR_semiboosted"]["Pass"] += len(semiboosted_eq2_VR_pass_fatjet)
 
     cutFlowHistos = {}
     for r in regions:
@@ -202,7 +196,6 @@ if __name__ == "__main__":
     
     j3_SR_fail_boosted,j3_SR_pass_boosted,j3_VR_fail_boosted,j3_VR_pass_boosted,mjj_vs_mjjj_SR_fail_boosted,mjj_vs_mjjj_SR_pass_boosted,mjj_vs_mjjj_VR_fail_boosted,mjj_vs_mjjj_VR_pass_boosted = plotboosted(boosted_SR_fail,boosted_SR_pass,boosted_VR_fail,boosted_VR_pass,process)                  
     j3_SR_fail_semiboosted,j3_SR_pass_semiboosted,j3_VR_fail_semiboosted,j3_VR_pass_semiboosted,mjj_vs_mjjj_SR_fail_semiboosted,mjj_vs_mjjj_SR_pass_semiboosted,mjj_vs_mjjj_VR_fail_semiboosted,mjj_vs_mjjj_VR_pass_semiboosted = plotsemiboosted("Semiboosted", semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet,semiboosted_SR_fail_jet, semiboosted_SR_pass_jet,semiboosted_VR_fail_fatjet,semiboosted_VR_pass_fatjet,semiboosted_VR_fail_jet,semiboosted_VR_pass_jet,process)
-    j3_SR_fail_semiboosted_eq2,j3_SR_pass_semiboosted_eq2,j3_VR_fail_semiboosted_eq2,j3_VR_pass_semiboosted_eq2,mjj_vs_mjjj_SR_fail_semiboosted_eq2,mjj_vs_mjjj_SR_pass_semiboosted_eq2,mjj_vs_mjjj_VR_fail_semiboosted_eq2,mjj_vs_mjjj_VR_pass_semiboosted_eq2 = plotsemiboosted("Semiboosted_eq2", semiboosted_eq2_SR_fail_fatjet, semiboosted_eq2_SR_pass_fatjet,semiboosted_eq2_SR_fail_jet, semiboosted_eq2_SR_pass_jet,semiboosted_eq2_VR_fail_fatjet,semiboosted_eq2_VR_pass_fatjet,semiboosted_eq2_VR_fail_jet,semiboosted_eq2_VR_pass_jet,process)
     
     with uproot.recreate(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile))) as fout:
         if ("JetHT" not in process):
@@ -223,30 +216,11 @@ if __name__ == "__main__":
         fout[f"j3_VR_fail_semiboosted"] = j3_VR_fail_semiboosted
         fout[f"mjj_vs_mjjj_SR_fail_semiboosted"] = mjj_vs_mjjj_SR_fail_semiboosted
         fout[f"mjj_vs_mjjj_VR_fail_semiboosted"] = mjj_vs_mjjj_VR_fail_semiboosted
-        fout[f"j3_SR_pass_semiboosted_eq2"] = j3_SR_pass_semiboosted_eq2
-        fout[f"j3_VR_pass_semiboosted_eq2"] = j3_VR_pass_semiboosted_eq2
-        fout[f"mjj_vs_mjjj_SR_pass_semiboosted_eq2"] = mjj_vs_mjjj_SR_pass_semiboosted_eq2
-        fout[f"mjj_vs_mjjj_VR_pass_semiboosted_eq2"] = mjj_vs_mjjj_VR_pass_semiboosted_eq2
-        fout[f"j3_SR_fail_semiboosted_eq2"] = j3_SR_fail_semiboosted_eq2
-        fout[f"j3_VR_fail_semiboosted_eq2"] = j3_VR_fail_semiboosted_eq2
-        fout[f"mjj_vs_mjjj_SR_fail_semiboosted_eq2"] = mjj_vs_mjjj_SR_fail_semiboosted_eq2
-        fout[f"mjj_vs_mjjj_VR_fail_semiboosted_eq2"] = mjj_vs_mjjj_VR_fail_semiboosted_eq2
         # for r in regions:
             # fout[f"cutFlowHisto_{r}"] = cutFlowHistos[r] # this does not work properly (see [*])
     
-    fout = ROOT.TFile.Open(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile)), 'UPDATE')
-    list_of_keys = copy.deepcopy(fout.GetListOfKeys()) # without deepcopy the processing time explodes, no idea why
-    for myKey in list_of_keys:
-        if re.match ('TH', myKey.GetClassName()):
-            hname = myKey.GetName()
-            if ("eq2" not in hname):
-                continue
-            h_eq2 = fout.Get(hname)
-            h = fout.Get(hname.replace("_eq2", ""))
-            h.Add(h_eq2)
-            h.Write("", ROOT.TObject.kOverwrite)
-            fout.Delete(hname + ";1")
     # [*] uproot has some issues with storing histograms with labelled bins (apparently only the first bin is stored) so resorting to plain ROOT here
+    fout = ROOT.TFile.Open(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile)), 'UPDATE')
     for r in regions:
         cutFlowHistos[r].Write()
     fout.Close()
