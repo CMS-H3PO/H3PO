@@ -7,6 +7,7 @@ import json
 import re 
 import copy
 
+
 def get_dataset_scaling_factor(process,year,sumGen):
     json_file = open(H3_DIR + "/xsecs.json")
     config = json.load(json_file)
@@ -61,7 +62,7 @@ def remove_root_files(list_of_root_files):
 
 
 
-def combine_histograms(identifier, rmFiles=False, startsWithRegion=True, mvFiles=False, fit_dir="fit", startsWithId=False):
+def combine_histograms(identifier, keepFiles=True, startsWithRegion=True, mvFiles=False, fit_dir="fit", startsWithId=False):
     
     regions = ["Histograms"]
     
@@ -76,7 +77,7 @@ def combine_histograms(identifier, rmFiles=False, startsWithRegion=True, mvFiles
 
         if not (len(list_of_root_files)==1 and filename==list_of_root_files[0]):
             system("hadd -f {0} {1}".format(filename," ".join(list_of_root_files)))
-        if rmFiles:
+        if not keepFiles:
             remove_root_files(list_of_root_files)
         if mvFiles:
             system("mkdir -p {0}".format(fit_dir))
@@ -111,19 +112,23 @@ if __name__ == '__main__':
                         default=["QCD","TTbar","JetHT2017","XToYHTo6B_MX-2400_MY-800"],
                         metavar="PROCESSES")
     
-    parser.add_argument("--delete", dest="delete", action='store_true',
-                      help="Delete Condor output root files (default: %(default)s)",
+    parser.add_argument("--keep_files", dest="keep_files", action='store_true',
+                      help="Keep Condor output root files (default: %(default)s)",
                       default=False)
-    parser.add_argument("--skip_norm", dest="normalize", action='store_false',
+    
+    parser.add_argument("--skip_norm", dest="skip_norm", action='store_true',
                         help="Specify if histograms should be normalized (default: %(default)s)",
-                        default=True)
+                        default=False)
 
 
     (options, args) = parser.parse_known_args()
+    
+    if options.keep_files and not options.skip_norm:
+        print("WARNING: You selected to keep files but not skip the normalization. If you decide to re-run the combination, then make sure to skip the normalization. Otherwise, the histograms will be rescaled more than once.")
 
     chdir(options.input)
     
-    if (options.normalize):
+    if not options.skip_norm:
         print ("Performing normalization...")
         for dataset in datasets[options.year]:
             if ("JetHT" in dataset):
@@ -136,11 +141,11 @@ if __name__ == '__main__':
     print ("Merging dataset files...")
     for dataset in datasets[options.year]:
         print ("Processing {0}".format(dataset))
-        combine_histograms(dataset, options.delete)
+        combine_histograms(dataset, options.keep_files)
     print ("Merging dataset files done")
 
     print ("Merging process files...")
     for process in options.processes:
         print ("Processing {0}".format(process))
-        combine_histograms(process, False, False, True, options.fit_dir, True)
+        combine_histograms(process, True, False, True, options.fit_dir, True)
     print ("Merging process files done")

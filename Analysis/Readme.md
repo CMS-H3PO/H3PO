@@ -17,9 +17,9 @@ This will submit jobs to condor for all the samples. Wait till all jobs are done
 
 To combine histograms:
 ```
-python combine_histograms.py -i condor_jobs_<timestamp> [--delete]
+python combine_histograms.py -i condor_jobs_<timestamp>
 ```
-This will combine root files and store them in ```condor_jobs_<timestamp>/fit``` directory with intermediate files left in ```condor_jobs_<timestamp>```. You can use an optional ```--delete``` parameter to delete the Condor output root files (once that is done, you can no longer re-run ```combine_histograms.py```).
+This will combine root files and store them in ```condor_jobs_<timestamp>/fit``` directory with intermediate files left in ```condor_jobs_<timestamp>```.
 
 To generate boosted and semiboosted plots:
 ```
