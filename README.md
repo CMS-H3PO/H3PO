@@ -8,9 +8,8 @@ cmsenv
 cd ..
 python3 -m venv H3env
 source H3env/bin/activate
-pip install --upgrade pip
-pip install coffea #Some errors reported here, but coffea is installed
 git clone git@github.com:CMS-H3PO/H3PO.git
+pip install -r H3PO/requirements.txt
 ```
 Setup environment
 ```
