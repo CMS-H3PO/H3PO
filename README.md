@@ -22,16 +22,13 @@ cd H3PO
 ```
 
 # Running the notebooks from a server
-install
-```
-pip install jupyter
-```
-On server
+
+On a server
 ```
 cd H3PO
 jupyter notebook --no-browser --port=8889 #Output shows the token which may be necessary to provide in browser on first connection
 ```
-On local
+On a local machine
 ```
 ssh -N -f -L localhost:8888:localhost:8889 USER@SERVER
 http://localhost:8888 #type this in a browser
