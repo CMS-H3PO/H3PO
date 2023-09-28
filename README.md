@@ -9,7 +9,8 @@ cd ..
 python3 -m venv H3env
 source H3env/bin/activate
 git clone git@github.com:CMS-H3PO/H3PO.git
-pip install -r H3PO/requirements.txt
+cd H3PO
+pip install -r requirements.txt
 ```
 Setup environment
 ```
