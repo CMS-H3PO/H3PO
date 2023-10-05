@@ -1,24 +1,34 @@
 # Installation (Lorien)
+
+The following steps need to be done only once for the initial installation
 ```
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 export SCRAM_ARCH=slc7_amd64_gcc10
 cmsrel CMSSW_12_3_0
 cd CMSSW_12_3_0
 cmsenv
-cd ..
+cd -
+
 python3 -m venv H3env
 source H3env/bin/activate
 git clone git@github.com:CMS-H3PO/H3PO.git
 cd H3PO
 pip install -r requirements.txt
 ```
-Setup environment
+You now have all the required software installed and the enviroment set up.
+
+To set up environment in a new shell, run the following
 ```
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 cd CMSSW_12_3_0
 cmsenv
-cd ..
+cd -
 source H3env/bin/activate
+cd H3PO
+```
+or alternatively just run
+```
+source H3PO/activate_env
 cd H3PO
 ```
 
