@@ -51,7 +51,7 @@ fatjet_factory = {
             "Summer19UL16APV_V7_MC_UncertaintySources_AK8PFPuppi.junc.txt.gz",
             "Summer20UL16APV_JRV3_MC_PtResolution_AK8PFPuppi.jr.txt.gz",
             "Summer20UL16APV_JRV3_MC_SF_AK8PFPuppi.jersf.txt.gz"
-        ],path="data/jec/2016APV/"
+        ],path="../data/jec/2016APV/"
     ),
         "2016mc": jet_factory_factory(
         files=[
@@ -64,7 +64,7 @@ fatjet_factory = {
             "Summer19UL16_V7_MC_UncertaintySources_AK8PFPuppi.junc.txt.gz",
             "Summer20UL16_JRV3_MC_PtResolution_AK8PFPuppi.jr.txt.gz",
             "Summer20UL16_JRV3_MC_SF_AK8PFPuppi.jersf.txt.gz"
-        ],path="data/jec/2016/"
+        ],path="../data/jec/2016/"
     ),
         "2017mc": jet_factory_factory(
         files=[
@@ -77,7 +77,7 @@ fatjet_factory = {
             "Summer19UL17_V5_MC_UncertaintySources_AK8PFPuppi.junc.txt.gz",
             "Summer19UL17_JRV3_MC_PtResolution_AK8PFPuppi.jr.txt.gz",
             "Summer19UL17_JRV3_MC_SF_AK8PFPuppi.jersf.txt.gz"
-        ],path="data/jec/2017/"
+        ],path="../data/jec/2017/"
     ),
         "2018mc": jet_factory_factory(
         files=[
@@ -91,12 +91,12 @@ fatjet_factory = {
         "Summer19UL18_JRV2_MC_PtResolution_AK8PFPuppi.jr.txt.gz",
         "Summer19UL18_JRV2_MC_SF_AK8PFPuppi.jersf.txt.gz"
 
-        ],path="data/jec/2018/"
+        ],path="../data/jec/2018/"
     )
 }
 
 if __name__ == "__main__":
-    oFile = "data/jec/jme_UL_pickled.pkl"
+    oFile = "../data/jec/jme_UL_pickled.pkl"
     with gzip.open(oFile, "wb") as fout:
         cloudpickle.dump(
             {
