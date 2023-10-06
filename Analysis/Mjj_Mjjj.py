@@ -5,7 +5,7 @@ import uproot
 import awkward as ak
 import hist
 from hist import Hist
-from Selection import *
+from Trig_Selection import *
 from Util import *
 
 
