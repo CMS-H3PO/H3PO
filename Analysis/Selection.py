@@ -117,9 +117,19 @@ def get_dijets(fatjets, jets, event_counts, addCounts=False):
     return fatjets, good_dijets
     
 
-def Event_selection(fname,process,event_counts,eventsToRead=None):
+def Event_selection(fname,process,event_counts,trigList=None,refTrigList=None,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
+        
+    if refTrigList != None:                
+        refTriggerBits = np.array([events.HLT[t] for t in refTrigList if t in events.HLT.fields])    
+        refTriggerMask = np.logical_or.reduce(refTriggerBits, axis=0)
+        events = events[refTriggerMask]
 
+    if trigList != None:
+        triggerBits = np.array([events.HLT[t] for t in trigList if t in events.HLT.fields])    
+        triggerMask = np.logical_or.reduce(triggerBits, axis=0)
+        events = events[triggerMask]
+            
     for r in event_counts.keys():
         event_counts[r]["Skim"] = len(events)
 

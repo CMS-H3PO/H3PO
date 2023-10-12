@@ -154,6 +154,17 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--sample', help='Sample name', default="QCD2000")
     parser.add_argument('-i', '--input', help='Input file')
     parser.add_argument('-o', '--output', help='Output directory')
+    parser.add_argument('-t', '--triggerList', help='Space-separated list of triggers (default: %(default)s);)',
+                        nargs='*',
+                        dest='triggerList',
+                        default = None
+                        )
+    parser.add_argument("-r", "--refTriggerList", help="Space-separated list of reference triggers (default: %(default)s);)",
+                        nargs="*",
+                        dest="refTriggerList",
+                        default = None
+                        )
+
     args = parser.parse_args()
     
     process=args.sample
@@ -178,7 +189,7 @@ if __name__ == "__main__":
         event_counts[r] = {}
         event_counts[r][first_bin] = (numberOfGenEvents if "JetHT" not in process else getNumberOfEvents(input))   
     
-    boosted_SR_fail, boosted_SR_pass, boosted_VR_fail, boosted_VR_pass, semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet, semiboosted_SR_fail_jet, semiboosted_SR_pass_jet, semiboosted_VR_fail_fatjet, semiboosted_VR_pass_fatjet, semiboosted_VR_fail_jet, semiboosted_VR_pass_jet, semiboosted_eq2_SR_fail_fatjet, semiboosted_eq2_SR_pass_fatjet, semiboosted_eq2_SR_fail_jet, semiboosted_eq2_SR_pass_jet, semiboosted_eq2_VR_fail_fatjet, semiboosted_eq2_VR_pass_fatjet, semiboosted_eq2_VR_fail_jet, semiboosted_eq2_VR_pass_jet = Event_selection(input,process,event_counts,eventsToRead=None)
+    boosted_SR_fail, boosted_SR_pass, boosted_VR_fail, boosted_VR_pass, semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet, semiboosted_SR_fail_jet, semiboosted_SR_pass_jet, semiboosted_VR_fail_fatjet, semiboosted_VR_pass_fatjet, semiboosted_VR_fail_jet, semiboosted_VR_pass_jet, semiboosted_eq2_SR_fail_fatjet, semiboosted_eq2_SR_pass_fatjet, semiboosted_eq2_SR_fail_jet, semiboosted_eq2_SR_pass_jet, semiboosted_eq2_VR_fail_fatjet, semiboosted_eq2_VR_pass_fatjet, semiboosted_eq2_VR_fail_jet, semiboosted_eq2_VR_pass_jet = Event_selection(input,process,event_counts,trigList=args.triggerList,refTrigList=args.refTriggerList,eventsToRead=None)
     
     event_counts["SR_boosted"]["Fail"] = len(boosted_SR_fail)
     event_counts["SR_boosted"]["Pass"] = len(boosted_SR_pass)
