@@ -16,6 +16,7 @@ def get_dataset_scaling_factor(process,year,sumGen):
     scaling     = (xsec*luminosity)/sumGen
     return scaling
 
+
 def get_number_of_events_in_dataset(list_of_root_files):
     nev = 0
     for root_fname in list_of_root_files:
@@ -25,13 +26,14 @@ def get_number_of_events_in_dataset(list_of_root_files):
         froot.Close()
     return nev
 
-def normalize_histograms(identifier, year, startsWithRegion=True, startsWithId=False):
+
+def normalize_histograms(identifier, year, startsWithRegion=True):
     regions = ["Histograms"]
     
     for region in regions:
         list_of_root_files = []
         cwd = getcwd()
-        list_of_root_files = get_list_of_root_files(cwd, identifier, region, startsWithRegion, startsWithId)
+        list_of_root_files = get_list_of_root_files(cwd, identifier, region, startsWithRegion)
         nev_in_sample = get_number_of_events_in_dataset(list_of_root_files)
         scale = get_dataset_scaling_factor(identifier, year, nev_in_sample)
         for root_fname in list_of_root_files:
@@ -46,23 +48,24 @@ def normalize_histograms(identifier, year, startsWithRegion=True, startsWithId=F
                     h.Scale(scale)
                     h.Write("", ROOT.TObject.kOverwrite)
             froot.Close()
-        
-def get_list_of_root_files(cwd, identifier, region, startsWithRegion, startsWithId):
+
+
+def get_list_of_root_files(cwd, identifier, region, startsWithRegion):
     list_of_root_files = []
     for file in listdir(cwd):
         if not isfile(join(cwd, file)):
             continue
-        if (file.startswith(identifier) if startsWithId else ('_'+identifier+'-') in file) and file.endswith('.root') and (file.startswith(region) if startsWithRegion else ('_'+region) in file):
+        if (file.startswith(identifier) if not startsWithRegion else ('_'+identifier+'-') in file) and file.endswith('.root') and (file.startswith(region) if startsWithRegion else ('_'+region) in file):
             list_of_root_files.append(file)
     return list_of_root_files
-            
+
+
 def remove_root_files(list_of_root_files):
     for file in list_of_root_files:
         system('rm ' + file)
 
 
-
-def combine_histograms(identifier, keepFiles=True, startsWithRegion=True, mvFiles=False, fit_dir="fit", startsWithId=False):
+def combine_histograms(identifier, keepFiles=True, startsWithRegion=True, mvFiles=False, fit_dir="fit"):
     
     regions = ["Histograms"]
     
@@ -70,7 +73,7 @@ def combine_histograms(identifier, keepFiles=True, startsWithRegion=True, mvFile
         list_of_root_files = []
         cwd = getcwd()
 
-        list_of_root_files = get_list_of_root_files(cwd, identifier, region, startsWithRegion, startsWithId)
+        list_of_root_files = get_list_of_root_files(cwd, identifier, region, startsWithRegion)
         filename = "{0}_{1}.root".format(identifier,region)
 
         # in case of only one source file, make sure that the source and target files do not have identical names. Otherwise, hadding is not needed
@@ -151,5 +154,5 @@ if __name__ == '__main__':
     print ("Merging process files...")
     for process in options.processes:
         print ("Processing {0}".format(process))
-        combine_histograms(process, True, False, True, options.fit_dir, True)
+        combine_histograms(process, True, False, True, options.fit_dir)
     print ("Merging process files done")
