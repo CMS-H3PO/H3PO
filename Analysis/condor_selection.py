@@ -23,6 +23,12 @@ if __name__ == '__main__':
                         default="2017",
                         metavar="YEAR")
 
+    parser.add_argument("-d", "--datasets", dest="datasets",
+                        help="Space-separated list of datasets (default: %(default)s)",
+                        nargs='*',
+                        default=["QCD","TTbar","JetHT","XToYHTo6B_MX-2400_MY-800"],
+                        metavar="DATASETS")
+
     parser.add_argument("--dry_run", dest="dry_run", action="store_true",
                         help="Dry run without submitting Condor jobs (default: %(default)s)",
                         default=False)
@@ -41,6 +47,8 @@ if __name__ == '__main__':
 
     num_of_jobs = {}
     for dataset in datasets[options.year]:
+        if not dataset.startswith(tuple(options.datasets)):
+            continue
         dataset_path = join(datasets[options.year][dataset], options.year, dataset)
         num_of_jobs[dataset] = 0
         for i, file in enumerate(listdir(dataset_path)):
