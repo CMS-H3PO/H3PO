@@ -109,7 +109,7 @@ if __name__ == '__main__':
     parser.add_argument("-p", "--processes", dest="processes",
                         help="Space-separated list of processes (default: %(default)s)",
                         nargs='*',
-                        default=["QCD","TTbar","JetHT2017","XToYHTo6B_MX-2400_MY-800"],
+                        default=["QCD","TTbar","JetHT","XToYHTo6B_MX-2400_MY-800"],
                         metavar="PROCESSES")
     
     parser.add_argument("--keep_files", dest="keep_files", action='store_true',
@@ -131,6 +131,8 @@ if __name__ == '__main__':
     if not options.skip_norm:
         print ("Performing normalization...")
         for dataset in datasets[options.year]:
+            if not dataset.startswith(tuple(options.processes)):
+                continue
             if ("JetHT" in dataset):
                 print ("Skipping {0} during normalization".format(dataset))
                 continue
@@ -140,6 +142,8 @@ if __name__ == '__main__':
 
     print ("Merging dataset files...")
     for dataset in datasets[options.year]:
+        if not dataset.startswith(tuple(options.processes)):
+            continue
         print ("Processing {0}".format(dataset))
         combine_histograms(dataset, options.keep_files)
     print ("Merging dataset files done")
