@@ -27,7 +27,7 @@ def get_number_of_events_in_dataset(list_of_root_files):
     return nev
 
 
-def normalize_histograms(identifier, year, startsWithRegion=True):
+def normalize_histograms(identifier, year, keepFiles=False, startsWithRegion=True):
     regions = ["Histograms"]
     
     for region in regions:
@@ -37,6 +37,8 @@ def normalize_histograms(identifier, year, startsWithRegion=True):
         nev_in_sample = get_number_of_events_in_dataset(list_of_root_files)
         scale = get_dataset_scaling_factor(identifier, year, nev_in_sample)
         for root_fname in list_of_root_files:
+            if keepFiles:
+                system("cp -p {0} unscaled_{1}".format(root_fname,root_fname))
             froot = ROOT.TFile.Open(root_fname, 'UPDATE')
             list_of_keys = copy.deepcopy(froot.GetListOfKeys()) # without deepcopy the processing time explodes, no idea why
             for myKey in list_of_keys:
@@ -65,7 +67,7 @@ def remove_root_files(list_of_root_files):
         system('rm ' + file)
 
 
-def combine_histograms(identifier, keepFiles=True, startsWithRegion=True, mvFiles=False, fit_dir="fit"):
+def combine_histograms(identifier, keepFiles=True, skipNorm=False, startsWithRegion=True, mvFiles=False, fit_dir="fit"):
     
     regions = ["Histograms"]
     
@@ -80,7 +82,11 @@ def combine_histograms(identifier, keepFiles=True, startsWithRegion=True, mvFile
 
         if not (len(list_of_root_files)==1 and filename==list_of_root_files[0]):
             system("hadd -f {0} {1}".format(filename," ".join(list_of_root_files)))
-        if not keepFiles:
+        if keepFiles:
+            if startsWithRegion and not skipNorm:
+                for root_fname in list_of_root_files:
+                    system("mv unscaled_{0} {1}".format(root_fname,root_fname))
+        else:
             remove_root_files(list_of_root_files)
         if mvFiles:
             system("mkdir -p {0}".format(fit_dir))
@@ -126,9 +132,6 @@ if __name__ == '__main__':
 
     (options, args) = parser.parse_known_args()
     
-    if options.keep_files and not options.skip_norm:
-        print("WARNING: You selected to keep files but not skip the normalization. If you decide to re-run the combination, then make sure to skip the normalization. Otherwise, the histograms will be rescaled more than once.")
-
     chdir(options.input)
     
     if not options.skip_norm:
@@ -140,7 +143,7 @@ if __name__ == '__main__':
                 print ("Skipping {0} during normalization".format(dataset))
                 continue
             print ("Processing {0}".format(dataset))
-            normalize_histograms(dataset, options.year)
+            normalize_histograms(dataset, options.year, options.keep_files)
         print ("Normalization done")
 
     print ("Merging dataset files...")
@@ -148,11 +151,11 @@ if __name__ == '__main__':
         if not dataset.startswith(tuple(options.processes)):
             continue
         print ("Processing {0}".format(dataset))
-        combine_histograms(dataset, options.keep_files)
+        combine_histograms(dataset, options.keep_files, options.skip_norm)
     print ("Merging dataset files done")
 
     print ("Merging process files...")
     for process in options.processes:
         print ("Processing {0}".format(process))
-        combine_histograms(process, True, False, True, options.fit_dir)
+        combine_histograms(process, True, options.skip_norm, False, True, options.fit_dir)
     print ("Merging process files done")
