@@ -1,13 +1,15 @@
 # Files:
 skimming.py - perform a loose selection on the files and store "skimmed" files. Execution time of the selection script is significantly reduced if skims are used as input\
-Selection.py - implements all the selection\
+Selection.py - implements all the selection
+
+HHH_samples_2016.txt - Official sample list of 2016 NanoAOD XToYHTo6B samples\
+HHH_samples_2017.txt - Official sample list of 2017 NanoAOD XToYHTo6B samples
+
 <!-- Efficiency_plot.py - creates 2D efficiency plot (Mass Y vs. Mass X)\ -->
 <!-- mass_matching_plots_boosted.py - creates MJJJ and MJJ mass distributions for boosted events\ -->
 <!-- mass_matching_plots_semiboosted.py - creates MJJJ and MJJ mass distributions for semiboosted events\ -->
-HHH_samples_2016.txt - Official sample list of 2016 NanoAOD XToYHTo6B samples (Needs to copy to Lorien once production is complete)\
-HHH_samples_2017.txt - Official sample list of 2017 NanoAOD XToYHTo6B samples (Needs to copy to Lorien once production is complete)
 
-# Make plots with signal, backgrounds and data for SR (Signal Region) and VR (Validation Region):
+# Make histograms with signal, backgrounds and data for SR (Signal Region) and VR (Validation Region):
 
 To run over all samples:
 ```
@@ -38,4 +40,20 @@ python combine_histograms.py -h
 Grid proxy needs to be initialized before running skimming to access the file on the store
 ```
 python skimming.py -i store/mc/RunIISummer20UL17NanoAODv9/QCD_HT1500to2000_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/100000/D5426269-CD07-CA4C-8E9E-E2336514139F.root -o test_output
+```
+
+Commands from the last round of histogram production:
+```
+python condor_selection.py -o /users/ferencek/HHH/condor_jobs_data_background_benchmarkSignal
+```
+```
+python combine_histograms.py -i /users/ferencek/HHH/condor_jobs_data_background_benchmarkSignal_20231014_012139 -p QCD TTbar XToYHTo6B_MX-2400_MY-800
+python combine_histograms.py -i /users/ferencek/HHH/condor_jobs_data_background_benchmarkSignal_20231014_012139 -p JetHT --delete_files
+```
+
+```
+python condor_selection.py -d XToYHTo6B_MX-1200_MY-300 XToYHTo6B_MX-1200_MY-600 XToYHTo6B_MX-1200_MY-800 XToYHTo6B_MX-1200_MY-1000 XToYHTo6B_MX-1500_MY-300 XToYHTo6B_MX-1500_MY-600 XToYHTo6B_MX-1500_MY-800 XToYHTo6B_MX-1500_MY-1000 XToYHTo6B_MX-1500_MY-1300 XToYHTo6B_MX-2000_MY-300 XToYHTo6B_MX-2000_MY-600 XToYHTo6B_MX-2000_MY-900 XToYHTo6B_MX-2000_MY-1100 XToYHTo6B_MX-2000_MY-1300 XToYHTo6B_MX-2000_MY-1600 XToYHTo6B_MX-2500_MY-300 XToYHTo6B_MX-2500_MY-600 XToYHTo6B_MX-2500_MY-800 XToYHTo6B_MX-2500_MY-1000 XToYHTo6B_MX-2500_MY-1300 XToYHTo6B_MX-2500_MY-1600 XToYHTo6B_MX-2500_MY-1800 XToYHTo6B_MX-3000_MY-300 XToYHTo6B_MX-3000_MY-600 XToYHTo6B_MX-3000_MY-800 XToYHTo6B_MX-3000_MY-1000 XToYHTo6B_MX-3000_MY-1300 XToYHTo6B_MX-3000_MY-1600 XToYHTo6B_MX-3000_MY-1800 XToYHTo6B_MX-3000_MY-2600 XToYHTo6B_MX-3000_MY-2800 XToYHTo6B_MX-3500_MY-300 XToYHTo6B_MX-3500_MY-600 XToYHTo6B_MX-3500_MY-700 XToYHTo6B_MX-3500_MY-1100 XToYHTo6B_MX-3500_MY-1300 XToYHTo6B_MX-3500_MY-1600 XToYHTo6B_MX-3500_MY-2000 XToYHTo6B_MX-3500_MY-2500 XToYHTo6B_MX-3500_MY-2800 XToYHTo6B_MX-4000_MY-300 XToYHTo6B_MX-4000_MY-600 XToYHTo6B_MX-4000_MY-800 XToYHTo6B_MX-4000_MY-1000 XToYHTo6B_MX-4000_MY-1300 XToYHTo6B_MX-4000_MY-1600 XToYHTo6B_MX-4000_MY-2000 XToYHTo6B_MX-4000_MY-2200 XToYHTo6B_MX-4000_MY-2500 XToYHTo6B_MX-4000_MY-2800 -o /users/ferencek/HHH/condor_jobs_signal
+```
+```
+python combine_histograms.py -i /users/ferencek/HHH/condor_jobs_signal_20231014_012233 -p XToYHTo6B_MX-1200_MY-300 XToYHTo6B_MX-1200_MY-600 XToYHTo6B_MX-1200_MY-800 XToYHTo6B_MX-1200_MY-1000 XToYHTo6B_MX-1500_MY-300 XToYHTo6B_MX-1500_MY-600 XToYHTo6B_MX-1500_MY-800 XToYHTo6B_MX-1500_MY-1000 XToYHTo6B_MX-1500_MY-1300 XToYHTo6B_MX-2000_MY-300 XToYHTo6B_MX-2000_MY-600 XToYHTo6B_MX-2000_MY-900 XToYHTo6B_MX-2000_MY-1100 XToYHTo6B_MX-2000_MY-1300 XToYHTo6B_MX-2000_MY-1600 XToYHTo6B_MX-2500_MY-300 XToYHTo6B_MX-2500_MY-600 XToYHTo6B_MX-2500_MY-800 XToYHTo6B_MX-2500_MY-1000 XToYHTo6B_MX-2500_MY-1300 XToYHTo6B_MX-2500_MY-1600 XToYHTo6B_MX-2500_MY-1800 XToYHTo6B_MX-3000_MY-300 XToYHTo6B_MX-3000_MY-600 XToYHTo6B_MX-3000_MY-800 XToYHTo6B_MX-3000_MY-1000 XToYHTo6B_MX-3000_MY-1300 XToYHTo6B_MX-3000_MY-1600 XToYHTo6B_MX-3000_MY-1800 XToYHTo6B_MX-3000_MY-2600 XToYHTo6B_MX-3000_MY-2800 XToYHTo6B_MX-3500_MY-300 XToYHTo6B_MX-3500_MY-600 XToYHTo6B_MX-3500_MY-700 XToYHTo6B_MX-3500_MY-1100 XToYHTo6B_MX-3500_MY-1300 XToYHTo6B_MX-3500_MY-1600 XToYHTo6B_MX-3500_MY-2000 XToYHTo6B_MX-3500_MY-2500 XToYHTo6B_MX-3500_MY-2800 XToYHTo6B_MX-4000_MY-300 XToYHTo6B_MX-4000_MY-600 XToYHTo6B_MX-4000_MY-800 XToYHTo6B_MX-4000_MY-1000 XToYHTo6B_MX-4000_MY-1300 XToYHTo6B_MX-4000_MY-1600 XToYHTo6B_MX-4000_MY-2000 XToYHTo6B_MX-4000_MY-2200 XToYHTo6B_MX-4000_MY-2500 XToYHTo6B_MX-4000_MY-2800
 ```
