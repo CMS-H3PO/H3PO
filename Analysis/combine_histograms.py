@@ -27,7 +27,7 @@ def get_number_of_events_in_dataset(list_of_root_files):
     return nev
 
 
-def normalize_histograms(identifier, year, keepFiles=False, startsWithRegion=True):
+def normalize_histograms(identifier, year, deleteFiles=False, startsWithRegion=True):
     regions = ["Histograms"]
     
     for region in regions:
@@ -37,7 +37,7 @@ def normalize_histograms(identifier, year, keepFiles=False, startsWithRegion=Tru
         nev_in_sample = get_number_of_events_in_dataset(list_of_root_files)
         scale = get_dataset_scaling_factor(identifier, year, nev_in_sample)
         for root_fname in list_of_root_files:
-            if keepFiles:
+            if not deleteFiles:
                 system("cp -p {0} unscaled_{1}".format(root_fname,root_fname))
             froot = ROOT.TFile.Open(root_fname, 'UPDATE')
             list_of_keys = copy.deepcopy(froot.GetListOfKeys()) # without deepcopy the processing time explodes, no idea why
@@ -67,7 +67,7 @@ def remove_root_files(list_of_root_files):
         system('rm ' + file)
 
 
-def combine_histograms(identifier, keepFiles=True, skipNorm=False, startsWithRegion=True, mvFiles=False, fit_dir="fit"):
+def combine_histograms(identifier, deleteFiles=False, skipNorm=False, startsWithRegion=True, mvFiles=False, fit_dir="fit"):
     
     regions = ["Histograms"]
     
@@ -82,12 +82,12 @@ def combine_histograms(identifier, keepFiles=True, skipNorm=False, startsWithReg
 
         if not (len(list_of_root_files)==1 and filename==list_of_root_files[0]):
             system("hadd -f {0} {1}".format(filename," ".join(list_of_root_files)))
-        if keepFiles:
+        if deleteFiles:
+            remove_root_files(list_of_root_files)
+        else:
             if startsWithRegion and not skipNorm:
                 for root_fname in list_of_root_files:
                     system("mv unscaled_{0} {1}".format(root_fname,root_fname))
-        else:
-            remove_root_files(list_of_root_files)
         if mvFiles:
             system("mkdir -p {0}".format(fit_dir))
             system("mv {0} {1}".format(filename,fit_dir))
@@ -121,8 +121,8 @@ if __name__ == '__main__':
                         default=["QCD","TTbar","JetHT","XToYHTo6B_MX-2400_MY-800"],
                         metavar="PROCESSES")
     
-    parser.add_argument("--keep_files", dest="keep_files", action='store_true',
-                      help="Keep Condor output root files (default: %(default)s)",
+    parser.add_argument("--delete_files", dest="delete_files", action='store_true',
+                      help="Delete Condor output root files (default: %(default)s)",
                       default=False)
     
     parser.add_argument("--skip_norm", dest="skip_norm", action='store_true',
@@ -143,7 +143,7 @@ if __name__ == '__main__':
                 print ("Skipping {0} during normalization".format(dataset))
                 continue
             print ("Processing {0}".format(dataset))
-            normalize_histograms(dataset, options.year, options.keep_files)
+            normalize_histograms(dataset, options.year, options.delete_files)
         print ("Normalization done")
 
     print ("Merging dataset files...")
@@ -151,7 +151,7 @@ if __name__ == '__main__':
         if not dataset.startswith(tuple(options.processes)):
             continue
         print ("Processing {0}".format(dataset))
-        combine_histograms(dataset, options.keep_files, options.skip_norm)
+        combine_histograms(dataset, options.delete_files, options.skip_norm)
     print ("Merging dataset files done")
 
     print ("Merging process files...")
