@@ -67,6 +67,10 @@ def remove_root_files(list_of_root_files):
         system('rm ' + file)
 
 
+def mv_file(dir, file):
+    system("mkdir -p {0}".format(dir))
+    system("mv {0} {1}".format(file,dir))
+
 def combine_histograms(identifier, deleteFiles=False, skipNorm=False, startsWithRegion=True, mvFiles=False, fit_dir="fit"):
     
     regions = ["Histograms"]
@@ -79,18 +83,19 @@ def combine_histograms(identifier, deleteFiles=False, skipNorm=False, startsWith
         filename = "{0}_{1}.root".format(identifier,region)
 
         # in case of only one source file, make sure that the source and target files do not have identical names. Otherwise, hadding is not needed
-
-        if not (len(list_of_root_files)==1 and filename==list_of_root_files[0]):
-            system("hadd -f {0} {1}".format(filename," ".join(list_of_root_files)))
-        if deleteFiles:
-            remove_root_files(list_of_root_files)
+        if (len(list_of_root_files)==1 and filename==list_of_root_files[0]):
+            if mvFiles:
+                mv_file(fit_dir, filename)
         else:
-            if startsWithRegion and not skipNorm:
-                for root_fname in list_of_root_files:
-                    system("mv unscaled_{0} {1}".format(root_fname,root_fname))
-        if mvFiles:
-            system("mkdir -p {0}".format(fit_dir))
-            system("mv {0} {1}".format(filename,fit_dir))
+            system("hadd -f {0} {1}".format(filename," ".join(list_of_root_files)))
+            if deleteFiles:
+                remove_root_files(list_of_root_files)
+            else:
+                if startsWithRegion and not skipNorm:
+                    for root_fname in list_of_root_files:
+                        system("mv unscaled_{0} {1}".format(root_fname,root_fname))
+            if mvFiles:
+                mv_file(fit_dir, filename)
 
 
 if __name__ == '__main__':
