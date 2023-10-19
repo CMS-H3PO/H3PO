@@ -12,9 +12,9 @@ from Util import *
 j3_bins=120
 j3_start=0
 j3_stop=6000
-j2_bins=80
+j2_bins=120
 j2_start=0
-j2_stop=4000
+j2_stop=6000
 
 
 def plotboosted(boosted_SR_fail, boosted_SR_pass, boosted_VR_fail, boosted_VR_pass, process):
