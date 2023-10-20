@@ -1,0 +1,15 @@
+awkward0==0.15.5
+boost-histogram==1.1.0
+cloudpickle==2.2.1
+coffea==0.7.20
+fsspec==2023.1.0
+jupyter==1.0.0
+llvmlite==0.39.1
+numba==0.56.4
+pyarrow==11.0.0
+qtconsole==5.4.0
+qtpy==2.3.0
+tqdm==4.64.1
+uproot==4.3.7
+uproot3==3.14.4
+uproot3-methods==0.10.1

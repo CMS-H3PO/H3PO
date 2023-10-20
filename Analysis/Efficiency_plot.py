@@ -25,7 +25,7 @@ Mass_Y = [-100,4000]
 for mx in MX:
     for my in MY:
         if my+130<mx:
-            fname   = "/eos/user/b/bchitrod/HHH/NANOAOD/TRSM_XToHY_6b_M3_{0}_M2_{1}_NANOAOD.root".format(mx,my)
+            fname   = "/STORE/ferencek/TRSM_XToHY_6b/2017/13TeV/NANOAOD/TRSM_XToHY_6b_M3_{0}_M2_{1}_NANOAOD.root".format(mx,my)
             oFile   = "{0}_{1}".format(mx,my)
 
             boosted_fatjets = boosted(fname,oFile,processLabel="MX{0}_MY{1}".format(mx,my),eventsToRead=None)
@@ -41,7 +41,7 @@ for mx in MX:
 
         elif my+100==mx:
             my = my-40
-            fname   = "/eos/user/b/bchitrod/HHH/NANOAOD/TRSM_XToHY_6b_M3_{0}_M2_{1}_NANOAOD.root".format(mx,my)
+            fname   = "/STORE/ferencek/TRSM_XToHY_6b/2017/13TeV/NANOAOD/TRSM_XToHY_6b_M3_{0}_M2_{1}_NANOAOD.root".format(mx,my)
             oFile   = "{0}_{1}".format(mx,my)
             boosted_fatjets = boosted(fname,oFile,processLabel="MX{0}_MY{1}".format(mx,my),eventsToRead=None)
             boosted_efficiency = ak.num(boosted_fatjets,axis=0)/100
