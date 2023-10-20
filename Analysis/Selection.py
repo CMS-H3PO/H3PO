@@ -2,7 +2,9 @@ import awkward as ak
 from coffea.nanoevents import NanoEventsFactory, NanoAODSchema
 import numpy as np
 import json
-
+import gzip
+import cloudpickle
+from condor.paths import H3_DIR
 
 #---------------------------------------------
 # Selection cuts
@@ -24,6 +26,25 @@ res_mass_cut = [90.,150.]
 # loose cut = 0.0532, med_cut = 0.3040, tight_cut = 0.7476 , https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17   
 res_deepBcut = 0.0532
 #---------------------------------------------
+def addJECVariables(jets, event_rho):
+    jets["pt_raw"] = (1 - jets.rawFactor)*jets.pt
+    jets["mass_raw"] = (1 - jets.rawFactor)*jets.mass
+    jets["pt_gen"] = ak.values_astype(ak.fill_none(jets.matched_gen.pt, 0), np.float32)
+    jets["event_rho"] = ak.broadcast_arrays(event_rho, jets.pt)[0]
+    return jets
+
+def yearFromInputFile(inputFile):
+    if("2016APV" in inputFile):
+        return "2016APV"
+    #Because 2016 repeats, ordering is important
+    elif("2016" in inputFile):
+        return "2016"
+    elif("2017" in inputFile):
+        return "2017"
+    elif("2018" in inputFile):
+        return "2018" 
+    else:       
+        raise ValueError('Could not determine year from input file: {0}'.format(inputFile))
 
 
 def closest(masses):
@@ -117,13 +138,38 @@ def get_dijets(fatjets, jets, event_counts, addCounts=False):
     return fatjets, good_dijets
     
 
-def Event_selection(fname,process,event_counts,eventsToRead=None):
+def Event_selection(fname,process,event_counts,variation="nominal",eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
 
     for r in event_counts.keys():
         event_counts[r]["Skim"] = len(events)
+    
+    if("JetHT" in process):
+        #UL NanoAOD already has JECs applied
+        fatjets = events.FatJet
+    else:
+        with gzip.open(H3_DIR+"/../data/jec/jme_UL_pickled.pkl") as fin:
+            jmeDB           = cloudpickle.load(fin)
+            fatjetFactory   = jmeDB["fatjet_factory"]    
+        
+        year                = yearFromInputFile(fname)
+        jecCache            = {}
+        fatjetsPrecalib     = events.FatJet
+        fatjetsCalib        = fatjetFactory[year+"mc"].build(addJECVariables(events.FatJet, events.fixedGridRhoFastjetAll), jecCache)
+        
+        if(variation=="nominal"):
+            fatjets         = fatjetsCalib
+        elif(variation=="jesUp"):
+            fatjets         = fatjetsCalib.JES_jes.up
+        elif(variation=="jesDown"):
+            fatjets         = fatjetsCalib.JES_jes.down
+        elif(variation=="jerUp"):
+            fatjets         = fatjetsCalib.JER.up
+        elif(variation=="jerDown"):
+            fatjets         = fatjetsCalib.JER.down
+        else:       
+            raise ValueError('Invalid variation: ', variation)
 
-    fatjets = events.FatJet
 
     # fat jet preselection
     fatjets = fatjets[precut(fatjets)]

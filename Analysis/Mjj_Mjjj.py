@@ -161,11 +161,13 @@ if __name__ == "__main__":
     output=args.output
     ofile = os.path.basename(input)
     print(process)
-    year = "2017"
+    yearFromInputFile(input)
    
+    variations        = ["nominal"]
     numberOfGenEvents = 0.
     if ("JetHT" not in process):
         numberOfGenEvents = getNumberOfGenEvents(input)
+        variations        = ["nominal","jesUp","jesDown","jerUp","jerDown"]
     numberOfGenEventsAxis = hist.axis.Integer(0, 1, label="Number of generated events", underflow=False, overflow=False)
     numberOfGenEventsHisto = Hist(numberOfGenEventsAxis)
     numberOfGenEventsHisto[0] = numberOfGenEvents
@@ -177,63 +179,70 @@ if __name__ == "__main__":
     for r in regions:
         event_counts[r] = {}
         event_counts[r][first_bin] = (numberOfGenEvents if "JetHT" not in process else getNumberOfEvents(input))   
-    
-    boosted_SR_fail, boosted_SR_pass, boosted_VR_fail, boosted_VR_pass, semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet, semiboosted_SR_fail_jet, semiboosted_SR_pass_jet, semiboosted_VR_fail_fatjet, semiboosted_VR_pass_fatjet, semiboosted_VR_fail_jet, semiboosted_VR_pass_jet, semiboosted_eq2_SR_fail_fatjet, semiboosted_eq2_SR_pass_fatjet, semiboosted_eq2_SR_fail_jet, semiboosted_eq2_SR_pass_jet, semiboosted_eq2_VR_fail_fatjet, semiboosted_eq2_VR_pass_fatjet, semiboosted_eq2_VR_fail_jet, semiboosted_eq2_VR_pass_jet = Event_selection(input,process,event_counts,eventsToRead=None)
-    
-    event_counts["SR_boosted"]["Fail"] = len(boosted_SR_fail)
-    event_counts["SR_boosted"]["Pass"] = len(boosted_SR_pass)
-    event_counts["VR_boosted"]["Fail"] = len(boosted_VR_fail)
-    event_counts["VR_boosted"]["Pass"] = len(boosted_VR_pass)
-    event_counts["SR_semiboosted"]["Fail"] = len(semiboosted_SR_fail_fatjet)
-    event_counts["SR_semiboosted"]["Pass"] = len(semiboosted_SR_pass_fatjet)
-    event_counts["VR_semiboosted"]["Fail"] = len(semiboosted_VR_fail_fatjet)
-    event_counts["VR_semiboosted"]["Pass"] = len(semiboosted_VR_pass_fatjet)
-    event_counts["SR_semiboosted"]["Fail"] += len(semiboosted_eq2_SR_fail_fatjet)
-    event_counts["SR_semiboosted"]["Pass"] += len(semiboosted_eq2_SR_pass_fatjet)
-    event_counts["VR_semiboosted"]["Fail"] += len(semiboosted_eq2_VR_fail_fatjet)
-    event_counts["VR_semiboosted"]["Pass"] += len(semiboosted_eq2_VR_pass_fatjet)
 
-    cutFlowHistos = {}
-    for r in regions:
-        cutFlowHistos[r] = ROOT.TH1D(f"cutFlowHisto_{r}", f"{r};Cut flow;Number of events", len(event_counts[r].keys()), 0., float(len(event_counts[r].keys())))
-        for i, key in enumerate(event_counts[r].keys()):
-            cutFlowHistos[r].SetBinContent(i+1, event_counts[r][key])
-            cutFlowHistos[r].GetXaxis().SetBinLabel(i+1, key)
-    
-    j3_SR_fail_boosted,j3_SR_pass_boosted,j3_VR_fail_boosted,j3_VR_pass_boosted,mjj_vs_mjjj_SR_fail_boosted,mjj_vs_mjjj_SR_pass_boosted,mjj_vs_mjjj_VR_fail_boosted,mjj_vs_mjjj_VR_pass_boosted = plotboosted(boosted_SR_fail,boosted_SR_pass,boosted_VR_fail,boosted_VR_pass,process)                  
-    j3_SR_fail_semiboosted,j3_SR_pass_semiboosted,j3_VR_fail_semiboosted,j3_VR_pass_semiboosted,mjj_vs_mjjj_SR_fail_semiboosted,mjj_vs_mjjj_SR_pass_semiboosted,mjj_vs_mjjj_VR_fail_semiboosted,mjj_vs_mjjj_VR_pass_semiboosted = plotsemiboosted("Semiboosted", semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet,semiboosted_SR_fail_jet, semiboosted_SR_pass_jet,semiboosted_VR_fail_fatjet,semiboosted_VR_pass_fatjet,semiboosted_VR_fail_jet,semiboosted_VR_pass_jet,process)
-    j3_SR_fail_semiboosted_eq2,j3_SR_pass_semiboosted_eq2,j3_VR_fail_semiboosted_eq2,j3_VR_pass_semiboosted_eq2,mjj_vs_mjjj_SR_fail_semiboosted_eq2,mjj_vs_mjjj_SR_pass_semiboosted_eq2,mjj_vs_mjjj_VR_fail_semiboosted_eq2,mjj_vs_mjjj_VR_pass_semiboosted_eq2 = plotsemiboosted("Semiboosted_eq2", semiboosted_eq2_SR_fail_fatjet, semiboosted_eq2_SR_pass_fatjet,semiboosted_eq2_SR_fail_jet, semiboosted_eq2_SR_pass_jet,semiboosted_eq2_VR_fail_fatjet,semiboosted_eq2_VR_pass_fatjet,semiboosted_eq2_VR_fail_jet,semiboosted_eq2_VR_pass_jet,process)
-    
-    with uproot.recreate(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile))) as fout:
-        if ("JetHT" not in process):
-            fout[f"numberOfGenEventsHisto"] = numberOfGenEventsHisto
-        fout[f"j3_SR_pass_boosted"] = j3_SR_pass_boosted
-        fout[f"j3_VR_pass_boosted"] = j3_VR_pass_boosted
-        fout[f"mjj_vs_mjjj_SR_pass_boosted"] = mjj_vs_mjjj_SR_pass_boosted
-        fout[f"mjj_vs_mjjj_VR_pass_boosted"] = mjj_vs_mjjj_VR_pass_boosted
-        fout[f"j3_SR_fail_boosted"] = j3_SR_fail_boosted
-        fout[f"j3_VR_fail_boosted"] = j3_VR_fail_boosted
-        fout[f"mjj_vs_mjjj_SR_fail_boosted"] = mjj_vs_mjjj_SR_fail_boosted
-        fout[f"mjj_vs_mjjj_VR_fail_boosted"] = mjj_vs_mjjj_VR_fail_boosted
-        fout[f"j3_SR_pass_semiboosted"] = j3_SR_pass_semiboosted
-        fout[f"j3_VR_pass_semiboosted"] = j3_VR_pass_semiboosted
-        fout[f"mjj_vs_mjjj_SR_pass_semiboosted"] = mjj_vs_mjjj_SR_pass_semiboosted
-        fout[f"mjj_vs_mjjj_VR_pass_semiboosted"] = mjj_vs_mjjj_VR_pass_semiboosted
-        fout[f"j3_SR_fail_semiboosted"] = j3_SR_fail_semiboosted
-        fout[f"j3_VR_fail_semiboosted"] = j3_VR_fail_semiboosted
-        fout[f"mjj_vs_mjjj_SR_fail_semiboosted"] = mjj_vs_mjjj_SR_fail_semiboosted
-        fout[f"mjj_vs_mjjj_VR_fail_semiboosted"] = mjj_vs_mjjj_VR_fail_semiboosted
-        fout[f"j3_SR_pass_semiboosted_eq2"] = j3_SR_pass_semiboosted_eq2
-        fout[f"j3_VR_pass_semiboosted_eq2"] = j3_VR_pass_semiboosted_eq2
-        fout[f"mjj_vs_mjjj_SR_pass_semiboosted_eq2"] = mjj_vs_mjjj_SR_pass_semiboosted_eq2
-        fout[f"mjj_vs_mjjj_VR_pass_semiboosted_eq2"] = mjj_vs_mjjj_VR_pass_semiboosted_eq2
-        fout[f"j3_SR_fail_semiboosted_eq2"] = j3_SR_fail_semiboosted_eq2
-        fout[f"j3_VR_fail_semiboosted_eq2"] = j3_VR_fail_semiboosted_eq2
-        fout[f"mjj_vs_mjjj_SR_fail_semiboosted_eq2"] = mjj_vs_mjjj_SR_fail_semiboosted_eq2
-        fout[f"mjj_vs_mjjj_VR_fail_semiboosted_eq2"] = mjj_vs_mjjj_VR_fail_semiboosted_eq2
+    outHists = {}    
+    for variation in variations:
+
+        boosted_SR_fail, boosted_SR_pass, boosted_VR_fail, boosted_VR_pass, semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet, semiboosted_SR_fail_jet, semiboosted_SR_pass_jet, semiboosted_VR_fail_fatjet, semiboosted_VR_pass_fatjet, semiboosted_VR_fail_jet, semiboosted_VR_pass_jet, semiboosted_eq2_SR_fail_fatjet, semiboosted_eq2_SR_pass_fatjet, semiboosted_eq2_SR_fail_jet, semiboosted_eq2_SR_pass_jet, semiboosted_eq2_VR_fail_fatjet, semiboosted_eq2_VR_pass_fatjet, semiboosted_eq2_VR_fail_jet, semiboosted_eq2_VR_pass_jet = Event_selection(input,process,event_counts,eventsToRead=None,variation=variation)
+        
+        if variation=="nominal":
+            event_counts["SR_boosted"]["Fail"] = len(boosted_SR_fail)
+            event_counts["SR_boosted"]["Pass"] = len(boosted_SR_pass)
+            event_counts["VR_boosted"]["Fail"] = len(boosted_VR_fail)
+            event_counts["VR_boosted"]["Pass"] = len(boosted_VR_pass)
+            event_counts["SR_semiboosted"]["Fail"] = len(semiboosted_SR_fail_fatjet)
+            event_counts["SR_semiboosted"]["Pass"] = len(semiboosted_SR_pass_fatjet)
+            event_counts["VR_semiboosted"]["Fail"] = len(semiboosted_VR_fail_fatjet)
+            event_counts["VR_semiboosted"]["Pass"] = len(semiboosted_VR_pass_fatjet)
+            event_counts["SR_semiboosted"]["Fail"] += len(semiboosted_eq2_SR_fail_fatjet)
+            event_counts["SR_semiboosted"]["Pass"] += len(semiboosted_eq2_SR_pass_fatjet)
+            event_counts["VR_semiboosted"]["Fail"] += len(semiboosted_eq2_VR_fail_fatjet)
+            event_counts["VR_semiboosted"]["Pass"] += len(semiboosted_eq2_VR_pass_fatjet)
+
+            cutFlowHistos = {}
+            for r in regions:
+                cutFlowHistos[r] = ROOT.TH1D(f"cutFlowHisto_{r}", f"{r};Cut flow;Number of events", len(event_counts[r].keys()), 0., float(len(event_counts[r].keys())))
+                for i, key in enumerate(event_counts[r].keys()):
+                    cutFlowHistos[r].SetBinContent(i+1, event_counts[r][key])
+                    cutFlowHistos[r].GetXaxis().SetBinLabel(i+1, key)
+            
+        j3_SR_fail_boosted,j3_SR_pass_boosted,j3_VR_fail_boosted,j3_VR_pass_boosted,mjj_vs_mjjj_SR_fail_boosted,mjj_vs_mjjj_SR_pass_boosted,mjj_vs_mjjj_VR_fail_boosted,mjj_vs_mjjj_VR_pass_boosted = plotboosted(boosted_SR_fail,boosted_SR_pass,boosted_VR_fail,boosted_VR_pass,process)                  
+        j3_SR_fail_semiboosted,j3_SR_pass_semiboosted,j3_VR_fail_semiboosted,j3_VR_pass_semiboosted,mjj_vs_mjjj_SR_fail_semiboosted,mjj_vs_mjjj_SR_pass_semiboosted,mjj_vs_mjjj_VR_fail_semiboosted,mjj_vs_mjjj_VR_pass_semiboosted = plotsemiboosted("Semiboosted", semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet,semiboosted_SR_fail_jet, semiboosted_SR_pass_jet,semiboosted_VR_fail_fatjet,semiboosted_VR_pass_fatjet,semiboosted_VR_fail_jet,semiboosted_VR_pass_jet,process)
+        j3_SR_fail_semiboosted_eq2,j3_SR_pass_semiboosted_eq2,j3_VR_fail_semiboosted_eq2,j3_VR_pass_semiboosted_eq2,mjj_vs_mjjj_SR_fail_semiboosted_eq2,mjj_vs_mjjj_SR_pass_semiboosted_eq2,mjj_vs_mjjj_VR_fail_semiboosted_eq2,mjj_vs_mjjj_VR_pass_semiboosted_eq2 = plotsemiboosted("Semiboosted_eq2", semiboosted_eq2_SR_fail_fatjet, semiboosted_eq2_SR_pass_fatjet,semiboosted_eq2_SR_fail_jet, semiboosted_eq2_SR_pass_jet,semiboosted_eq2_VR_fail_fatjet,semiboosted_eq2_VR_pass_fatjet,semiboosted_eq2_VR_fail_jet,semiboosted_eq2_VR_pass_jet,process)
+        
+        if ("JetHT" not in process and variation=="nominal"):
+            outHists[f"numberOfGenEventsHisto"] = numberOfGenEventsHisto
+        outHists[f"j3_SR_pass_boosted_{variation}"] = j3_SR_pass_boosted
+        outHists[f"j3_VR_pass_boosted_{variation}"] = j3_VR_pass_boosted
+        outHists[f"mjj_vs_mjjj_SR_pass_boosted_{variation}"] = mjj_vs_mjjj_SR_pass_boosted
+        outHists[f"mjj_vs_mjjj_VR_pass_boosted_{variation}"] = mjj_vs_mjjj_VR_pass_boosted
+        outHists[f"j3_SR_fail_boosted_{variation}"] = j3_SR_fail_boosted
+        outHists[f"j3_VR_fail_boosted_{variation}"] = j3_VR_fail_boosted
+        outHists[f"mjj_vs_mjjj_SR_fail_boosted_{variation}"] = mjj_vs_mjjj_SR_fail_boosted
+        outHists[f"mjj_vs_mjjj_VR_fail_boosted_{variation}"] = mjj_vs_mjjj_VR_fail_boosted
+        outHists[f"j3_SR_pass_semiboosted_{variation}"] = j3_SR_pass_semiboosted
+        outHists[f"j3_VR_pass_semiboosted_{variation}"] = j3_VR_pass_semiboosted
+        outHists[f"mjj_vs_mjjj_SR_pass_semiboosted_{variation}"] = mjj_vs_mjjj_SR_pass_semiboosted
+        outHists[f"mjj_vs_mjjj_VR_pass_semiboosted_{variation}"] = mjj_vs_mjjj_VR_pass_semiboosted
+        outHists[f"j3_SR_fail_semiboosted_{variation}"] = j3_SR_fail_semiboosted
+        outHists[f"j3_VR_fail_semiboosted_{variation}"] = j3_VR_fail_semiboosted
+        outHists[f"mjj_vs_mjjj_SR_fail_semiboosted_{variation}"] = mjj_vs_mjjj_SR_fail_semiboosted
+        outHists[f"mjj_vs_mjjj_VR_fail_semiboosted_{variation}"] = mjj_vs_mjjj_VR_fail_semiboosted
+        outHists[f"j3_SR_pass_semiboosted_eq2_{variation}"] = j3_SR_pass_semiboosted_eq2
+        outHists[f"j3_VR_pass_semiboosted_eq2_{variation}"] = j3_VR_pass_semiboosted_eq2
+        outHists[f"mjj_vs_mjjj_SR_pass_semiboosted_eq2_{variation}"] = mjj_vs_mjjj_SR_pass_semiboosted_eq2
+        outHists[f"mjj_vs_mjjj_VR_pass_semiboosted_eq2_{variation}"] = mjj_vs_mjjj_VR_pass_semiboosted_eq2
+        outHists[f"j3_SR_fail_semiboosted_eq2_{variation}"] = j3_SR_fail_semiboosted_eq2
+        outHists[f"j3_VR_fail_semiboosted_eq2_{variation}"] = j3_VR_fail_semiboosted_eq2
+        outHists[f"mjj_vs_mjjj_SR_fail_semiboosted_eq2_{variation}"] = mjj_vs_mjjj_SR_fail_semiboosted_eq2
+        outHists[f"mjj_vs_mjjj_VR_fail_semiboosted_eq2_{variation}"] = mjj_vs_mjjj_VR_fail_semiboosted_eq2
         # for r in regions:
-            # fout[f"cutFlowHisto_{r}"] = cutFlowHistos[r] # this does not work properly (see [*])
-    
+                # fout[f"cutFlowHisto_{r}"] = cutFlowHistos[r] # this does not work properly (see [*])
+        
+    with uproot.recreate(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile))) as fout:
+        for histName in outHists:
+            fout[histName] = outHists[histName]
+
     fout = ROOT.TFile.Open(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile)), 'UPDATE')
     list_of_keys = copy.deepcopy(fout.GetListOfKeys()) # without deepcopy the processing time explodes, no idea why
     for myKey in list_of_keys:
@@ -247,7 +256,8 @@ if __name__ == "__main__":
             h.Write("", ROOT.TObject.kOverwrite)
             fout.Delete(hname + ";1")
     # [*] uproot has some issues with storing histograms with labelled bins (apparently only the first bin is stored) so resorting to plain ROOT here
-    for r in regions:
-        cutFlowHistos[r].Write()
+    if(variation=="nominal"):
+        for r in regions:
+            cutFlowHistos[r].Write()
     fout.Close()
     
