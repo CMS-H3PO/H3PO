@@ -95,12 +95,69 @@ fatjet_factory = {
     )
 }
 
+jet_factory = {    
+    "2016APVmc": jet_factory_factory(
+        files=[
+            "Summer19UL16APV_V7_MC_L1FastJet_AK4PFchs.jec.txt.gz",
+            "Summer19UL16APV_V7_MC_L2Relative_AK4PFchs.jec.txt.gz",
+            "Summer19UL16APV_V7_MC_L2L3Residual_AK4PFchs.jec.txt.gz",
+            #"Summer19UL16APV_V7_MC_L2Residual_AK4PFchs.jec.txt.gz", #This one can actually be included, but does not affect result!
+            "Summer19UL16APV_V7_MC_L3Absolute_AK4PFchs.jec.txt.gz",
+            "Summer19UL16APV_V7_MC_Uncertainty_AK4PFchs.junc.txt.gz",
+            "Summer19UL16APV_V7_MC_UncertaintySources_AK4PFchs.junc.txt.gz",
+            "Summer20UL16APV_JRV3_MC_PtResolution_AK4PFchs.jr.txt.gz",
+            "Summer20UL16APV_JRV3_MC_SF_AK4PFchs.jersf.txt.gz"
+        ],path="../data/jec/2016APV/"
+    ),
+        "2016mc": jet_factory_factory(
+        files=[
+            "Summer19UL16_V7_MC_L1FastJet_AK4PFchs.jec.txt.gz",
+            "Summer19UL16_V7_MC_L2Relative_AK4PFchs.jec.txt.gz",
+            "Summer19UL16_V7_MC_L2L3Residual_AK4PFchs.jec.txt.gz",
+            #"Summer19UL16_V7_MC_L2Residual_AK4PFchs.jec.txt.gz", #This one can actually be included, but does not affect result!
+            "Summer19UL16_V7_MC_L3Absolute_AK4PFchs.jec.txt.gz",
+            "Summer19UL16_V7_MC_Uncertainty_AK4PFchs.junc.txt.gz",
+            "Summer19UL16_V7_MC_UncertaintySources_AK4PFchs.junc.txt.gz",
+            "Summer20UL16_JRV3_MC_PtResolution_AK4PFchs.jr.txt.gz",
+            "Summer20UL16_JRV3_MC_SF_AK4PFchs.jersf.txt.gz"
+        ],path="../data/jec/2016/"
+    ),
+        "2017mc": jet_factory_factory(
+        files=[
+            "Summer19UL17_V5_MC_L1FastJet_AK4PFchs.jec.txt.gz",
+            "Summer19UL17_V5_MC_L2Relative_AK4PFchs.jec.txt.gz",
+            "Summer19UL17_V5_MC_L2L3Residual_AK4PFchs.jec.txt.gz",
+            #"Summer19UL17_V5_MC_L2Residual_AK4PFchs.jec.txt.gz", #This one can actually be included, but does not affect result!
+            "Summer19UL17_V5_MC_L3Absolute_AK4PFchs.jec.txt.gz",
+            "Summer19UL17_V5_MC_Uncertainty_AK4PFchs.junc.txt.gz",
+            "Summer19UL17_V5_MC_UncertaintySources_AK4PFchs.junc.txt.gz",
+            "Summer19UL17_JRV3_MC_PtResolution_AK4PFchs.jr.txt.gz",
+            "Summer19UL17_JRV3_MC_SF_AK4PFchs.jersf.txt.gz"
+        ],path="../data/jec/2017/"
+    ),
+        "2018mc": jet_factory_factory(
+        files=[
+        "Summer19UL18_V5_MC_L1FastJet_AK4PFchs.jec.txt.gz",
+        "Summer19UL18_V5_MC_L2Relative_AK4PFchs.jec.txt.gz",
+        "Summer19UL18_V5_MC_L2L3Residual_AK4PFchs.jec.txt.gz",
+        #"Summer19UL18_V5_MC_L2Residual_AK4PFchs.jec.txt.gz", #This one can actually be included, but does not affect result!
+        "Summer19UL18_V5_MC_L3Absolute_AK4PFchs.jec.txt.gz",
+        "Summer19UL18_V5_MC_Uncertainty_AK4PFchs.junc.txt.gz",
+        "Summer19UL18_V5_MC_UncertaintySources_AK4PFchs.junc.txt.gz",
+        "Summer19UL18_JRV2_MC_PtResolution_AK4PFchs.jr.txt.gz",
+        "Summer19UL18_JRV2_MC_SF_AK4PFchs.jersf.txt.gz"
+
+        ],path="../data/jec/2018/"
+    )
+}
+
 if __name__ == "__main__":
     oFile = "../data/jec/jme_UL_pickled.pkl"
     with gzip.open(oFile, "wb") as fout:
         cloudpickle.dump(
             {
                 "fatjet_factory": fatjet_factory,
+                "jet_factory"   : jet_factory,
             },
             fout
         )

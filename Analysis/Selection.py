@@ -136,7 +136,44 @@ def get_dijets(fatjets, jets, event_counts, addCounts=False):
         event_counts["Good_dijet"] = len(fatjets)
     
     return fatjets, good_dijets
-    
+
+def getCalibratedAK4(events,variation,jetFactory,year):
+    AK4jecCache         = {}
+    jetsCalib           = jetFactory[year+"mc"].build(addJECVariables(events.Jet, events.fixedGridRhoFastjetAll), AK4jecCache)
+        
+    if(variation=="nominal"):
+        jets         = jetsCalib
+    elif(variation=="jesUp"):
+        jets         = jetsCalib.JES_jes.up
+    elif(variation=="jesDown"):
+        jets         = jetsCalib.JES_jes.down
+    elif(variation=="jerUp"):
+        jets         = jetsCalib.JER.up
+    elif(variation=="jerDown"):
+        jets         = jetsCalib.JER.down
+    else:       
+        raise ValueError('Invalid variation: ', variation)
+
+    return jets
+
+def getCalibratedAK8(events,variation,fatjetFactory,year):
+    AK8jecCache         = {}
+    fatjetsCalib        = fatjetFactory[year+"mc"].build(addJECVariables(events.FatJet, events.fixedGridRhoFastjetAll), AK8jecCache)
+
+    if(variation=="nominal"):
+        fatjets         = fatjetsCalib
+    elif(variation=="jesUp"):
+        fatjets         = fatjetsCalib.JES_jes.up
+    elif(variation=="jesDown"):
+        fatjets         = fatjetsCalib.JES_jes.down
+    elif(variation=="jerUp"):
+        fatjets         = fatjetsCalib.JER.up
+    elif(variation=="jerDown"):
+        fatjets         = fatjetsCalib.JER.down
+    else:       
+        raise ValueError('Invalid variation: ', variation)
+
+    return fatjets
 
 def Event_selection(fname,process,event_counts,variation="nominal",eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
@@ -151,25 +188,10 @@ def Event_selection(fname,process,event_counts,variation="nominal",eventsToRead=
         with gzip.open(H3_DIR+"/../data/jec/jme_UL_pickled.pkl") as fin:
             jmeDB           = cloudpickle.load(fin)
             fatjetFactory   = jmeDB["fatjet_factory"]    
+            jetFactory      = jmeDB["jet_factory"]    
         
         year                = yearFromInputFile(fname)
-        jecCache            = {}
-        fatjetsPrecalib     = events.FatJet
-        fatjetsCalib        = fatjetFactory[year+"mc"].build(addJECVariables(events.FatJet, events.fixedGridRhoFastjetAll), jecCache)
-        
-        if(variation=="nominal"):
-            fatjets         = fatjetsCalib
-        elif(variation=="jesUp"):
-            fatjets         = fatjetsCalib.JES_jes.up
-        elif(variation=="jesDown"):
-            fatjets         = fatjetsCalib.JES_jes.down
-        elif(variation=="jerUp"):
-            fatjets         = fatjetsCalib.JER.up
-        elif(variation=="jerDown"):
-            fatjets         = fatjetsCalib.JER.down
-        else:       
-            raise ValueError('Invalid variation: ', variation)
-
+        fatjets             = getCalibratedAK8(events,variation,fatjetFactory,year)
 
     # fat jet preselection
     fatjets = fatjets[precut(fatjets)]
@@ -212,7 +234,10 @@ def Event_selection(fname,process,event_counts,variation="nominal",eventsToRead=
     events_SR_sb  = events_preselection[fatjets_SR_sb_evtMask & ~(fatjets_VR_b_evtMask)]
     fatjets_SR_sb =          fatjets_SR[fatjets_SR_sb_evtMask & ~(fatjets_VR_b_evtMask)]
     # get resolved jets from selected events
-    jets_SR_sb = events_SR_sb.Jet
+    if("JetHT" in process):
+        jets_SR_sb = events_SR_sb.Jet
+    else:
+        jets_SR_sb = getCalibratedAK4(events_SR_sb,variation,jetFactory,year)
 
     event_counts["SR_semiboosted"]["Mass_cut_fatjets"] = len(fatjets_SR_sb)
 
@@ -227,7 +252,10 @@ def Event_selection(fname,process,event_counts,variation="nominal",eventsToRead=
     events_VR_sb  = events_preselection[fatjets_VR_sb_evtMask & ~(fatjets_SR_b_evtMask | fatjets_SR_sb_evtMask | fatjets_VR_b_evtMask)]
     fatjets_VR_sb =       fatjets_VR_sb[fatjets_VR_sb_evtMask & ~(fatjets_SR_b_evtMask | fatjets_SR_sb_evtMask | fatjets_VR_b_evtMask)]
     # get resolved jets from selected events
-    jets_VR_sb = events_VR_sb.Jet
+    if("JetHT" in process):
+        jets_VR_sb = events_VR_sb.Jet
+    else:
+        jets_VR_sb = getCalibratedAK4(events_VR_sb,variation,jetFactory,year)
 
     event_counts["VR_semiboosted"]["Mass_cut_fatjets"] = len(fatjets_VR_sb)
     
@@ -241,7 +269,10 @@ def Event_selection(fname,process,event_counts,variation="nominal",eventsToRead=
     events_SR_sb_eq2  = events_preselection_eq2[ak.num(fatjets_SR_sb_eq2, axis=1)==2]
     fatjets_SR_sb_eq2 =       fatjets_SR_sb_eq2[ak.num(fatjets_SR_sb_eq2, axis=1)==2]
     # get resolved jets from selected events
-    jets_SR_sb_eq2 = events_SR_sb_eq2.Jet
+    if("JetHT" in process):
+        jets_SR_sb_eq2 = events_SR_sb_eq2.Jet    
+    else:
+        jets_SR_sb_eq2 = getCalibratedAK4(events_SR_sb_eq2,variation,jetFactory,year)
 
     event_counts["SR_semiboosted"]["Mass_cut_fatjets"] += len(fatjets_SR_sb_eq2)
 
@@ -255,7 +286,10 @@ def Event_selection(fname,process,event_counts,variation="nominal",eventsToRead=
     events_VR_sb_eq2  = events_preselection_eq2[ak.num(fatjets_VR_sb_eq2, axis=1)==2]
     fatjets_VR_sb_eq2 =       fatjets_VR_sb_eq2[ak.num(fatjets_VR_sb_eq2, axis=1)==2]
     # get resolved jets from selected events
-    jets_VR_sb_eq2 = events_VR_sb_eq2.Jet
+    if("JetHT" in process):
+        jets_VR_sb_eq2 = events_VR_sb_eq2.Jet
+    else:
+        jets_VR_sb_eq2 = getCalibratedAK4(events_VR_sb_eq2,variation,jetFactory,year)
 
     event_counts["VR_semiboosted"]["Mass_cut_fatjets"] += len(fatjets_VR_sb_eq2)
 

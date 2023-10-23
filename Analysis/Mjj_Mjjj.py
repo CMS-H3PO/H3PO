@@ -148,6 +148,8 @@ def plotsemiboosted(label, semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatje
 
 
 if __name__ == "__main__":
+    import time
+    start_time = time.time()
     from argparse import ArgumentParser
     
     parser = ArgumentParser(description="Do -h to see usage")
@@ -256,8 +258,7 @@ if __name__ == "__main__":
             h.Write("", ROOT.TObject.kOverwrite)
             fout.Delete(hname + ";1")
     # [*] uproot has some issues with storing histograms with labelled bins (apparently only the first bin is stored) so resorting to plain ROOT here
-    if(variation=="nominal"):
-        for r in regions:
-            cutFlowHistos[r].Write()
+    for r in regions:
+        cutFlowHistos[r].Write()
     fout.Close()
-    
+    print("--- %s seconds ---" % (time.time() - start_time))
