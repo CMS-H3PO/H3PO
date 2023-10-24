@@ -91,7 +91,7 @@ def combine_histograms(identifier, deleteFiles=False, skipNorm=False, startsWith
             if deleteFiles:
                 remove_root_files(list_of_root_files)
             else:
-                if startsWithRegion and not skipNorm:
+                if startsWithRegion and not skipNorm and not "JetHT" in identifier:
                     for root_fname in list_of_root_files:
                         system("mv unscaled_{0} {1}".format(root_fname,root_fname))
             if mvFiles:
