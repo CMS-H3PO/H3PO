@@ -33,13 +33,25 @@ if __name__ == '__main__':
                         help="Dry run without submitting Condor jobs (default: %(default)s)",
                         default=False)
 
+    parser.add_argument("-t", "--triggerList", help="Space-separated list of triggers (default: %(default)s);)",
+                        nargs="*",
+                        dest="triggerList",
+                        default = None
+                        )
+    
+    parser.add_argument("-r", "--refTriggerList", help="Space-separated list of reference triggers (default: %(default)s);)",
+                        nargs="*",
+                        dest="refTriggerList",
+                        default = None
+                        )
+        
     (options, args) = parser.parse_known_args()
 
     initial_dir = H3_DIR
-    if options.output.startswith('/'):
-        condor_dir = options.output.rstrip('/') + '_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    else:
-        condor_dir = join(initial_dir, options.output.rstrip('/') + '_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
+    condor_dir = options.output.rstrip('/') + '_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    if not options.output.startswith('/'):
+        condor_dir = join(initial_dir, condor_dir)
+        
     condor_dir_jobs = join(condor_dir, "jobs")
     condor_dir_logs = join(condor_dir, "logs")
     os.system('mkdir -p ' + condor_dir_jobs)
@@ -56,6 +68,11 @@ if __name__ == '__main__':
             if not isfile(file_path):
                 continue
             args = '-s={0} -i={1} -o={2}'.format(dataset, file_path, condor_dir)
+            if options.triggerList != None:
+                args += ' -t ' + (' ').join(options.triggerList)
+            if options.refTriggerList != None:
+                args += ' -r ' + (' ').join(options.refTriggerList)
+                
             dataset_job = '{0}_{1}'.format(dataset, i)
             job_desc = join(condor_dir_jobs, 'job_desc-' + dataset_job + '.txt')
             
