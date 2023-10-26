@@ -92,7 +92,116 @@ fatjet_factory = {
         "Summer19UL18_JRV2_MC_SF_AK8PFPuppi.jersf.txt.gz"
 
         ],path="../data/jec/2018/"
+    ),
+        "2016APVRunBCD": jet_factory_factory(
+        files=[
+        "Summer19UL16APV_RunBCD_V7_DATA_L1FastJet_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL16APV_RunBCD_V7_DATA_L2Relative_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL16APV_RunBCD_V7_DATA_L2L3Residual_AK8PFPuppi.jec.txt.gz",
+        #"Summer19UL16APV_RunBCD_V7_DATA_L2Residual_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL16APV_RunBCD_V7_DATA_L3Absolute_AK8PFPuppi.jec.txt.gz",
+        ],path="../data/jec/2016APV/"
+    ),
+        "2016APVRunEF": jet_factory_factory(
+        files=[
+        "Summer19UL16APV_RunEF_V7_DATA_L1FastJet_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL16APV_RunEF_V7_DATA_L2Relative_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL16APV_RunEF_V7_DATA_L2L3Residual_AK8PFPuppi.jec.txt.gz",
+        #"Summer19UL16APV_RunEF_V7_DATA_L2Residual_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL16APV_RunEF_V7_DATA_L3Absolute_AK8PFPuppi.jec.txt.gz",
+        ],path="../data/jec/2016APV/"
+    ),
+        "2016RunFGH": jet_factory_factory(
+        files=[
+        "Summer19UL16_RunFGH_V7_DATA_L1FastJet_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL16_RunFGH_V7_DATA_L2Relative_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL16_RunFGH_V7_DATA_L2L3Residual_AK8PFPuppi.jec.txt.gz",
+        #"Summer19UL16_RunFGH_V7_DATA_L2Residual_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL16_RunFGH_V7_DATA_L3Absolute_AK8PFPuppi.jec.txt.gz",
+        ],path="../data/jec/2016/"
+    ),
+        "2017RunB": jet_factory_factory(
+        files=[
+        "Summer19UL17_RunB_V5_DATA_L1FastJet_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL17_RunB_V5_DATA_L2Relative_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL17_RunB_V5_DATA_L2L3Residual_AK8PFPuppi.jec.txt.gz",
+        #"Summer19UL17_RunB_V5_DATA_L2Residual_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL17_RunB_V5_DATA_L3Absolute_AK8PFPuppi.jec.txt.gz",
+        ],path="../data/jec/2017/"
+    ),
+        "2017RunC": jet_factory_factory(
+        files=[
+        "Summer19UL17_RunC_V5_DATA_L1FastJet_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL17_RunC_V5_DATA_L2Relative_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL17_RunC_V5_DATA_L2L3Residual_AK8PFPuppi.jec.txt.gz",
+        #"Summer19UL17_RunC_V5_DATA_L2Residual_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL17_RunC_V5_DATA_L3Absolute_AK8PFPuppi.jec.txt.gz",
+        ],path="../data/jec/2017/"
+    ),
+        "2017RunD": jet_factory_factory(
+        files=[
+        "Summer19UL17_RunD_V5_DATA_L1FastJet_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL17_RunD_V5_DATA_L2Relative_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL17_RunD_V5_DATA_L2L3Residual_AK8PFPuppi.jec.txt.gz",
+        #"Summer19UL17_RunD_V5_DATA_L2Residual_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL17_RunD_V5_DATA_L3Absolute_AK8PFPuppi.jec.txt.gz",
+        ],path="../data/jec/2017/"
+    ),
+        "2017RunE": jet_factory_factory(
+        files=[
+        "Summer19UL17_RunE_V5_DATA_L1FastJet_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL17_RunE_V5_DATA_L2Relative_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL17_RunE_V5_DATA_L2L3Residual_AK8PFPuppi.jec.txt.gz",
+        #"Summer19UL17_RunE_V5_DATA_L2Residual_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL17_RunE_V5_DATA_L3Absolute_AK8PFPuppi.jec.txt.gz",
+        ],path="../data/jec/2017/"
+    ),
+        "2017RunF": jet_factory_factory(
+        files=[
+        "Summer19UL17_RunF_V5_DATA_L1FastJet_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL17_RunF_V5_DATA_L2Relative_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL17_RunF_V5_DATA_L2L3Residual_AK8PFPuppi.jec.txt.gz",
+        #"Summer19UL17_RunF_V5_DATA_L2Residual_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL17_RunF_V5_DATA_L3Absolute_AK8PFPuppi.jec.txt.gz",
+        ],path="../data/jec/2017/"
+    ),
+        "2018RunA": jet_factory_factory(
+        files=[
+        "Summer19UL18_RunA_V5_DATA_L1FastJet_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL18_RunA_V5_DATA_L2Relative_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL18_RunA_V5_DATA_L2L3Residual_AK8PFPuppi.jec.txt.gz",
+        #"Summer19UL18_RunA_V5_DATA_L2Residual_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL18_RunA_V5_DATA_L3Absolute_AK8PFPuppi.jec.txt.gz",
+        ],path="../data/jec/2018/"
+    ),
+        "2018RunB": jet_factory_factory(
+        files=[
+        "Summer19UL18_RunB_V5_DATA_L1FastJet_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL18_RunB_V5_DATA_L2Relative_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL18_RunB_V5_DATA_L2L3Residual_AK8PFPuppi.jec.txt.gz",
+        #"Summer19UL18_RunB_V5_DATA_L2Residual_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL18_RunB_V5_DATA_L3Absolute_AK8PFPuppi.jec.txt.gz",
+        ],path="../data/jec/2018/"
+    ),
+        "2018RunC": jet_factory_factory(
+        files=[
+        "Summer19UL18_RunC_V5_DATA_L1FastJet_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL18_RunC_V5_DATA_L2Relative_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL18_RunC_V5_DATA_L2L3Residual_AK8PFPuppi.jec.txt.gz",
+        #"Summer19UL18_RunC_V5_DATA_L2Residual_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL18_RunC_V5_DATA_L3Absolute_AK8PFPuppi.jec.txt.gz",
+        ],path="../data/jec/2018/"
+    ),
+        "2018RunD": jet_factory_factory(
+        files=[
+        "Summer19UL18_RunD_V5_DATA_L1FastJet_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL18_RunD_V5_DATA_L2Relative_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL18_RunD_V5_DATA_L2L3Residual_AK8PFPuppi.jec.txt.gz",
+        #"Summer19UL18_RunD_V5_DATA_L2Residual_AK8PFPuppi.jec.txt.gz",
+        "Summer19UL18_RunD_V5_DATA_L3Absolute_AK8PFPuppi.jec.txt.gz",
+        ],path="../data/jec/2018/"
     )
+
 }
 
 jet_factory = {    
@@ -147,6 +256,114 @@ jet_factory = {
         "Summer19UL18_JRV2_MC_PtResolution_AK4PFchs.jr.txt.gz",
         "Summer19UL18_JRV2_MC_SF_AK4PFchs.jersf.txt.gz"
 
+        ],path="../data/jec/2018/"
+    ),
+        "2016APVRunBCD": jet_factory_factory(
+        files=[
+        "Summer19UL16APV_RunBCD_V7_DATA_L1FastJet_AK4PFchs.jec.txt.gz",
+        "Summer19UL16APV_RunBCD_V7_DATA_L2Relative_AK4PFchs.jec.txt.gz",
+        "Summer19UL16APV_RunBCD_V7_DATA_L2L3Residual_AK4PFchs.jec.txt.gz",
+        #"Summer19UL16APV_RunBCD_V7_DATA_L2Residual_AK4PFchs.jec.txt.gz",
+        "Summer19UL16APV_RunBCD_V7_DATA_L3Absolute_AK4PFchs.jec.txt.gz",
+        ],path="../data/jec/2016APV/"
+    ),
+        "2016APVRunEF": jet_factory_factory(
+        files=[
+        "Summer19UL16APV_RunEF_V7_DATA_L1FastJet_AK4PFchs.jec.txt.gz",
+        "Summer19UL16APV_RunEF_V7_DATA_L2Relative_AK4PFchs.jec.txt.gz",
+        "Summer19UL16APV_RunEF_V7_DATA_L2L3Residual_AK4PFchs.jec.txt.gz",
+        #"Summer19UL16APV_RunEF_V7_DATA_L2Residual_AK4PFchs.jec.txt.gz",
+        "Summer19UL16APV_RunEF_V7_DATA_L3Absolute_AK4PFchs.jec.txt.gz",
+        ],path="../data/jec/2016APV/"
+    ),
+        "2016RunFGH": jet_factory_factory(
+        files=[
+        "Summer19UL16_RunFGH_V7_DATA_L1FastJet_AK4PFchs.jec.txt.gz",
+        "Summer19UL16_RunFGH_V7_DATA_L2Relative_AK4PFchs.jec.txt.gz",
+        "Summer19UL16_RunFGH_V7_DATA_L2L3Residual_AK4PFchs.jec.txt.gz",
+        #"Summer19UL16_RunFGH_V7_DATA_L2Residual_AK4PFchs.jec.txt.gz",
+        "Summer19UL16_RunFGH_V7_DATA_L3Absolute_AK4PFchs.jec.txt.gz",
+        ],path="../data/jec/2016/"
+    ),
+        "2017RunB": jet_factory_factory(
+        files=[
+        "Summer19UL17_RunB_V5_DATA_L1FastJet_AK4PFchs.jec.txt.gz",
+        "Summer19UL17_RunB_V5_DATA_L2Relative_AK4PFchs.jec.txt.gz",
+        "Summer19UL17_RunB_V5_DATA_L2L3Residual_AK4PFchs.jec.txt.gz",
+        #"Summer19UL17_RunB_V5_DATA_L2Residual_AK4PFchs.jec.txt.gz",
+        "Summer19UL17_RunB_V5_DATA_L3Absolute_AK4PFchs.jec.txt.gz",
+        ],path="../data/jec/2017/"
+    ),
+        "2017RunC": jet_factory_factory(
+        files=[
+        "Summer19UL17_RunC_V5_DATA_L1FastJet_AK4PFchs.jec.txt.gz",
+        "Summer19UL17_RunC_V5_DATA_L2Relative_AK4PFchs.jec.txt.gz",
+        "Summer19UL17_RunC_V5_DATA_L2L3Residual_AK4PFchs.jec.txt.gz",
+        #"Summer19UL17_RunC_V5_DATA_L2Residual_AK4PFchs.jec.txt.gz",
+        "Summer19UL17_RunC_V5_DATA_L3Absolute_AK4PFchs.jec.txt.gz",
+        ],path="../data/jec/2017/"
+    ),
+        "2017RunD": jet_factory_factory(
+        files=[
+        "Summer19UL17_RunD_V5_DATA_L1FastJet_AK4PFchs.jec.txt.gz",
+        "Summer19UL17_RunD_V5_DATA_L2Relative_AK4PFchs.jec.txt.gz",
+        "Summer19UL17_RunD_V5_DATA_L2L3Residual_AK4PFchs.jec.txt.gz",
+        #"Summer19UL17_RunD_V5_DATA_L2Residual_AK4PFchs.jec.txt.gz",
+        "Summer19UL17_RunD_V5_DATA_L3Absolute_AK4PFchs.jec.txt.gz",
+        ],path="../data/jec/2017/"
+    ),
+        "2017RunE": jet_factory_factory(
+        files=[
+        "Summer19UL17_RunE_V5_DATA_L1FastJet_AK4PFchs.jec.txt.gz",
+        "Summer19UL17_RunE_V5_DATA_L2Relative_AK4PFchs.jec.txt.gz",
+        "Summer19UL17_RunE_V5_DATA_L2L3Residual_AK4PFchs.jec.txt.gz",
+        #"Summer19UL17_RunE_V5_DATA_L2Residual_AK4PFchs.jec.txt.gz",
+        "Summer19UL17_RunE_V5_DATA_L3Absolute_AK4PFchs.jec.txt.gz",
+        ],path="../data/jec/2017/"
+    ),
+        "2017RunF": jet_factory_factory(
+        files=[
+        "Summer19UL17_RunF_V5_DATA_L1FastJet_AK4PFchs.jec.txt.gz",
+        "Summer19UL17_RunF_V5_DATA_L2Relative_AK4PFchs.jec.txt.gz",
+        "Summer19UL17_RunF_V5_DATA_L2L3Residual_AK4PFchs.jec.txt.gz",
+        #"Summer19UL17_RunF_V5_DATA_L2Residual_AK4PFchs.jec.txt.gz",
+        "Summer19UL17_RunF_V5_DATA_L3Absolute_AK4PFchs.jec.txt.gz",
+        ],path="../data/jec/2017/"
+    ),
+        "2018RunA": jet_factory_factory(
+        files=[
+        "Summer19UL18_RunA_V5_DATA_L1FastJet_AK4PFchs.jec.txt.gz",
+        "Summer19UL18_RunA_V5_DATA_L2Relative_AK4PFchs.jec.txt.gz",
+        "Summer19UL18_RunA_V5_DATA_L2L3Residual_AK4PFchs.jec.txt.gz",
+        #"Summer19UL18_RunA_V5_DATA_L2Residual_AK4PFchs.jec.txt.gz",
+        "Summer19UL18_RunA_V5_DATA_L3Absolute_AK4PFchs.jec.txt.gz",
+        ],path="../data/jec/2018/"
+    ),
+        "2018RunB": jet_factory_factory(
+        files=[
+        "Summer19UL18_RunB_V5_DATA_L1FastJet_AK4PFchs.jec.txt.gz",
+        "Summer19UL18_RunB_V5_DATA_L2Relative_AK4PFchs.jec.txt.gz",
+        "Summer19UL18_RunB_V5_DATA_L2L3Residual_AK4PFchs.jec.txt.gz",
+        #"Summer19UL18_RunB_V5_DATA_L2Residual_AK4PFchs.jec.txt.gz",
+        "Summer19UL18_RunB_V5_DATA_L3Absolute_AK4PFchs.jec.txt.gz",
+        ],path="../data/jec/2018/"
+    ),
+        "2018RunC": jet_factory_factory(
+        files=[
+        "Summer19UL18_RunC_V5_DATA_L1FastJet_AK4PFchs.jec.txt.gz",
+        "Summer19UL18_RunC_V5_DATA_L2Relative_AK4PFchs.jec.txt.gz",
+        "Summer19UL18_RunC_V5_DATA_L2L3Residual_AK4PFchs.jec.txt.gz",
+        #"Summer19UL18_RunC_V5_DATA_L2Residual_AK4PFchs.jec.txt.gz",
+        "Summer19UL18_RunC_V5_DATA_L3Absolute_AK4PFchs.jec.txt.gz",
+        ],path="../data/jec/2018/"
+    ),
+        "2018RunD": jet_factory_factory(
+        files=[
+        "Summer19UL18_RunD_V5_DATA_L1FastJet_AK4PFchs.jec.txt.gz",
+        "Summer19UL18_RunD_V5_DATA_L2Relative_AK4PFchs.jec.txt.gz",
+        "Summer19UL18_RunD_V5_DATA_L2L3Residual_AK4PFchs.jec.txt.gz",
+        #"Summer19UL18_RunD_V5_DATA_L2Residual_AK4PFchs.jec.txt.gz",
+        "Summer19UL18_RunD_V5_DATA_L3Absolute_AK4PFchs.jec.txt.gz",
         ],path="../data/jec/2018/"
     )
 }
