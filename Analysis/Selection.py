@@ -137,6 +137,7 @@ def get_dijets(fatjets, jets, event_counts, addCounts=False):
     
     return fatjets, good_dijets
 
+
 def getCalibratedAK4(events,variation,jetFactory,year):
     AK4jecCache         = {}
     jetsCalib           = jetFactory[year+"mc"].build(addJECVariables(events.Jet, events.fixedGridRhoFastjetAll), AK4jecCache)
@@ -155,6 +156,7 @@ def getCalibratedAK4(events,variation,jetFactory,year):
         raise ValueError('Invalid variation: ', variation)
 
     return jets
+
 
 def getCalibratedAK8(events,variation,fatjetFactory,year):
     AK8jecCache         = {}
@@ -175,9 +177,20 @@ def getCalibratedAK8(events,variation,fatjetFactory,year):
 
     return fatjets
 
-def Event_selection(fname,process,event_counts,variation="nominal",eventsToRead=None):
-    events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
 
+def Event_selection(fname,process,event_counts,variation="nominal",trigList=None,refTrigList=None,eventsToRead=None):
+    events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
+        
+    if refTrigList != None:                
+        refTriggerBits = np.array([events.HLT[t] for t in refTrigList if t in events.HLT.fields])    
+        refTriggerMask = np.logical_or.reduce(refTriggerBits, axis=0)
+        events = events[refTriggerMask]
+
+    if trigList != None:
+        triggerBits = np.array([events.HLT[t] for t in trigList if t in events.HLT.fields])    
+        triggerMask = np.logical_or.reduce(triggerBits, axis=0)
+        events = events[triggerMask]
+            
     for r in event_counts.keys():
         event_counts[r]["Skim"] = len(events)
     
