@@ -156,6 +156,11 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--sample', help='Sample name', default="QCD2000")
     parser.add_argument('-i', '--input', help='Input file')
     parser.add_argument('-o', '--output', help='Output directory')
+    parser.add_argument("-j", "--jecVariations", dest="jecVariations",
+                        help="Space-separated list of JEC variations (default: %(default)s). Use 'fromFile' to turn off the JEC re-application.",
+                        nargs='*',
+                        default=["nominal","jesUp","jesDown","jerUp","jerDown"],
+                        metavar="JECVARS")
     parser.add_argument('-t', '--triggerList', help='Space-separated list of triggers (default: %(default)s);)',
                         nargs='*',
                         dest='triggerList',
@@ -176,11 +181,11 @@ if __name__ == "__main__":
     print(process)
     yearFromInputFile(input)
    
-    variations        = ["nominal"]
+    variations        = (["fromFile"] if "fromFile" in args.jecVariations else ["nominal"])
     numberOfGenEvents = 0.
     if ("JetHT" not in process):
         numberOfGenEvents = getNumberOfGenEvents(input)
-        variations        = ["nominal","jesUp","jesDown","jerUp","jerDown"]
+        variations        = args.jecVariations
     numberOfGenEventsAxis = hist.axis.Integer(0, 1, label="Number of generated events", underflow=False, overflow=False)
     numberOfGenEventsHisto = Hist(numberOfGenEventsAxis)
     numberOfGenEventsHisto[0] = numberOfGenEvents
@@ -198,7 +203,7 @@ if __name__ == "__main__":
 
         boosted_SR_fail, boosted_SR_pass, boosted_VR_fail, boosted_VR_pass, semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet, semiboosted_SR_fail_jet, semiboosted_SR_pass_jet, semiboosted_VR_fail_fatjet, semiboosted_VR_pass_fatjet, semiboosted_VR_fail_jet, semiboosted_VR_pass_jet, semiboosted_eq2_SR_fail_fatjet, semiboosted_eq2_SR_pass_fatjet, semiboosted_eq2_SR_fail_jet, semiboosted_eq2_SR_pass_jet, semiboosted_eq2_VR_fail_fatjet, semiboosted_eq2_VR_pass_fatjet, semiboosted_eq2_VR_fail_jet, semiboosted_eq2_VR_pass_jet = Event_selection(input,process,event_counts,variation=variation,trigList=args.triggerList,refTrigList=args.refTriggerList,eventsToRead=None)
         
-        if variation=="nominal":
+        if variation in ["nominal","fromFile"]:
             event_counts["SR_boosted"]["Fail"] = len(boosted_SR_fail)
             event_counts["SR_boosted"]["Pass"] = len(boosted_SR_pass)
             event_counts["VR_boosted"]["Fail"] = len(boosted_VR_fail)
@@ -223,7 +228,7 @@ if __name__ == "__main__":
         j3_SR_fail_semiboosted,j3_SR_pass_semiboosted,j3_VR_fail_semiboosted,j3_VR_pass_semiboosted,mjj_vs_mjjj_SR_fail_semiboosted,mjj_vs_mjjj_SR_pass_semiboosted,mjj_vs_mjjj_VR_fail_semiboosted,mjj_vs_mjjj_VR_pass_semiboosted = plotsemiboosted("Semiboosted", semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet,semiboosted_SR_fail_jet, semiboosted_SR_pass_jet,semiboosted_VR_fail_fatjet,semiboosted_VR_pass_fatjet,semiboosted_VR_fail_jet,semiboosted_VR_pass_jet,process)
         j3_SR_fail_semiboosted_eq2,j3_SR_pass_semiboosted_eq2,j3_VR_fail_semiboosted_eq2,j3_VR_pass_semiboosted_eq2,mjj_vs_mjjj_SR_fail_semiboosted_eq2,mjj_vs_mjjj_SR_pass_semiboosted_eq2,mjj_vs_mjjj_VR_fail_semiboosted_eq2,mjj_vs_mjjj_VR_pass_semiboosted_eq2 = plotsemiboosted("Semiboosted_eq2", semiboosted_eq2_SR_fail_fatjet, semiboosted_eq2_SR_pass_fatjet,semiboosted_eq2_SR_fail_jet, semiboosted_eq2_SR_pass_jet,semiboosted_eq2_VR_fail_fatjet,semiboosted_eq2_VR_pass_fatjet,semiboosted_eq2_VR_fail_jet,semiboosted_eq2_VR_pass_jet,process)
         
-        if ("JetHT" not in process and variation=="nominal"):
+        if ("JetHT" not in process and variation in ["nominal","fromFile"]):
             outHists[f"numberOfGenEventsHisto"] = numberOfGenEventsHisto
         outHists[f"j3_SR_pass_boosted_{variation}"] = j3_SR_pass_boosted
         outHists[f"j3_VR_pass_boosted_{variation}"] = j3_VR_pass_boosted

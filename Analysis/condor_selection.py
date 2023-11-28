@@ -33,6 +33,12 @@ if __name__ == '__main__':
                         help="Dry run without submitting Condor jobs (default: %(default)s)",
                         default=False)
 
+    parser.add_argument("-j", "--jecVariations", dest="jecVariations",
+                        help="Space-separated list of JEC variations (default: %(default)s)",
+                        nargs='*',
+                        default=None,
+                        metavar="JECVARS")
+
     parser.add_argument("-t", "--triggerList", help="Space-separated list of triggers (default: %(default)s);)",
                         nargs="*",
                         dest="triggerList",
@@ -44,7 +50,7 @@ if __name__ == '__main__':
                         dest="refTriggerList",
                         default = None
                         )
-        
+
     (options, args) = parser.parse_known_args()
 
     initial_dir = H3_DIR
@@ -68,6 +74,8 @@ if __name__ == '__main__':
             if not isfile(file_path):
                 continue
             args = '-s={0} -i={1} -o={2}'.format(dataset, file_path, condor_dir)
+            if options.jecVariations != None:
+                args += ' -j ' + (' ').join(options.jecVariations)
             if options.triggerList != None:
                 args += ' -t ' + (' ').join(options.triggerList)
             if options.refTriggerList != None:
