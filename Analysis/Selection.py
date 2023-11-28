@@ -227,15 +227,20 @@ def Event_selection(fname,process,event_counts,variation="nominal",trigList=None
             
     for r in event_counts.keys():
         event_counts[r]["Skim"] = len(events)
-    
-    with gzip.open(H3_DIR+"/../data/jec/jme_UL_pickled.pkl") as fin:
-        jmeDB           = cloudpickle.load(fin)
-        fatjetFactory   = jmeDB["fatjet_factory"]    
-        jetFactory      = jmeDB["jet_factory"]    
-    
-    jecTag              = jecTagFromFileName(fname)
-    print("JEC tag: ", jecTag)
-    fatjets             = getCalibratedAK8(events,variation,fatjetFactory,jecTag)
+
+    # if JEC re-application is turned off
+    if variation == "fromFile":
+        print("JEC re-aplication turned off")
+        fatjets = events.FatJet
+    else:
+        with gzip.open(H3_DIR+"/../data/jec/jme_UL_pickled.pkl") as fin:
+            jmeDB           = cloudpickle.load(fin)
+            fatjetFactory   = jmeDB["fatjet_factory"]
+            jetFactory      = jmeDB["jet_factory"]
+
+        jecTag              = jecTagFromFileName(fname)
+        print("JEC tag: ", jecTag)
+        fatjets             = getCalibratedAK8(events,variation,fatjetFactory,jecTag)
 
     # fat jet preselection
     fatjets = fatjets[precut(fatjets)]
@@ -278,7 +283,8 @@ def Event_selection(fname,process,event_counts,variation="nominal",trigList=None
     events_SR_sb  = events_preselection[fatjets_SR_sb_evtMask & ~(fatjets_VR_b_evtMask)]
     fatjets_SR_sb =          fatjets_SR[fatjets_SR_sb_evtMask & ~(fatjets_VR_b_evtMask)]
     # get resolved jets from selected events
-    if("JetHT" in process):
+    # if JEC re-application is turned off
+    if variation == "fromFile":
         jets_SR_sb = events_SR_sb.Jet
     else:
         jets_SR_sb = getCalibratedAK4(events_SR_sb,variation,jetFactory,jecTag)
@@ -296,7 +302,8 @@ def Event_selection(fname,process,event_counts,variation="nominal",trigList=None
     events_VR_sb  = events_preselection[fatjets_VR_sb_evtMask & ~(fatjets_SR_b_evtMask | fatjets_SR_sb_evtMask | fatjets_VR_b_evtMask)]
     fatjets_VR_sb =       fatjets_VR_sb[fatjets_VR_sb_evtMask & ~(fatjets_SR_b_evtMask | fatjets_SR_sb_evtMask | fatjets_VR_b_evtMask)]
     # get resolved jets from selected events
-    if("JetHT" in process):
+    # if JEC re-application is turned off
+    if variation == "fromFile":
         jets_VR_sb = events_VR_sb.Jet
     else:
         jets_VR_sb = getCalibratedAK4(events_VR_sb,variation,jetFactory,jecTag)
@@ -313,7 +320,8 @@ def Event_selection(fname,process,event_counts,variation="nominal",trigList=None
     events_SR_sb_eq2  = events_preselection_eq2[ak.num(fatjets_SR_sb_eq2, axis=1)==2]
     fatjets_SR_sb_eq2 =       fatjets_SR_sb_eq2[ak.num(fatjets_SR_sb_eq2, axis=1)==2]
     # get resolved jets from selected events
-    if("JetHT" in process):
+    # if JEC re-application is turned off
+    if variation == "fromFile":
         jets_SR_sb_eq2 = events_SR_sb_eq2.Jet    
     else:
         jets_SR_sb_eq2 = getCalibratedAK4(events_SR_sb_eq2,variation,jetFactory,jecTag)
@@ -330,7 +338,8 @@ def Event_selection(fname,process,event_counts,variation="nominal",trigList=None
     events_VR_sb_eq2  = events_preselection_eq2[ak.num(fatjets_VR_sb_eq2, axis=1)==2]
     fatjets_VR_sb_eq2 =       fatjets_VR_sb_eq2[ak.num(fatjets_VR_sb_eq2, axis=1)==2]
     # get resolved jets from selected events
-    if("JetHT" in process):
+    # if JEC re-application is turned off
+    if variation == "fromFile":
         jets_VR_sb_eq2 = events_VR_sb_eq2.Jet
     else:
         jets_VR_sb_eq2 = getCalibratedAK4(events_VR_sb_eq2,variation,jetFactory,jecTag)
