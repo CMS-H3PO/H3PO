@@ -267,7 +267,7 @@ def Event_selection(fname,process,event_counts,variation="nominal",trigList=None
     events_SR_b       = events_preselection[fatjets_SR_b_evtMask]
     
     # VR boosted
-    # apply the VR jet mass cuts to the 3 leading (in mass) fat jets and reject overlap with the SR.
+    # apply the VR jet mass cuts to the 3 leading (in pT) fat jets and reject overlap with the SR.
     # Pass on only the 3 leading fat jets (to avoid events passing or failing due to the pNet score of the 4th or higher leading fat jet)
     fatjets_VR_b_evtMask = VR_b_JetMass_evtMask(fatjets)
     fatjets_VR_b = fatjets[fatjets_VR_b_evtMask & ~fatjets_SR_b_evtMask][:,0:3]
