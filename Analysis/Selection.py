@@ -225,7 +225,7 @@ def Event_selection(fname,process,event_counts,variation="nominal",trigList=None
     if trigList != None:
         triggerBits = np.array([events.HLT[t] for t in trigList if t in events.HLT.fields])
         triggerMask = np.logical_or.reduce(triggerBits, axis=0)
-        events = trig_events[triggerMask]
+        events = events[triggerMask]
 
     for r in event_counts.keys():
         event_counts[r]["Skim"] = len(events)
