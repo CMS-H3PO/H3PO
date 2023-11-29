@@ -13,14 +13,14 @@ mass_points = [
 ]
 
 
-def makePlot(path, cut_flow, step):
+def makePlot(path, cut_flow, step, hmax):
 
     selection = 'boosted'
     if 'semiboosted' in cut_flow:
         selection = 'semiboosted'
 
     gr_limit = copy.deepcopy(ROOT.TGraph2D())
-    gr_limit.SetTitle(";m_{X} [GeV];m_{Y} [GeV];Selection efficiency (" + selection + ")")
+    gr_limit.SetTitle(";m_{X} [GeV];m_{Y} [GeV];Selection efficiency (" + selection + ", " + step + ")")
 
     max_eff = 0.
     bin_total = 1
@@ -43,9 +43,9 @@ def makePlot(path, cut_flow, step):
                     bin_step = b
                     break
 
-        total = cf.GetBinContent(bin_total)
-        step = cf.GetBinContent(bin_step)
-        eff = step/total
+        totalCount = cf.GetBinContent(bin_total)
+        passCount = cf.GetBinContent(bin_step)
+        eff = passCount/totalCount
         if eff > max_eff:
             max_eff = eff
 
@@ -60,14 +60,14 @@ def makePlot(path, cut_flow, step):
     c = ROOT.TCanvas("c", "",1000,900)
     c.cd()
 
-    gr_limit.SetMinimum(0.) # for now put by hand
-    gr_limit.SetMaximum(0.25) # for now put by hand
+    gr_limit.SetMinimum(0.)
+    gr_limit.SetMaximum(hmax)
 
     gr_limit.Draw("cont4z")
 
     #c.SetLogz()
 
-    c.SaveAs('Signal_efficiency_map_{0}.png'.format(selection))
+    c.SaveAs('Signal_efficiency_map_{0}_{1}.png'.format(selection, step))
 
 
 if __name__ == '__main__':
@@ -99,5 +99,7 @@ if __name__ == '__main__':
     ROOT.gStyle.SetStatFont(42)
     ROOT.gROOT.ForceStyle()
     
-    makePlot('/STORE/HHH/Histograms/2017/20231019_162502/', 'cutFlowHisto_SR_boosted', 'Pass')
-    makePlot('/STORE/HHH/Histograms/2017/20231019_162502/', 'cutFlowHisto_SR_semiboosted', 'Pass')
+    makePlot('/STORE/HHH/Histograms/2017/20231019_162502/', 'cutFlowHisto_SR_boosted', 'Pass', 0.25)
+    makePlot('/STORE/HHH/Histograms/2017/20231019_162502/', 'cutFlowHisto_SR_semiboosted', 'Pass', 0.25)
+    makePlot('/STORE/HHH/Histograms/2017/20231019_162502/', 'cutFlowHisto_SR_boosted', 'Fail', 0.004)
+    makePlot('/STORE/HHH/Histograms/2017/20231019_162502/', 'cutFlowHisto_SR_semiboosted', 'Fail', 0.004)
