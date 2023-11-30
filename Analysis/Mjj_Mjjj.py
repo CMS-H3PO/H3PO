@@ -260,30 +260,33 @@ if __name__ == "__main__":
         if (not saveOnceMCDone and "JetHT" not in process and variation in ["nominal","fromFile"]):
             saveOnceMCDone = True
             outHists[f"numberOfGenEventsHisto"] = numberOfGenEventsHisto
-        outHists[f"j3_SR_pass_boosted_{variation}"] = j3_SR_pass_boosted
-        outHists[f"j3_VR_pass_boosted_{variation}"] = j3_VR_pass_boosted
-        outHists[f"mjj_vs_mjjj_SR_pass_boosted_{variation}"] = mjj_vs_mjjj_SR_pass_boosted
-        outHists[f"mjj_vs_mjjj_VR_pass_boosted_{variation}"] = mjj_vs_mjjj_VR_pass_boosted
-        outHists[f"j3_SR_fail_boosted_{variation}"] = j3_SR_fail_boosted
-        outHists[f"j3_VR_fail_boosted_{variation}"] = j3_VR_fail_boosted
-        outHists[f"mjj_vs_mjjj_SR_fail_boosted_{variation}"] = mjj_vs_mjjj_SR_fail_boosted
-        outHists[f"mjj_vs_mjjj_VR_fail_boosted_{variation}"] = mjj_vs_mjjj_VR_fail_boosted
-        outHists[f"j3_SR_pass_semiboosted_{variation}"] = j3_SR_pass_semiboosted
-        outHists[f"j3_VR_pass_semiboosted_{variation}"] = j3_VR_pass_semiboosted
-        outHists[f"mjj_vs_mjjj_SR_pass_semiboosted_{variation}"] = mjj_vs_mjjj_SR_pass_semiboosted
-        outHists[f"mjj_vs_mjjj_VR_pass_semiboosted_{variation}"] = mjj_vs_mjjj_VR_pass_semiboosted
-        outHists[f"j3_SR_fail_semiboosted_{variation}"] = j3_SR_fail_semiboosted
-        outHists[f"j3_VR_fail_semiboosted_{variation}"] = j3_VR_fail_semiboosted
-        outHists[f"mjj_vs_mjjj_SR_fail_semiboosted_{variation}"] = mjj_vs_mjjj_SR_fail_semiboosted
-        outHists[f"mjj_vs_mjjj_VR_fail_semiboosted_{variation}"] = mjj_vs_mjjj_VR_fail_semiboosted
-        outHists[f"j3_SR_pass_semiboosted_eq2_{variation}"] = j3_SR_pass_semiboosted_eq2
-        outHists[f"j3_VR_pass_semiboosted_eq2_{variation}"] = j3_VR_pass_semiboosted_eq2
-        outHists[f"mjj_vs_mjjj_SR_pass_semiboosted_eq2_{variation}"] = mjj_vs_mjjj_SR_pass_semiboosted_eq2
-        outHists[f"mjj_vs_mjjj_VR_pass_semiboosted_eq2_{variation}"] = mjj_vs_mjjj_VR_pass_semiboosted_eq2
-        outHists[f"j3_SR_fail_semiboosted_eq2_{variation}"] = j3_SR_fail_semiboosted_eq2
-        outHists[f"j3_VR_fail_semiboosted_eq2_{variation}"] = j3_VR_fail_semiboosted_eq2
-        outHists[f"mjj_vs_mjjj_SR_fail_semiboosted_eq2_{variation}"] = mjj_vs_mjjj_SR_fail_semiboosted_eq2
-        outHists[f"mjj_vs_mjjj_VR_fail_semiboosted_eq2_{variation}"] = mjj_vs_mjjj_VR_fail_semiboosted_eq2
+
+        suffix = ("" if variation=="fromFile" else f"_{variation}")
+
+        outHists[f"j3_SR_pass_boosted{suffix}"] = j3_SR_pass_boosted
+        outHists[f"j3_VR_pass_boosted{suffix}"] = j3_VR_pass_boosted
+        outHists[f"mjj_vs_mjjj_SR_pass_boosted{suffix}"] = mjj_vs_mjjj_SR_pass_boosted
+        outHists[f"mjj_vs_mjjj_VR_pass_boosted{suffix}"] = mjj_vs_mjjj_VR_pass_boosted
+        outHists[f"j3_SR_fail_boosted{suffix}"] = j3_SR_fail_boosted
+        outHists[f"j3_VR_fail_boosted{suffix}"] = j3_VR_fail_boosted
+        outHists[f"mjj_vs_mjjj_SR_fail_boosted{suffix}"] = mjj_vs_mjjj_SR_fail_boosted
+        outHists[f"mjj_vs_mjjj_VR_fail_boosted{suffix}"] = mjj_vs_mjjj_VR_fail_boosted
+        outHists[f"j3_SR_pass_semiboosted{suffix}"] = j3_SR_pass_semiboosted
+        outHists[f"j3_VR_pass_semiboosted{suffix}"] = j3_VR_pass_semiboosted
+        outHists[f"mjj_vs_mjjj_SR_pass_semiboosted{suffix}"] = mjj_vs_mjjj_SR_pass_semiboosted
+        outHists[f"mjj_vs_mjjj_VR_pass_semiboosted{suffix}"] = mjj_vs_mjjj_VR_pass_semiboosted
+        outHists[f"j3_SR_fail_semiboosted{suffix}"] = j3_SR_fail_semiboosted
+        outHists[f"j3_VR_fail_semiboosted{suffix}"] = j3_VR_fail_semiboosted
+        outHists[f"mjj_vs_mjjj_SR_fail_semiboosted{suffix}"] = mjj_vs_mjjj_SR_fail_semiboosted
+        outHists[f"mjj_vs_mjjj_VR_fail_semiboosted{suffix}"] = mjj_vs_mjjj_VR_fail_semiboosted
+        outHists[f"j3_SR_pass_semiboosted_eq2{suffix}"] = j3_SR_pass_semiboosted_eq2
+        outHists[f"j3_VR_pass_semiboosted_eq2{suffix}"] = j3_VR_pass_semiboosted_eq2
+        outHists[f"mjj_vs_mjjj_SR_pass_semiboosted_eq2{suffix}"] = mjj_vs_mjjj_SR_pass_semiboosted_eq2
+        outHists[f"mjj_vs_mjjj_VR_pass_semiboosted_eq2{suffix}"] = mjj_vs_mjjj_VR_pass_semiboosted_eq2
+        outHists[f"j3_SR_fail_semiboosted_eq2{suffix}"] = j3_SR_fail_semiboosted_eq2
+        outHists[f"j3_VR_fail_semiboosted_eq2{suffix}"] = j3_VR_fail_semiboosted_eq2
+        outHists[f"mjj_vs_mjjj_SR_fail_semiboosted_eq2{suffix}"] = mjj_vs_mjjj_SR_fail_semiboosted_eq2
+        outHists[f"mjj_vs_mjjj_VR_fail_semiboosted_eq2{suffix}"] = mjj_vs_mjjj_VR_fail_semiboosted_eq2
         # for r in regions:
                 # fout[f"cutFlowHisto_{r}"] = cutFlowHistos[r] # this does not work properly (see [*])
         
