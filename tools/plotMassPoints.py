@@ -48,16 +48,6 @@ c.cd()
 bkg = r.TH2F("bkg",";m_{X} [TeV];m_{Y} [TeV]",105,0,4200/1000.,105,0,4200/1000.)
 bkg.Draw()
 #---------------------------------------------------------------------
-#official_samples = set()
-#with open('/users/ferencek/HHH/H3PO/Analysis/HHH_samples_2017.txt', 'r') as files:
-    #for f in files.read().splitlines():
-        ##print(f)
-        #spl = f.split('_')
-        #official_samples.add( (int(spl[2].split('-')[1]), int(spl[3].split('-')[1])) )
-
-#official_samples = sorted(official_samples)
-#print(official_samples)
-
 official_samples = [
   (400, 250),
   (450, 250), (450, 300),
