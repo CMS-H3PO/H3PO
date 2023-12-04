@@ -249,12 +249,12 @@ def Event_selection(fname,process,event_counts,variation="nominal",trigList=None
     fatjets = fatjets[precut(fatjets)]
 
     # select events with exactly 2 preselected fat jets
-    events_preselection_eq2 =  events[ak.num(fatjets, axis=1)==2]
-    fatjets_eq2             = fatjets[ak.num(fatjets, axis=1)==2]
+    events_eq2  =  events[ak.num(fatjets, axis=1)==2]
+    fatjets_eq2 = fatjets[ak.num(fatjets, axis=1)==2]
 
     # select events with at least 3 preselected fat jets
-    events_preselection =  events[ak.num(fatjets, axis=1)>2]
-    fatjets             = fatjets[ak.num(fatjets, axis=1)>2]
+    events  =  events[ak.num(fatjets, axis=1)>2]
+    fatjets = fatjets[ak.num(fatjets, axis=1)>2]
 
     for r in event_counts.keys():
         if 'semiboosted' in r:
@@ -269,24 +269,24 @@ def Event_selection(fname,process,event_counts,variation="nominal",trigList=None
     # SR boosted
     # select events with at least 3 good fat jets. Pass on only the 3 leading fat jets (to avoid events passing or failing due to the 4th or higher leading fat jet)
     fatjets_SR_b_evtMask = (ak.num(fatjets_SR, axis=1)>2)
+    events_SR_b  =     events[fatjets_SR_b_evtMask]
     fatjets_SR_b = fatjets_SR[fatjets_SR_b_evtMask][:,0:3]
-    events_SR_b  = events_preselection[fatjets_SR_b_evtMask]
-    
+
     # VR boosted
     # apply the VR jet mass cuts to the 3 leading (in pT) fat jets and reject overlap with the SR.
     # Pass on only the 3 leading fat jets (to avoid events passing or failing due to the pNet score of the 4th or higher leading fat jet)
     fatjets_VR_b_evtMask = VR_b_JetMass_evtMask(fatjets)
+    events_VR_b  =  events[fatjets_VR_b_evtMask & ~fatjets_SR_b_evtMask]
     fatjets_VR_b = fatjets[fatjets_VR_b_evtMask & ~fatjets_SR_b_evtMask][:,0:3]
-    events_VR_b  = events_preselection[fatjets_VR_b_evtMask & ~fatjets_SR_b_evtMask]
-    
+
     event_counts["SR_boosted"]["Mass_cut"] = len(fatjets_SR_b)
     event_counts["VR_boosted"]["Mass_cut"] = len(fatjets_VR_b)
 
     # SR semiboosted
     # select events with exactly 2 good fat jets and reject overlap with the VR boosted (by construction orthogonal to the SR boosted)
     fatjets_SR_sb_evtMask = (ak.num(fatjets_SR, axis=1)==2)
-    events_SR_sb  = events_preselection[fatjets_SR_sb_evtMask & ~(fatjets_VR_b_evtMask)]
-    fatjets_SR_sb =          fatjets_SR[fatjets_SR_sb_evtMask & ~(fatjets_VR_b_evtMask)]
+    events_SR_sb  =     events[fatjets_SR_sb_evtMask & ~(fatjets_VR_b_evtMask)]
+    fatjets_SR_sb = fatjets_SR[fatjets_SR_sb_evtMask & ~(fatjets_VR_b_evtMask)]
     # get resolved jets from selected events
     # if JEC re-application is turned off
     if variation == "fromFile":
@@ -304,8 +304,8 @@ def Event_selection(fname,process,event_counts,variation="nominal",trigList=None
     fatjets_VR_sb = fatjets[:,0:2]
     fatjets_VR_sb = fatjets_VR_sb[HiggsMassVeto(fatjets_VR_sb)]
     fatjets_VR_sb_evtMask = (ak.num(fatjets_VR_sb, axis=1)==2)
-    events_VR_sb  = events_preselection[fatjets_VR_sb_evtMask & ~(fatjets_SR_b_evtMask | fatjets_SR_sb_evtMask | fatjets_VR_b_evtMask)]
-    fatjets_VR_sb =       fatjets_VR_sb[fatjets_VR_sb_evtMask & ~(fatjets_SR_b_evtMask | fatjets_SR_sb_evtMask | fatjets_VR_b_evtMask)]
+    events_VR_sb  =        events[fatjets_VR_sb_evtMask & ~(fatjets_SR_b_evtMask | fatjets_SR_sb_evtMask | fatjets_VR_b_evtMask)]
+    fatjets_VR_sb = fatjets_VR_sb[fatjets_VR_sb_evtMask & ~(fatjets_SR_b_evtMask | fatjets_SR_sb_evtMask | fatjets_VR_b_evtMask)]
     # get resolved jets from selected events
     # if JEC re-application is turned off
     if variation == "fromFile":
@@ -322,8 +322,8 @@ def Event_selection(fname,process,event_counts,variation="nominal",trigList=None
     # apply the jet mass cut to preselected fat jets
     fatjets_SR_sb_eq2 = fatjets_eq2[HiggsMassCut(fatjets_eq2)]
     # select events with exactly 2 good fat jets
-    events_SR_sb_eq2  = events_preselection_eq2[ak.num(fatjets_SR_sb_eq2, axis=1)==2]
-    fatjets_SR_sb_eq2 =       fatjets_SR_sb_eq2[ak.num(fatjets_SR_sb_eq2, axis=1)==2]
+    events_SR_sb_eq2  =        events_eq2[ak.num(fatjets_SR_sb_eq2, axis=1)==2]
+    fatjets_SR_sb_eq2 = fatjets_SR_sb_eq2[ak.num(fatjets_SR_sb_eq2, axis=1)==2]
     # get resolved jets from selected events
     # if JEC re-application is turned off
     if variation == "fromFile":
@@ -340,8 +340,8 @@ def Event_selection(fname,process,event_counts,variation="nominal",trigList=None
     # apply the jet mass cut to preselected fat jets
     fatjets_VR_sb_eq2 = fatjets_eq2[HiggsMassVeto(fatjets_eq2)]
     # select events with exactly 2 good fat jets
-    events_VR_sb_eq2  = events_preselection_eq2[ak.num(fatjets_VR_sb_eq2, axis=1)==2]
-    fatjets_VR_sb_eq2 =       fatjets_VR_sb_eq2[ak.num(fatjets_VR_sb_eq2, axis=1)==2]
+    events_VR_sb_eq2  =        events_eq2[ak.num(fatjets_VR_sb_eq2, axis=1)==2]
+    fatjets_VR_sb_eq2 = fatjets_VR_sb_eq2[ak.num(fatjets_VR_sb_eq2, axis=1)==2]
     # get resolved jets from selected events
     # if JEC re-application is turned off
     if variation == "fromFile":
