@@ -64,7 +64,7 @@ def precut(fatjets):
     return (fatjets.pt>ptcut) & (np.absolute(fatjets.eta)<etacut)
 
 
-def FailPassCategories(fatjets, jets=None):
+def FailPassCategories(events, fatjets, jets=None):
     # sort the fat jets in the descending pNet HbbvsQCD score
     sorted_fatjets = fatjets[ak.argsort(-HbbvsQCD(fatjets),axis=-1)]
 
@@ -73,9 +73,9 @@ def FailPassCategories(fatjets, jets=None):
     fail_mask = (HbbvsQCD(sorted_fatjets[:,0])<=pNet_cut)
     pass_mask = (HbbvsQCD(sorted_fatjets[:,0])>pNet_cut)
     if jets is not None:
-        return fatjets[fail_mask], fatjets[pass_mask], jets[fail_mask], jets[pass_mask]
+        return events[fail_mask], events[pass_mask], fatjets[fail_mask], fatjets[pass_mask], jets[fail_mask], jets[pass_mask]
     else:
-        return fatjets[fail_mask], fatjets[pass_mask]
+        return events[fail_mask], events[pass_mask], fatjets[fail_mask], fatjets[pass_mask]
 
 # this is a jet mask
 def HiggsMassCut(fatjets):
@@ -357,4 +357,4 @@ def Event_selection(fname,process,event_counts,variation="nominal",trigList=None
     # get good dijets
     fatjets_VR_sb_eq2, good_dijets_VR_sb_eq2, events_VR_sb_eq2 = get_dijets(fatjets_VR_sb_eq2, jets_VR_sb_eq2, events_VR_sb_eq2, event_counts["VR_semiboosted"], True)
 
-    return *FailPassCategories(fatjets_SR_b), *FailPassCategories(fatjets_VR_b), *FailPassCategories(fatjets_SR_sb, good_dijets_SR_sb), *FailPassCategories(fatjets_VR_sb, good_dijets_VR_sb), *FailPassCategories(fatjets_SR_sb_eq2, good_dijets_SR_sb_eq2), *FailPassCategories(fatjets_VR_sb_eq2, good_dijets_VR_sb_eq2)
+    return *FailPassCategories(events_SR_b, fatjets_SR_b), *FailPassCategories(events_VR_b, fatjets_VR_b), *FailPassCategories(events_SR_sb, fatjets_SR_sb, good_dijets_SR_sb), *FailPassCategories(events_VR_sb, fatjets_VR_sb, good_dijets_VR_sb), *FailPassCategories(events_SR_sb_eq2, fatjets_SR_sb_eq2, good_dijets_SR_sb_eq2), *FailPassCategories(events_VR_sb_eq2, fatjets_VR_sb_eq2, good_dijets_VR_sb_eq2)
