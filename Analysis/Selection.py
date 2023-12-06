@@ -215,28 +215,23 @@ def jecTagFromFileName(fname):
         jecTag = year+"Run"+era
         return jecTag
 
-def Event_selection(fname,process,event_counts,variation="nominal",trigList=None,refTrigList=None,eventsToRead=None):
+def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
 
     for r in event_counts.keys():
         event_counts[r]["Skim"] = len(events)
 
-    if refTrigList != None:
-        refTriggerBits = np.array([events.HLT[t] for t in refTrigList if t in events.HLT.fields])
-        refTriggerMask = np.logical_or.reduce(refTriggerBits, axis=0)
-        events = events[refTriggerMask]
-
-    if trigList != None:
+    if trigList != None and refTrigList == None:
         triggerBits = np.array([events.HLT[t] for t in trigList if t in events.HLT.fields])
         triggerMask = np.logical_or.reduce(triggerBits, axis=0)
         events = events[triggerMask]
 
-    for r in event_counts.keys():
-        event_counts[r]["Trigger"] = len(events)
+        for r in event_counts.keys():
+            event_counts[r]["Trigger"] = len(events)
 
     # if JEC re-application is turned off
     if variation == "fromFile":
-        print("JEC re-aplication turned off")
+        print("JEC re-application turned off")
         fatjets = events.FatJet
     else:
         with gzip.open(H3_DIR+"/../data/jec/jme_UL_pickled.pkl") as fin:
