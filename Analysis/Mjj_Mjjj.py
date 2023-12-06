@@ -17,134 +17,198 @@ j2_start=0
 j2_stop=6000
 
 
-def plotboosted(boosted_SR_fail, boosted_SR_pass, boosted_VR_fail, boosted_VR_pass, process):
+def getTriggerEvtMask(events, trigList):
+    refTriggerBits = np.array([events.HLT[t] for t in trigList if t in events.HLT.fields])
 
-    trijet_mass_SR_fail = (boosted_SR_fail[:,0]+boosted_SR_fail[:,1]+boosted_SR_fail[:,2]).mass
-    trijet_mass_SR_pass = (boosted_SR_pass[:,0]+boosted_SR_pass[:,1]+boosted_SR_pass[:,2]).mass
-
-    trijet_mass_VR_fail = (boosted_VR_fail[:,0]+boosted_VR_fail[:,1]+boosted_VR_fail[:,2]).mass
-    trijet_mass_VR_pass = (boosted_VR_pass[:,0]+boosted_VR_pass[:,1]+boosted_VR_pass[:,2]).mass
-
-    j3_SR_fail_bin = hist.axis.Regular(label="Boosted Signal Fail Trijet Mass [GeV]", name="trijet_mass_SR_fail", bins=j3_bins, start=j3_start, stop=j3_stop)
-    j3_SR_fail_hist = Hist(j3_SR_fail_bin, storage="weight")
-    j3_SR_fail_hist.fill(trijet_mass_SR_fail=trijet_mass_SR_fail)
-
-    j3_SR_pass_bin = hist.axis.Regular(label="Boosted Signal Pass Trijet Mass [GeV]", name="trijet_mass_SR_pass", bins=j3_bins, start=j3_start, stop=j3_stop)
-    j3_SR_pass_hist = Hist(j3_SR_pass_bin, storage="weight")
-    j3_SR_pass_hist.fill(trijet_mass_SR_pass=trijet_mass_SR_pass)
-
-    j3_VR_fail_bin = hist.axis.Regular(label="Boosted Validation Fail Trijet Mass [GeV]", name="trijet_mass_VR_fail", bins=j3_bins, start=j3_start, stop=j3_stop)
-    j3_VR_fail_hist = Hist(j3_VR_fail_bin, storage="weight")
-    j3_VR_fail_hist.fill(trijet_mass_VR_fail=trijet_mass_VR_fail)
-
-    j3_VR_pass_bin = hist.axis.Regular(label="Boosted Validation Pass Trijet Mass [GeV]", name="trijet_mass_VR_pass", bins=j3_bins, start=j3_start, stop=j3_stop)
-    j3_VR_pass_hist = Hist(j3_VR_pass_bin, storage="weight")
-    j3_VR_pass_hist.fill(trijet_mass_VR_pass=trijet_mass_VR_pass)
-
-    dijet1_mass_SR_fail = (boosted_SR_fail[:,0]+boosted_SR_fail[:,1]).mass
-    dijet2_mass_SR_fail = (boosted_SR_fail[:,0]+boosted_SR_fail[:,2]).mass
-    dijet3_mass_SR_fail = (boosted_SR_fail[:,1]+boosted_SR_fail[:,2]).mass
-    dijet1_mass_SR_pass = (boosted_SR_pass[:,0]+boosted_SR_pass[:,1]).mass
-    dijet2_mass_SR_pass = (boosted_SR_pass[:,0]+boosted_SR_pass[:,2]).mass
-    dijet3_mass_SR_pass = (boosted_SR_pass[:,1]+boosted_SR_pass[:,2]).mass
-
-    dijet1_mass_VR_fail = (boosted_VR_fail[:,0]+boosted_VR_fail[:,1]).mass
-    dijet2_mass_VR_fail = (boosted_VR_fail[:,0]+boosted_VR_fail[:,2]).mass
-    dijet3_mass_VR_fail = (boosted_VR_fail[:,1]+boosted_VR_fail[:,2]).mass
-    dijet1_mass_VR_pass = (boosted_VR_pass[:,0]+boosted_VR_pass[:,1]).mass
-    dijet2_mass_VR_pass = (boosted_VR_pass[:,0]+boosted_VR_pass[:,2]).mass
-    dijet3_mass_VR_pass = (boosted_VR_pass[:,1]+boosted_VR_pass[:,2]).mass
-
-    j2_SR_fail_bin = hist.axis.Regular(label="Boosted Signal Fail Dijet Mass [GeV]", name="dijet_mass_SR_fail", bins=j2_bins, start=j2_start, stop=j2_stop)
-    mjj_vs_mjjj_SR_fail = Hist(j3_SR_fail_bin, j2_SR_fail_bin, storage="weight")
-    mjj_vs_mjjj_SR_fail.fill(dijet_mass_SR_fail=dijet1_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
-    mjj_vs_mjjj_SR_fail.fill(dijet_mass_SR_fail=dijet2_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
-    mjj_vs_mjjj_SR_fail.fill(dijet_mass_SR_fail=dijet3_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
-
-    j2_SR_pass_bin = hist.axis.Regular(label="Boosted Signal Pass Dijet Mass [GeV]", name="dijet_mass_SR_pass", bins=j2_bins, start=j2_start, stop=j2_stop)
-    mjj_vs_mjjj_SR_pass = Hist(j3_SR_pass_bin, j2_SR_pass_bin, storage="weight")
-    mjj_vs_mjjj_SR_pass.fill(dijet_mass_SR_pass=dijet1_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
-    mjj_vs_mjjj_SR_pass.fill(dijet_mass_SR_pass=dijet2_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
-    mjj_vs_mjjj_SR_pass.fill(dijet_mass_SR_pass=dijet3_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
-
-    j2_VR_fail_bin = hist.axis.Regular(label="Boosted Validation Fail Dijet Mass [GeV]", name="dijet_mass_VR_fail", bins=j2_bins, start=j2_start, stop=j2_stop)
-    mjj_vs_mjjj_VR_fail = Hist(j3_VR_fail_bin, j2_VR_fail_bin, storage="weight")
-    mjj_vs_mjjj_VR_fail.fill(dijet_mass_VR_fail=dijet1_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
-    mjj_vs_mjjj_VR_fail.fill(dijet_mass_VR_fail=dijet2_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
-    mjj_vs_mjjj_VR_fail.fill(dijet_mass_VR_fail=dijet3_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
-
-    j2_VR_pass_bin = hist.axis.Regular(label="Boosted Validation Pass Dijet Mass [GeV]", name="dijet_mass_VR_pass", bins=j2_bins, start=j2_start, stop=j2_stop)
-    mjj_vs_mjjj_VR_pass = Hist(j3_VR_pass_bin, j2_VR_pass_bin, storage="weight")
-    mjj_vs_mjjj_VR_pass.fill(dijet_mass_VR_pass=dijet1_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
-    mjj_vs_mjjj_VR_pass.fill(dijet_mass_VR_pass=dijet2_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
-    mjj_vs_mjjj_VR_pass.fill(dijet_mass_VR_pass=dijet3_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
-
-    return j3_SR_fail_hist,j3_SR_pass_hist,j3_VR_fail_hist,j3_VR_pass_hist,mjj_vs_mjjj_SR_fail,mjj_vs_mjjj_SR_pass,mjj_vs_mjjj_VR_fail,mjj_vs_mjjj_VR_pass
+    return np.logical_or.reduce(refTriggerBits, axis=0)
 
 
-def plotsemiboosted(label, semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet, semiboosted_SR_fail_jet, semiboosted_SR_pass_jet, semiboosted_VR_fail_fatjet, semiboosted_VR_pass_fatjet, semiboosted_VR_fail_jet, semiboosted_VR_pass_jet, process):
+def fillHistos(label, event_counts, SR_fail_fj, SR_pass_fj, VR_fail_fj, VR_pass_fj, SR_fail_j=None, SR_pass_j=None, VR_fail_j=None, VR_pass_j=None, SR_fail_e=None, SR_pass_e=None, VR_fail_e=None, VR_pass_e=None, refTrigList=None, trigList=None):
 
-    trijet_mass_SR_fail = (semiboosted_SR_fail_fatjet[:,0]+semiboosted_SR_fail_fatjet[:,1]+semiboosted_SR_fail_jet[:,0]['i0']+semiboosted_SR_fail_jet[:,0]['i1']).mass
-    trijet_mass_SR_pass = (semiboosted_SR_pass_fatjet[:,0]+semiboosted_SR_pass_fatjet[:,1]+semiboosted_SR_pass_jet[:,0]['i0']+semiboosted_SR_pass_jet[:,0]['i1']).mass
+    isBoosted = ("Semiboosted" not in label)
 
-    trijet_mass_VR_fail = (semiboosted_VR_fail_fatjet[:,0]+semiboosted_VR_fail_fatjet[:,1]+semiboosted_VR_fail_jet[:,0]['i0']+semiboosted_VR_fail_jet[:,0]['i1']).mass
-    trijet_mass_VR_pass = (semiboosted_VR_pass_fatjet[:,0]+semiboosted_VR_pass_fatjet[:,1]+semiboosted_VR_pass_jet[:,0]['i0']+semiboosted_VR_pass_jet[:,0]['i1']).mass
+    if refTrigList != None:
+        # SR fail
+        trigEvtMask = getTriggerEvtMask(SR_fail_e, refTrigList)
+        SR_fail_e  =  SR_fail_e[trigEvtMask]
+        SR_fail_fj = SR_fail_fj[trigEvtMask]
+        if not isBoosted:
+            SR_fail_j = SR_fail_j[trigEvtMask]
+        # SR pass
+        trigEvtMask = getTriggerEvtMask(SR_pass_e, refTrigList)
+        SR_pass_e  =  SR_pass_e[trigEvtMask]
+        SR_pass_fj = SR_pass_fj[trigEvtMask]
+        if not isBoosted:
+            SR_pass_j = SR_pass_j[trigEvtMask]
+        # VR fail
+        trigEvtMask = getTriggerEvtMask(VR_fail_e, refTrigList)
+        VR_fail_e  =  VR_fail_e[trigEvtMask]
+        VR_fail_fj = VR_fail_fj[trigEvtMask]
+        if not isBoosted:
+            VR_fail_j = VR_fail_j[trigEvtMask]
+        # VR pass
+        trigEvtMask = getTriggerEvtMask(VR_pass_e, refTrigList)
+        VR_pass_e  =  VR_pass_e[trigEvtMask]
+        VR_pass_fj = VR_pass_fj[trigEvtMask]
+        if not isBoosted:
+            VR_pass_j = VR_pass_j[trigEvtMask]
+
+    if trigList != None:
+        # SR fail
+        trigEvtMask = getTriggerEvtMask(SR_fail_e, trigList)
+        #SR_fail_e  =  SR_fail_e[trigEvtMask]
+        SR_fail_fj = SR_fail_fj[trigEvtMask]
+        if not isBoosted:
+            SR_fail_j = SR_fail_j[trigEvtMask]
+        # SR pass
+        trigEvtMask = getTriggerEvtMask(SR_pass_e, trigList)
+        #SR_pass_e  =  SR_pass_e[trigEvtMask]
+        SR_pass_fj = SR_pass_fj[trigEvtMask]
+        if not isBoosted:
+            SR_pass_j = SR_pass_j[trigEvtMask]
+        # VR fail
+        trigEvtMask = getTriggerEvtMask(VR_fail_e, trigList)
+        #VR_fail_e  =  VR_fail_e[trigEvtMask]
+        VR_fail_fj = VR_fail_fj[trigEvtMask]
+        if not isBoosted:
+            VR_fail_j = VR_fail_j[trigEvtMask]
+        # VR pass
+        trigEvtMask = getTriggerEvtMask(VR_pass_e, trigList)
+        #VR_pass_e  =  VR_pass_e[trigEvtMask]
+        VR_pass_fj = VR_pass_fj[trigEvtMask]
+        if not isBoosted:
+            VR_pass_j = VR_pass_j[trigEvtMask]
+
+    # add trigger selection to the cut flow event counts
+    if refTrigList != None or trigList != None:
+        if isBoosted:
+            event_counts["SR_boosted"]["Fail_trigger"] = len(SR_fail_fj)
+            event_counts["SR_boosted"]["Pass_trigger"] = len(SR_pass_fj)
+            event_counts["VR_boosted"]["Fail_trigger"] = len(VR_fail_fj)
+            event_counts["VR_boosted"]["Pass_trigger"] = len(VR_pass_fj)
+        else:
+            if "eq2" in label:
+                event_counts["SR_semiboosted"]["Fail_trigger"] += len(SR_fail_fj)
+                event_counts["SR_semiboosted"]["Pass_trigger"] += len(SR_pass_fj)
+                event_counts["VR_semiboosted"]["Fail_trigger"] += len(VR_fail_fj)
+                event_counts["VR_semiboosted"]["Pass_trigger"] += len(VR_pass_fj)
+            else:
+                event_counts["SR_semiboosted"]["Fail_trigger"] = len(SR_fail_fj)
+                event_counts["SR_semiboosted"]["Pass_trigger"] = len(SR_pass_fj)
+                event_counts["VR_semiboosted"]["Fail_trigger"] = len(VR_fail_fj)
+                event_counts["VR_semiboosted"]["Pass_trigger"] = len(VR_pass_fj)
+
+    hists = {}
+
+    if isBoosted:
+        trijet_mass_SR_fail = (SR_fail_fj[:,0]+SR_fail_fj[:,1]+SR_fail_fj[:,2]).mass
+        trijet_mass_SR_pass = (SR_pass_fj[:,0]+SR_pass_fj[:,1]+SR_pass_fj[:,2]).mass
+
+        trijet_mass_VR_fail = (VR_fail_fj[:,0]+VR_fail_fj[:,1]+VR_fail_fj[:,2]).mass
+        trijet_mass_VR_pass = (VR_pass_fj[:,0]+VR_pass_fj[:,1]+VR_pass_fj[:,2]).mass
+    else:
+        trijet_mass_SR_fail = (SR_fail_fj[:,0]+SR_fail_fj[:,1]+SR_fail_j[:,0]['i0']+SR_fail_j[:,0]['i1']).mass
+        trijet_mass_SR_pass = (SR_pass_fj[:,0]+SR_pass_fj[:,1]+SR_pass_j[:,0]['i0']+SR_pass_j[:,0]['i1']).mass
+
+        trijet_mass_VR_fail = (VR_fail_fj[:,0]+VR_fail_fj[:,1]+VR_fail_j[:,0]['i0']+VR_fail_j[:,0]['i1']).mass
+        trijet_mass_VR_pass = (VR_pass_fj[:,0]+VR_pass_fj[:,1]+VR_pass_j[:,0]['i0']+VR_pass_j[:,0]['i1']).mass
 
     j3_SR_fail_bin = hist.axis.Regular(label=f"{label} Signal Fail Trijet Mass [GeV]", name="trijet_mass_SR_fail", bins=j3_bins, start=j3_start, stop=j3_stop)
-    j3_SR_fail_hist = Hist(j3_SR_fail_bin, storage="weight")
-    j3_SR_fail_hist.fill(trijet_mass_SR_fail=trijet_mass_SR_fail)
+    hists["j3_SR_fail"] = Hist(j3_SR_fail_bin, storage="weight")
+    hists["j3_SR_fail"].fill(trijet_mass_SR_fail=trijet_mass_SR_fail)
 
     j3_SR_pass_bin = hist.axis.Regular(label=f"{label} Signal Pass Trijet Mass [GeV]", name="trijet_mass_SR_pass", bins=j3_bins, start=j3_start, stop=j3_stop)
-    j3_SR_pass_hist = Hist(j3_SR_pass_bin, storage="weight")
-    j3_SR_pass_hist.fill(trijet_mass_SR_pass=trijet_mass_SR_pass)
+    hists["j3_SR_pass"] = Hist(j3_SR_pass_bin, storage="weight")
+    hists["j3_SR_pass"].fill(trijet_mass_SR_pass=trijet_mass_SR_pass)
 
     j3_VR_fail_bin = hist.axis.Regular(label=f"{label} Validation Fail Trijet Mass [GeV]", name="trijet_mass_VR_fail", bins=j3_bins, start=j3_start, stop=j3_stop)
-    j3_VR_fail_hist = Hist(j3_VR_fail_bin, storage="weight")
-    j3_VR_fail_hist.fill(trijet_mass_VR_fail=trijet_mass_VR_fail)
+    hists["j3_VR_fail"] = Hist(j3_VR_fail_bin, storage="weight")
+    hists["j3_VR_fail"].fill(trijet_mass_VR_fail=trijet_mass_VR_fail)
 
     j3_VR_pass_bin = hist.axis.Regular(label=f"{label} Validation Pass Trijet Mass [GeV]", name="trijet_mass_VR_pass", bins=j3_bins, start=j3_start, stop=j3_stop)
-    j3_VR_pass_hist = Hist(j3_VR_pass_bin, storage="weight")
-    j3_VR_pass_hist.fill(trijet_mass_VR_pass=trijet_mass_VR_pass)
+    hists["j3_VR_pass"] = Hist(j3_VR_pass_bin, storage="weight")
+    hists["j3_VR_pass"].fill(trijet_mass_VR_pass=trijet_mass_VR_pass)
 
-    dijet1_mass_SR_fail = (semiboosted_SR_fail_fatjet[:,0]+semiboosted_SR_fail_fatjet[:,1]).mass
-    dijet2_mass_SR_fail = (semiboosted_SR_fail_fatjet[:,0]+semiboosted_SR_fail_jet[:,0]['i0']+semiboosted_SR_fail_jet[:,0]['i1']).mass
-    dijet3_mass_SR_fail = (semiboosted_SR_fail_fatjet[:,1]+semiboosted_SR_fail_jet[:,0]['i0']+semiboosted_SR_fail_jet[:,0]['i1']).mass
-    dijet1_mass_SR_pass = (semiboosted_SR_pass_fatjet[:,0]+semiboosted_SR_pass_fatjet[:,1]).mass
-    dijet2_mass_SR_pass = (semiboosted_SR_pass_fatjet[:,0]+semiboosted_SR_pass_jet[:,0]['i0']+semiboosted_SR_pass_jet[:,0]['i1']).mass
-    dijet3_mass_SR_pass = (semiboosted_SR_pass_fatjet[:,1]+semiboosted_SR_pass_jet[:,0]['i0']+semiboosted_SR_pass_jet[:,0]['i1']).mass
+    if isBoosted:
+        dijet1_mass_SR_fail = (SR_fail_fj[:,0]+SR_fail_fj[:,1]).mass
+        dijet2_mass_SR_fail = (SR_fail_fj[:,0]+SR_fail_fj[:,2]).mass
+        dijet3_mass_SR_fail = (SR_fail_fj[:,1]+SR_fail_fj[:,2]).mass
+        dijet1_mass_SR_pass = (SR_pass_fj[:,0]+SR_pass_fj[:,1]).mass
+        dijet2_mass_SR_pass = (SR_pass_fj[:,0]+SR_pass_fj[:,2]).mass
+        dijet3_mass_SR_pass = (SR_pass_fj[:,1]+SR_pass_fj[:,2]).mass
 
-    dijet1_mass_VR_fail = (semiboosted_VR_fail_fatjet[:,0]+semiboosted_VR_fail_fatjet[:,1]).mass
-    dijet2_mass_VR_fail = (semiboosted_VR_fail_fatjet[:,0]+semiboosted_VR_fail_jet[:,0]['i0']+semiboosted_VR_fail_jet[:,0]['i1']).mass
-    dijet3_mass_VR_fail = (semiboosted_VR_fail_fatjet[:,1]+semiboosted_VR_fail_jet[:,0]['i0']+semiboosted_VR_fail_jet[:,0]['i1']).mass
-    dijet1_mass_VR_pass = (semiboosted_VR_pass_fatjet[:,0]+semiboosted_VR_pass_fatjet[:,1]).mass
-    dijet2_mass_VR_pass = (semiboosted_VR_pass_fatjet[:,0]+semiboosted_VR_pass_jet[:,0]['i0']+semiboosted_VR_pass_jet[:,0]['i1']).mass
-    dijet3_mass_VR_pass = (semiboosted_VR_pass_fatjet[:,1]+semiboosted_VR_pass_jet[:,0]['i0']+semiboosted_VR_pass_jet[:,0]['i1']).mass
+        dijet1_mass_VR_fail = (VR_fail_fj[:,0]+VR_fail_fj[:,1]).mass
+        dijet2_mass_VR_fail = (VR_fail_fj[:,0]+VR_fail_fj[:,2]).mass
+        dijet3_mass_VR_fail = (VR_fail_fj[:,1]+VR_fail_fj[:,2]).mass
+        dijet1_mass_VR_pass = (VR_pass_fj[:,0]+VR_pass_fj[:,1]).mass
+        dijet2_mass_VR_pass = (VR_pass_fj[:,0]+VR_pass_fj[:,2]).mass
+        dijet3_mass_VR_pass = (VR_pass_fj[:,1]+VR_pass_fj[:,2]).mass
+    else:
+        dijet1_mass_SR_fail = (SR_fail_fj[:,0]+SR_fail_fj[:,1]).mass
+        dijet2_mass_SR_fail = (SR_fail_fj[:,0]+SR_fail_j[:,0]['i0']+SR_fail_j[:,0]['i1']).mass
+        dijet3_mass_SR_fail = (SR_fail_fj[:,1]+SR_fail_j[:,0]['i0']+SR_fail_j[:,0]['i1']).mass
+        dijet1_mass_SR_pass = (SR_pass_fj[:,0]+SR_pass_fj[:,1]).mass
+        dijet2_mass_SR_pass = (SR_pass_fj[:,0]+SR_pass_j[:,0]['i0']+SR_pass_j[:,0]['i1']).mass
+        dijet3_mass_SR_pass = (SR_pass_fj[:,1]+SR_pass_j[:,0]['i0']+SR_pass_j[:,0]['i1']).mass
+
+        dijet1_mass_VR_fail = (VR_fail_fj[:,0]+VR_fail_fj[:,1]).mass
+        dijet2_mass_VR_fail = (VR_fail_fj[:,0]+VR_fail_j[:,0]['i0']+VR_fail_j[:,0]['i1']).mass
+        dijet3_mass_VR_fail = (VR_fail_fj[:,1]+VR_fail_j[:,0]['i0']+VR_fail_j[:,0]['i1']).mass
+        dijet1_mass_VR_pass = (VR_pass_fj[:,0]+VR_pass_fj[:,1]).mass
+        dijet2_mass_VR_pass = (VR_pass_fj[:,0]+VR_pass_j[:,0]['i0']+VR_pass_j[:,0]['i1']).mass
+        dijet3_mass_VR_pass = (VR_pass_fj[:,1]+VR_pass_j[:,0]['i0']+VR_pass_j[:,0]['i1']).mass
 
     j2_SR_fail_bin = hist.axis.Regular(label=f"{label} Signal Fail Dijet Mass [GeV]", name="dijet_mass_SR_fail", bins=j2_bins, start=j2_start, stop=j2_stop)
-    mjj_vs_mjjj_SR_fail = Hist(j3_SR_fail_bin, j2_SR_fail_bin, storage="weight")
-    mjj_vs_mjjj_SR_fail.fill(dijet_mass_SR_fail=dijet1_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
-    mjj_vs_mjjj_SR_fail.fill(dijet_mass_SR_fail=dijet2_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
-    mjj_vs_mjjj_SR_fail.fill(dijet_mass_SR_fail=dijet3_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
+    hists["mjj_vs_mjjj_SR_fail"] = Hist(j3_SR_fail_bin, j2_SR_fail_bin, storage="weight")
+    hists["mjj_vs_mjjj_SR_fail"].fill(dijet_mass_SR_fail=dijet1_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
+    hists["mjj_vs_mjjj_SR_fail"].fill(dijet_mass_SR_fail=dijet2_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
+    hists["mjj_vs_mjjj_SR_fail"].fill(dijet_mass_SR_fail=dijet3_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
 
     j2_SR_pass_bin = hist.axis.Regular(label=f"{label} Signal Pass Dijet Mass [GeV]", name="dijet_mass_SR_pass", bins=j2_bins, start=j2_start, stop=j2_stop)
-    mjj_vs_mjjj_SR_pass = Hist(j3_SR_pass_bin, j2_SR_pass_bin, storage="weight")
-    mjj_vs_mjjj_SR_pass.fill(dijet_mass_SR_pass=dijet1_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
-    mjj_vs_mjjj_SR_pass.fill(dijet_mass_SR_pass=dijet2_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
-    mjj_vs_mjjj_SR_pass.fill(dijet_mass_SR_pass=dijet3_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
+    hists["mjj_vs_mjjj_SR_pass"] = Hist(j3_SR_pass_bin, j2_SR_pass_bin, storage="weight")
+    hists["mjj_vs_mjjj_SR_pass"].fill(dijet_mass_SR_pass=dijet1_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
+    hists["mjj_vs_mjjj_SR_pass"].fill(dijet_mass_SR_pass=dijet2_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
+    hists["mjj_vs_mjjj_SR_pass"].fill(dijet_mass_SR_pass=dijet3_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
 
     j2_VR_fail_bin = hist.axis.Regular(label=f"{label} Validation Fail Dijet Mass [GeV]", name="dijet_mass_VR_fail", bins=j2_bins, start=j2_start, stop=j2_stop)
-    mjj_vs_mjjj_VR_fail = Hist(j3_VR_fail_bin, j2_VR_fail_bin, storage="weight")
-    mjj_vs_mjjj_VR_fail.fill(dijet_mass_VR_fail=dijet1_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
-    mjj_vs_mjjj_VR_fail.fill(dijet_mass_VR_fail=dijet2_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
-    mjj_vs_mjjj_VR_fail.fill(dijet_mass_VR_fail=dijet3_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
+    hists["mjj_vs_mjjj_VR_fail"] = Hist(j3_VR_fail_bin, j2_VR_fail_bin, storage="weight")
+    hists["mjj_vs_mjjj_VR_fail"].fill(dijet_mass_VR_fail=dijet1_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
+    hists["mjj_vs_mjjj_VR_fail"].fill(dijet_mass_VR_fail=dijet2_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
+    hists["mjj_vs_mjjj_VR_fail"].fill(dijet_mass_VR_fail=dijet3_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
 
     j2_VR_pass_bin = hist.axis.Regular(label=f"{label} Validation Pass Dijet Mass [GeV]", name="dijet_mass_VR_pass", bins=j2_bins, start=j2_start, stop=j2_stop)
-    mjj_vs_mjjj_VR_pass = Hist(j3_VR_pass_bin, j2_VR_pass_bin, storage="weight")
-    mjj_vs_mjjj_VR_pass.fill(dijet_mass_VR_pass=dijet1_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
-    mjj_vs_mjjj_VR_pass.fill(dijet_mass_VR_pass=dijet2_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
-    mjj_vs_mjjj_VR_pass.fill(dijet_mass_VR_pass=dijet3_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
+    hists["mjj_vs_mjjj_VR_pass"] = Hist(j3_VR_pass_bin, j2_VR_pass_bin, storage="weight")
+    hists["mjj_vs_mjjj_VR_pass"].fill(dijet_mass_VR_pass=dijet1_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
+    hists["mjj_vs_mjjj_VR_pass"].fill(dijet_mass_VR_pass=dijet2_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
+    hists["mjj_vs_mjjj_VR_pass"].fill(dijet_mass_VR_pass=dijet3_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
 
-    return j3_SR_fail_hist,j3_SR_pass_hist,j3_VR_fail_hist,j3_VR_pass_hist,mjj_vs_mjjj_SR_fail,mjj_vs_mjjj_SR_pass,mjj_vs_mjjj_VR_fail,mjj_vs_mjjj_VR_pass
+    return hists
+
+
+def fillAllHistos(outHists, variation, event_counts, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j, SR_sb_eq2_fail_fj, SR_sb_eq2_pass_fj, VR_sb_eq2_fail_fj, VR_sb_eq2_pass_fj, SR_sb_eq2_fail_j, SR_sb_eq2_pass_j, VR_sb_eq2_fail_j, VR_sb_eq2_pass_j, SR_b_fail_e=None, SR_b_pass_e=None, VR_b_fail_e=None, VR_b_pass_e=None, SR_sb_fail_e=None, SR_sb_pass_e=None, VR_sb_fail_e=None, VR_sb_pass_e=None, SR_sb_eq2_fail_e=None, SR_sb_eq2_pass_e=None, VR_sb_eq2_fail_e=None, VR_sb_eq2_pass_e=None, refTrigList=None, trigList=None):
+
+    hists = {}
+    hists["boosted"] = fillHistos("Boosted", event_counts, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, None, None, None, None, SR_b_fail_e, SR_b_pass_e, VR_b_fail_e, VR_b_pass_e, refTrigList, trigList)
+    hists["semiboosted"] = fillHistos("Semiboosted", event_counts, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j, SR_sb_fail_e, SR_sb_pass_e, VR_sb_fail_e, VR_sb_pass_e, refTrigList, trigList)
+    hists["semiboosted_eq2"] = fillHistos("Semiboosted_eq2", event_counts, SR_sb_eq2_fail_fj, SR_sb_eq2_pass_fj, VR_sb_eq2_fail_fj, VR_sb_eq2_pass_fj, SR_sb_eq2_fail_j, SR_sb_eq2_pass_j, VR_sb_eq2_fail_j, VR_sb_eq2_pass_j, SR_sb_eq2_fail_e, SR_sb_eq2_pass_e, VR_sb_eq2_fail_e, VR_sb_eq2_pass_e, refTrigList, trigList)
+
+    selections = ["boosted", "semiboosted", "semiboosted_eq2"]
+    suffix = ("" if variation=="fromFile" else f"_{variation}")
+    if refTrigList != None or trigList != None:
+        suffix += "_"
+        if refTrigList != None and trigList == None:
+            suffix += "ref"
+        elif refTrigList != None and trigList != None:
+            suffix += "refAndAn"
+        else:
+            suffix += "an"
+        suffix += "Trig"
+
+    for sel in selections:
+        for hist in hists[sel]:
+            outHists[f"{hist}_{sel}{suffix}"] = hists[sel][hist]
+
+    return
 
 
 if __name__ == "__main__":
@@ -213,7 +277,7 @@ if __name__ == "__main__":
     numberOfGenEventsHisto[0] = numberOfGenEvents
 
     event_counts = {}
-    first_bin = ("Total" if "JetHT" not in process else "Trigger_and_skim")
+    first_bin = ("Total" if "JetHT" not in process else "Dataset_and_skim")
     
     regions = ["SR_boosted", "VR_boosted", "SR_semiboosted", "VR_semiboosted"]
     for r in regions:
@@ -226,25 +290,41 @@ if __name__ == "__main__":
 
     for variation in variations:
 
-        boosted_SR_fail, boosted_SR_pass, boosted_VR_fail, boosted_VR_pass, semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet, semiboosted_SR_fail_jet, semiboosted_SR_pass_jet, semiboosted_VR_fail_fatjet, semiboosted_VR_pass_fatjet, semiboosted_VR_fail_jet, semiboosted_VR_pass_jet, semiboosted_eq2_SR_fail_fatjet, semiboosted_eq2_SR_pass_fatjet, semiboosted_eq2_SR_fail_jet, semiboosted_eq2_SR_pass_jet, semiboosted_eq2_VR_fail_fatjet, semiboosted_eq2_VR_pass_fatjet, semiboosted_eq2_VR_fail_jet, semiboosted_eq2_VR_pass_jet = Event_selection(input,process,event_counts,variation=variation,trigList=args.triggerList,refTrigList=args.refTriggerList,eventsToRead=None)
+        SR_b_fail_e, SR_b_pass_e, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_e, VR_b_pass_e, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_e, SR_sb_pass_e, SR_sb_fail_fj, SR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_e, VR_sb_pass_e, VR_sb_fail_fj, VR_sb_pass_fj, VR_sb_fail_j, VR_sb_pass_j, SR_sb_eq2_fail_e, SR_sb_eq2_pass_e, SR_sb_eq2_fail_fj, SR_sb_eq2_pass_fj, SR_sb_eq2_fail_j, SR_sb_eq2_pass_j, VR_sb_eq2_fail_e, VR_sb_eq2_pass_e, VR_sb_eq2_fail_fj, VR_sb_eq2_pass_fj, VR_sb_eq2_fail_j, VR_sb_eq2_pass_j = Event_selection(input,process,event_counts,variation=variation,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
+
+        if not saveOnceDone and variation in ["nominal","fromFile"]:
+            event_counts["SR_boosted"]["Fail"] = len(SR_b_fail_fj)
+            event_counts["SR_boosted"]["Pass"] = len(SR_b_pass_fj)
+            event_counts["VR_boosted"]["Fail"] = len(VR_b_fail_fj)
+            event_counts["VR_boosted"]["Pass"] = len(VR_b_pass_fj)
+            event_counts["SR_semiboosted"]["Fail"] = len(SR_sb_fail_fj)
+            event_counts["SR_semiboosted"]["Pass"] = len(SR_sb_pass_fj)
+            event_counts["VR_semiboosted"]["Fail"] = len(VR_sb_fail_fj)
+            event_counts["VR_semiboosted"]["Pass"] = len(VR_sb_pass_fj)
+            event_counts["SR_semiboosted"]["Fail"] += len(SR_sb_eq2_fail_fj)
+            event_counts["SR_semiboosted"]["Pass"] += len(SR_sb_eq2_pass_fj)
+            event_counts["VR_semiboosted"]["Fail"] += len(VR_sb_eq2_fail_fj)
+            event_counts["VR_semiboosted"]["Pass"] += len(VR_sb_eq2_pass_fj)
+
+        # fill all histograms
+        # if doing trigger efficiency studies
+        if args.refTriggerList != None:
+            fillAllHistos(outHists, variation, event_counts, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j, SR_sb_eq2_fail_fj, SR_sb_eq2_pass_fj, VR_sb_eq2_fail_fj, VR_sb_eq2_pass_fj, SR_sb_eq2_fail_j, SR_sb_eq2_pass_j, VR_sb_eq2_fail_j, VR_sb_eq2_pass_j, SR_b_fail_e, SR_b_pass_e, VR_b_fail_e, VR_b_pass_e, SR_sb_fail_e, SR_sb_pass_e, VR_sb_fail_e, VR_sb_pass_e, SR_sb_eq2_fail_e, SR_sb_eq2_pass_e, VR_sb_eq2_fail_e, VR_sb_eq2_pass_e, args.refTriggerList)
+            # with analysis trigger included
+            if args.triggerList != None:
+                fillAllHistos(outHists, variation, event_counts, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j, SR_sb_eq2_fail_fj, SR_sb_eq2_pass_fj, VR_sb_eq2_fail_fj, VR_sb_eq2_pass_fj, SR_sb_eq2_fail_j, SR_sb_eq2_pass_j, VR_sb_eq2_fail_j, VR_sb_eq2_pass_j, SR_b_fail_e, SR_b_pass_e, VR_b_fail_e, VR_b_pass_e, SR_sb_fail_e, SR_sb_pass_e, VR_sb_fail_e, VR_sb_pass_e, SR_sb_eq2_fail_e, SR_sb_eq2_pass_e, VR_sb_eq2_fail_e, VR_sb_eq2_pass_e, args.refTriggerList, args.triggerList)
+        # normal selection
+        else:
+            fillAllHistos(outHists, variation, event_counts, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j, SR_sb_eq2_fail_fj, SR_sb_eq2_pass_fj, VR_sb_eq2_fail_fj, VR_sb_eq2_pass_fj, SR_sb_eq2_fail_j, SR_sb_eq2_pass_j, VR_sb_eq2_fail_j, VR_sb_eq2_pass_j)
+
+        if not saveOnceMCDone and "JetHT" not in process and variation in ["nominal","fromFile"]:
+            saveOnceMCDone = True
+            outHists[f"numberOfGenEventsHisto"] = numberOfGenEventsHisto
 
         if not saveOnceDone and variation in ["nominal","fromFile"]:
             # give priority to nominal if running both 'nominal' and 'fromFile'
             if variation=="nominal":
                 saveOnceDone = True
-
-            event_counts["SR_boosted"]["Fail"] = len(boosted_SR_fail)
-            event_counts["SR_boosted"]["Pass"] = len(boosted_SR_pass)
-            event_counts["VR_boosted"]["Fail"] = len(boosted_VR_fail)
-            event_counts["VR_boosted"]["Pass"] = len(boosted_VR_pass)
-            event_counts["SR_semiboosted"]["Fail"] = len(semiboosted_SR_fail_fatjet)
-            event_counts["SR_semiboosted"]["Pass"] = len(semiboosted_SR_pass_fatjet)
-            event_counts["VR_semiboosted"]["Fail"] = len(semiboosted_VR_fail_fatjet)
-            event_counts["VR_semiboosted"]["Pass"] = len(semiboosted_VR_pass_fatjet)
-            event_counts["SR_semiboosted"]["Fail"] += len(semiboosted_eq2_SR_fail_fatjet)
-            event_counts["SR_semiboosted"]["Pass"] += len(semiboosted_eq2_SR_pass_fatjet)
-            event_counts["VR_semiboosted"]["Fail"] += len(semiboosted_eq2_VR_fail_fatjet)
-            event_counts["VR_semiboosted"]["Pass"] += len(semiboosted_eq2_VR_pass_fatjet)
 
             cutFlowHistos = {}
             for r in regions:
@@ -252,48 +332,15 @@ if __name__ == "__main__":
                 for i, key in enumerate(event_counts[r].keys()):
                     cutFlowHistos[r].SetBinContent(i+1, event_counts[r][key])
                     cutFlowHistos[r].GetXaxis().SetBinLabel(i+1, key)
-            
-        j3_SR_fail_boosted,j3_SR_pass_boosted,j3_VR_fail_boosted,j3_VR_pass_boosted,mjj_vs_mjjj_SR_fail_boosted,mjj_vs_mjjj_SR_pass_boosted,mjj_vs_mjjj_VR_fail_boosted,mjj_vs_mjjj_VR_pass_boosted = plotboosted(boosted_SR_fail,boosted_SR_pass,boosted_VR_fail,boosted_VR_pass,process)                  
-        j3_SR_fail_semiboosted,j3_SR_pass_semiboosted,j3_VR_fail_semiboosted,j3_VR_pass_semiboosted,mjj_vs_mjjj_SR_fail_semiboosted,mjj_vs_mjjj_SR_pass_semiboosted,mjj_vs_mjjj_VR_fail_semiboosted,mjj_vs_mjjj_VR_pass_semiboosted = plotsemiboosted("Semiboosted", semiboosted_SR_fail_fatjet, semiboosted_SR_pass_fatjet,semiboosted_SR_fail_jet, semiboosted_SR_pass_jet,semiboosted_VR_fail_fatjet,semiboosted_VR_pass_fatjet,semiboosted_VR_fail_jet,semiboosted_VR_pass_jet,process)
-        j3_SR_fail_semiboosted_eq2,j3_SR_pass_semiboosted_eq2,j3_VR_fail_semiboosted_eq2,j3_VR_pass_semiboosted_eq2,mjj_vs_mjjj_SR_fail_semiboosted_eq2,mjj_vs_mjjj_SR_pass_semiboosted_eq2,mjj_vs_mjjj_VR_fail_semiboosted_eq2,mjj_vs_mjjj_VR_pass_semiboosted_eq2 = plotsemiboosted("Semiboosted_eq2", semiboosted_eq2_SR_fail_fatjet, semiboosted_eq2_SR_pass_fatjet,semiboosted_eq2_SR_fail_jet, semiboosted_eq2_SR_pass_jet,semiboosted_eq2_VR_fail_fatjet,semiboosted_eq2_VR_pass_fatjet,semiboosted_eq2_VR_fail_jet,semiboosted_eq2_VR_pass_jet,process)
-        
-        if (not saveOnceMCDone and "JetHT" not in process and variation in ["nominal","fromFile"]):
-            saveOnceMCDone = True
-            outHists[f"numberOfGenEventsHisto"] = numberOfGenEventsHisto
 
-        suffix = ("" if variation=="fromFile" else f"_{variation}")
-
-        outHists[f"j3_SR_pass_boosted{suffix}"] = j3_SR_pass_boosted
-        outHists[f"j3_VR_pass_boosted{suffix}"] = j3_VR_pass_boosted
-        outHists[f"mjj_vs_mjjj_SR_pass_boosted{suffix}"] = mjj_vs_mjjj_SR_pass_boosted
-        outHists[f"mjj_vs_mjjj_VR_pass_boosted{suffix}"] = mjj_vs_mjjj_VR_pass_boosted
-        outHists[f"j3_SR_fail_boosted{suffix}"] = j3_SR_fail_boosted
-        outHists[f"j3_VR_fail_boosted{suffix}"] = j3_VR_fail_boosted
-        outHists[f"mjj_vs_mjjj_SR_fail_boosted{suffix}"] = mjj_vs_mjjj_SR_fail_boosted
-        outHists[f"mjj_vs_mjjj_VR_fail_boosted{suffix}"] = mjj_vs_mjjj_VR_fail_boosted
-        outHists[f"j3_SR_pass_semiboosted{suffix}"] = j3_SR_pass_semiboosted
-        outHists[f"j3_VR_pass_semiboosted{suffix}"] = j3_VR_pass_semiboosted
-        outHists[f"mjj_vs_mjjj_SR_pass_semiboosted{suffix}"] = mjj_vs_mjjj_SR_pass_semiboosted
-        outHists[f"mjj_vs_mjjj_VR_pass_semiboosted{suffix}"] = mjj_vs_mjjj_VR_pass_semiboosted
-        outHists[f"j3_SR_fail_semiboosted{suffix}"] = j3_SR_fail_semiboosted
-        outHists[f"j3_VR_fail_semiboosted{suffix}"] = j3_VR_fail_semiboosted
-        outHists[f"mjj_vs_mjjj_SR_fail_semiboosted{suffix}"] = mjj_vs_mjjj_SR_fail_semiboosted
-        outHists[f"mjj_vs_mjjj_VR_fail_semiboosted{suffix}"] = mjj_vs_mjjj_VR_fail_semiboosted
-        outHists[f"j3_SR_pass_semiboosted_eq2{suffix}"] = j3_SR_pass_semiboosted_eq2
-        outHists[f"j3_VR_pass_semiboosted_eq2{suffix}"] = j3_VR_pass_semiboosted_eq2
-        outHists[f"mjj_vs_mjjj_SR_pass_semiboosted_eq2{suffix}"] = mjj_vs_mjjj_SR_pass_semiboosted_eq2
-        outHists[f"mjj_vs_mjjj_VR_pass_semiboosted_eq2{suffix}"] = mjj_vs_mjjj_VR_pass_semiboosted_eq2
-        outHists[f"j3_SR_fail_semiboosted_eq2{suffix}"] = j3_SR_fail_semiboosted_eq2
-        outHists[f"j3_VR_fail_semiboosted_eq2{suffix}"] = j3_VR_fail_semiboosted_eq2
-        outHists[f"mjj_vs_mjjj_SR_fail_semiboosted_eq2{suffix}"] = mjj_vs_mjjj_SR_fail_semiboosted_eq2
-        outHists[f"mjj_vs_mjjj_VR_fail_semiboosted_eq2{suffix}"] = mjj_vs_mjjj_VR_fail_semiboosted_eq2
-        # for r in regions:
-                # fout[f"cutFlowHisto_{r}"] = cutFlowHistos[r] # this does not work properly (see [*])
-        
+    # save histograms to a ROOT file
     with uproot.recreate(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile))) as fout:
         for histName in outHists:
             fout[histName] = outHists[histName]
+        #for r in regions:
+            #fout[f"cutFlowHisto_{r}"] = cutFlowHistos[r] # this does not work properly (see [*])
 
+    # re-open the ROOT file for some updates and storing additional histograms
     fout = ROOT.TFile.Open(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile)), 'UPDATE')
     list_of_keys = copy.deepcopy(fout.GetListOfKeys()) # without deepcopy the processing time explodes, no idea why
     for myKey in list_of_keys:
