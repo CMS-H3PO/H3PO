@@ -1,3 +1,6 @@
+import sys
+
+
 official_samples_used = [
   (1200, 300), (1200, 600), (1200, 800), (1200, 1000),
   (1500, 300), (1500, 600), (1500, 800), (1500, 1000), (1500, 1300),
@@ -15,4 +18,10 @@ dataset_strings = []
 for (mX, mY) in official_samples_used:
     dataset_strings.append(f'XToYHTo6B_MX-{mX}_MY-{mY}')
 
-print(' '.join(dataset_strings))
+# if multi-line printout is needed
+if len(sys.argv)>1 and sys.argv[1].lower().startswith('m'):
+    for s in dataset_strings:
+        print(f', "{s}":   SKIM_DIR')
+# single-line printout
+else:
+    print(' '.join(dataset_strings))
