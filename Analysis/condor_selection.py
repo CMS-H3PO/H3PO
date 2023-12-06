@@ -98,6 +98,9 @@ if __name__ == '__main__':
             if not options.dry_run:
                 system('condor_submit ' + job_desc)
             num_of_jobs[dataset] += 1
-            
 
-
+    number_of_jobs_total = 0
+    for dataset in num_of_jobs:
+        number_of_jobs_total += num_of_jobs[dataset]
+    if number_of_jobs_total == 0:
+        print('No matching dataset(s) found. No jobs to submit.')
