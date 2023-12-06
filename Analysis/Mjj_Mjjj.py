@@ -277,7 +277,7 @@ if __name__ == "__main__":
     numberOfGenEventsHisto[0] = numberOfGenEvents
 
     event_counts = {}
-    first_bin = ("Total" if "JetHT" not in process else "Dataset")
+    first_bin = ("Total" if "JetHT" not in process else "Dataset_and_skim")
     
     regions = ["SR_boosted", "VR_boosted", "SR_semiboosted", "VR_semiboosted"]
     for r in regions:

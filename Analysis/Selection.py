@@ -218,8 +218,9 @@ def jecTagFromFileName(fname):
 def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
 
-    for r in event_counts.keys():
-        event_counts[r]["Skim"] = len(events)
+    if "JetHT" not in process:
+        for r in event_counts.keys():
+            event_counts[r]["Skim"] = len(events)
 
     if trigList != None and refTrigList == None:
         triggerBits = np.array([events.HLT[t] for t in trigList if t in events.HLT.fields])
