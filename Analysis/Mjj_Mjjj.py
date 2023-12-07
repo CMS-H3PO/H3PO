@@ -53,6 +53,24 @@ def fillHistos(label, event_counts, SR_fail_fj, SR_pass_fj, VR_fail_fj, VR_pass_
         if not isBoosted:
             VR_pass_j = VR_pass_j[trigEvtMask]
 
+        # add reference trigger selection to the cut flow event counts
+        if isBoosted:
+            event_counts["SR_boosted"]["Fail_refTrigger"] = len(SR_fail_fj)
+            event_counts["SR_boosted"]["Pass_refTrigger"] = len(SR_pass_fj)
+            event_counts["VR_boosted"]["Fail_refTrigger"] = len(VR_fail_fj)
+            event_counts["VR_boosted"]["Pass_refTrigger"] = len(VR_pass_fj)
+        else:
+            if "eq2" in label:
+                event_counts["SR_semiboosted"]["Fail_refTrigger"] += len(SR_fail_fj)
+                event_counts["SR_semiboosted"]["Pass_refTrigger"] += len(SR_pass_fj)
+                event_counts["VR_semiboosted"]["Fail_refTrigger"] += len(VR_fail_fj)
+                event_counts["VR_semiboosted"]["Pass_refTrigger"] += len(VR_pass_fj)
+            else:
+                event_counts["SR_semiboosted"]["Fail_refTrigger"] = len(SR_fail_fj)
+                event_counts["SR_semiboosted"]["Pass_refTrigger"] = len(SR_pass_fj)
+                event_counts["VR_semiboosted"]["Fail_refTrigger"] = len(VR_fail_fj)
+                event_counts["VR_semiboosted"]["Pass_refTrigger"] = len(VR_pass_fj)
+
     if trigList != None:
         # SR fail
         trigEvtMask = getTriggerEvtMask(SR_fail_e, trigList)
@@ -79,8 +97,7 @@ def fillHistos(label, event_counts, SR_fail_fj, SR_pass_fj, VR_fail_fj, VR_pass_
         if not isBoosted:
             VR_pass_j = VR_pass_j[trigEvtMask]
 
-    # add trigger selection to the cut flow event counts
-    if refTrigList != None or trigList != None:
+        # add analysis trigger selection to the cut flow event counts
         if isBoosted:
             event_counts["SR_boosted"]["Fail_trigger"] = len(SR_fail_fj)
             event_counts["SR_boosted"]["Pass_trigger"] = len(SR_pass_fj)
@@ -285,14 +302,26 @@ if __name__ == "__main__":
         event_counts[r][first_bin] = (numberOfGenEvents if "JetHT" not in process else getNumberOfEvents(input))   
 
     outHists = {}
+    cutFlowHistos = {}
     saveOnceDone = False
     saveOnceMCDone = False
 
     for variation in variations:
+        # save the total number of generated events for MC samples
+        if not saveOnceMCDone and "JetHT" not in process and variation in ["nominal","fromFile"]:
+            saveOnceMCDone = True
+            outHists[f"numberOfGenEventsHisto"] = numberOfGenEventsHisto
 
         SR_b_fail_e, SR_b_pass_e, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_e, VR_b_pass_e, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_e, SR_sb_pass_e, SR_sb_fail_fj, SR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_e, VR_sb_pass_e, VR_sb_fail_fj, VR_sb_pass_fj, VR_sb_fail_j, VR_sb_pass_j, SR_sb_eq2_fail_e, SR_sb_eq2_pass_e, SR_sb_eq2_fail_fj, SR_sb_eq2_pass_fj, SR_sb_eq2_fail_j, SR_sb_eq2_pass_j, VR_sb_eq2_fail_e, VR_sb_eq2_pass_e, VR_sb_eq2_fail_fj, VR_sb_eq2_pass_fj, VR_sb_eq2_fail_j, VR_sb_eq2_pass_j = Event_selection(input,process,event_counts,variation=variation,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
 
+        # fill all histograms
+        fillAllHistos(outHists, variation, event_counts, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j, SR_sb_eq2_fail_fj, SR_sb_eq2_pass_fj, VR_sb_eq2_fail_fj, VR_sb_eq2_pass_fj, SR_sb_eq2_fail_j, SR_sb_eq2_pass_j, VR_sb_eq2_fail_j, VR_sb_eq2_pass_j)
+
         if not saveOnceDone and variation in ["nominal","fromFile"]:
+            # give priority to 'nominal' if running both 'nominal' and 'fromFile'
+            if variation=="nominal":
+                saveOnceDone = True
+
             event_counts["SR_boosted"]["Fail"] = len(SR_b_fail_fj)
             event_counts["SR_boosted"]["Pass"] = len(SR_b_pass_fj)
             event_counts["VR_boosted"]["Fail"] = len(VR_b_fail_fj)
@@ -306,27 +335,14 @@ if __name__ == "__main__":
             event_counts["VR_semiboosted"]["Fail"] += len(VR_sb_eq2_fail_fj)
             event_counts["VR_semiboosted"]["Pass"] += len(VR_sb_eq2_pass_fj)
 
-        # fill all histograms
-        # if doing trigger efficiency studies
-        if args.refTriggerList != None:
-            fillAllHistos(outHists, variation, event_counts, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j, SR_sb_eq2_fail_fj, SR_sb_eq2_pass_fj, VR_sb_eq2_fail_fj, VR_sb_eq2_pass_fj, SR_sb_eq2_fail_j, SR_sb_eq2_pass_j, VR_sb_eq2_fail_j, VR_sb_eq2_pass_j, SR_b_fail_e, SR_b_pass_e, VR_b_fail_e, VR_b_pass_e, SR_sb_fail_e, SR_sb_pass_e, VR_sb_fail_e, VR_sb_pass_e, SR_sb_eq2_fail_e, SR_sb_eq2_pass_e, VR_sb_eq2_fail_e, VR_sb_eq2_pass_e, args.refTriggerList)
-            # with analysis trigger included
-            if args.triggerList != None:
-                fillAllHistos(outHists, variation, event_counts, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j, SR_sb_eq2_fail_fj, SR_sb_eq2_pass_fj, VR_sb_eq2_fail_fj, VR_sb_eq2_pass_fj, SR_sb_eq2_fail_j, SR_sb_eq2_pass_j, VR_sb_eq2_fail_j, VR_sb_eq2_pass_j, SR_b_fail_e, SR_b_pass_e, VR_b_fail_e, VR_b_pass_e, SR_sb_fail_e, SR_sb_pass_e, VR_sb_fail_e, VR_sb_pass_e, SR_sb_eq2_fail_e, SR_sb_eq2_pass_e, VR_sb_eq2_fail_e, VR_sb_eq2_pass_e, args.refTriggerList, args.triggerList)
-        # normal selection
-        else:
-            fillAllHistos(outHists, variation, event_counts, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j, SR_sb_eq2_fail_fj, SR_sb_eq2_pass_fj, VR_sb_eq2_fail_fj, VR_sb_eq2_pass_fj, SR_sb_eq2_fail_j, SR_sb_eq2_pass_j, VR_sb_eq2_fail_j, VR_sb_eq2_pass_j)
+            # if doing trigger efficiency studies
+            if args.refTriggerList != None:
+                fillAllHistos(outHists, variation, event_counts, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j, SR_sb_eq2_fail_fj, SR_sb_eq2_pass_fj, VR_sb_eq2_fail_fj, VR_sb_eq2_pass_fj, SR_sb_eq2_fail_j, SR_sb_eq2_pass_j, VR_sb_eq2_fail_j, VR_sb_eq2_pass_j, SR_b_fail_e, SR_b_pass_e, VR_b_fail_e, VR_b_pass_e, SR_sb_fail_e, SR_sb_pass_e, VR_sb_fail_e, VR_sb_pass_e, SR_sb_eq2_fail_e, SR_sb_eq2_pass_e, VR_sb_eq2_fail_e, VR_sb_eq2_pass_e, args.refTriggerList)
+                # if the analysis trigger(s) are applied as well
+                if args.triggerList != None:
+                    fillAllHistos(outHists, variation, event_counts, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j, SR_sb_eq2_fail_fj, SR_sb_eq2_pass_fj, VR_sb_eq2_fail_fj, VR_sb_eq2_pass_fj, SR_sb_eq2_fail_j, SR_sb_eq2_pass_j, VR_sb_eq2_fail_j, VR_sb_eq2_pass_j, SR_b_fail_e, SR_b_pass_e, VR_b_fail_e, VR_b_pass_e, SR_sb_fail_e, SR_sb_pass_e, VR_sb_fail_e, VR_sb_pass_e, SR_sb_eq2_fail_e, SR_sb_eq2_pass_e, VR_sb_eq2_fail_e, VR_sb_eq2_pass_e, args.refTriggerList, args.triggerList)
 
-        if not saveOnceMCDone and "JetHT" not in process and variation in ["nominal","fromFile"]:
-            saveOnceMCDone = True
-            outHists[f"numberOfGenEventsHisto"] = numberOfGenEventsHisto
-
-        if not saveOnceDone and variation in ["nominal","fromFile"]:
-            # give priority to nominal if running both 'nominal' and 'fromFile'
-            if variation=="nominal":
-                saveOnceDone = True
-
-            cutFlowHistos = {}
+            # create and fill the cut flow histograms
             for r in regions:
                 cutFlowHistos[r] = ROOT.TH1D(f"cutFlowHisto_{r}", f"{r};Cut flow;Number of events", len(event_counts[r].keys()), 0., float(len(event_counts[r].keys())))
                 for i, key in enumerate(event_counts[r].keys()):
