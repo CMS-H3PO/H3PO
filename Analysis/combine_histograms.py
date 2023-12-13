@@ -162,5 +162,5 @@ if __name__ == '__main__':
     print ("Merging process files...")
     for process in options.processes:
         print ("Processing {0}".format(process))
-        combine_histograms(process, True, options.skip_norm, False, True, options.fit_dir)
+        combine_histograms(process, options.delete_files, options.skip_norm, False, True, options.fit_dir)
     print ("Merging process files done")
