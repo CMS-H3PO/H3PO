@@ -51,6 +51,10 @@ if __name__ == '__main__':
                         default = None
                         )
 
+    parser.add_argument("--extra_histos", dest="extra_histos", action='store_true',
+                        help="Switch for producing additional histograms (default: %(default)s)",
+                        default=False)
+
     (options, args) = parser.parse_known_args()
 
     initial_dir = H3_DIR
@@ -80,7 +84,9 @@ if __name__ == '__main__':
                 args += ' -t ' + (' ').join(options.triggerList)
             if options.refTriggerList != None:
                 args += ' -r ' + (' ').join(options.refTriggerList)
-                
+            if options.extra_histos:
+                args += ' --extra_histos'
+
             dataset_job = '{0}_{1}'.format(dataset, i)
             job_desc = join(condor_dir_jobs, 'job_desc-' + dataset_job + '.txt')
             
