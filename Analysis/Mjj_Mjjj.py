@@ -448,7 +448,7 @@ if __name__ == "__main__":
         histName = "numberOfGenEventsHisto"
         if histName in keys:
             fout[histName] = outHists[histName]
-            keys.remove("numberOfGenEventsHisto")
+            keys.remove(histName)
         # save all other histograms
         for histName in keys:
             fout[histName] = outHists[histName]
