@@ -402,7 +402,7 @@ if __name__ == "__main__":
         # save the total number of generated events for MC samples
         if not saveOnceMCDone and "JetHT" not in process and variation in ["nominal","fromFile"]:
             saveOnceMCDone = True
-            outHists[f"numberOfGenEventsHisto"] = numberOfGenEventsHisto
+            outHists["numberOfGenEventsHisto"] = numberOfGenEventsHisto
 
         SR_b_fail_e, SR_b_pass_e, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_e, VR_b_pass_e, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_e, SR_sb_pass_e, SR_sb_fail_fj, SR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_e, VR_sb_pass_e, VR_sb_fail_fj, VR_sb_pass_fj, VR_sb_fail_j, VR_sb_pass_j, SR_sb_eq2_fail_e, SR_sb_eq2_pass_e, SR_sb_eq2_fail_fj, SR_sb_eq2_pass_fj, SR_sb_eq2_fail_j, SR_sb_eq2_pass_j, VR_sb_eq2_fail_e, VR_sb_eq2_pass_e, VR_sb_eq2_fail_fj, VR_sb_eq2_pass_fj, VR_sb_eq2_fail_j, VR_sb_eq2_pass_j = Event_selection(input,process,event_counts,variation=variation,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
 
@@ -443,7 +443,14 @@ if __name__ == "__main__":
 
     # save histograms to a ROOT file
     with uproot.recreate(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile))) as fout:
-        for histName in outHists:
+        keys = sorted(outHists.keys())
+        # if present, save numberOfGenEventsHisto first
+        histName = "numberOfGenEventsHisto"
+        if histName in keys:
+            fout[histName] = outHists[histName]
+            keys.remove("numberOfGenEventsHisto")
+        # save all other histograms
+        for histName in keys:
             fout[histName] = outHists[histName]
         #for r in regions:
             #fout[f"cutFlowHisto_{r}"] = cutFlowHistos[r] # this does not work properly (see [*])
@@ -451,6 +458,7 @@ if __name__ == "__main__":
     # re-open the ROOT file for some updates and storing additional histograms
     fout = ROOT.TFile.Open(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile)), 'UPDATE')
     list_of_keys = copy.deepcopy(fout.GetListOfKeys()) # without deepcopy the processing time explodes, no idea why
+    # sum up two sets of semiboosted histograms and delete the 'eq2' set
     for myKey in list_of_keys:
         if re.match ('TH', myKey.GetClassName()):
             hname = myKey.GetName()
