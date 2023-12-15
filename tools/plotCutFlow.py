@@ -44,7 +44,7 @@ if __name__ == '__main__':
     ROOT.gROOT.ForceStyle()
 
 
-    #makePlot('XToYHTo6B_MX-2500_MY-800_Histograms_unnormalized.root', 'cutFlowHisto_SR_boosted', "m_{X}=2500 GeV, m_{Y}=800 GeV", 'cutFlowHisto_signal_SR_boosted.png')
-    #makePlot('XToYHTo6B_MX-2500_MY-800_Histograms_unnormalized.root', 'cutFlowHisto_SR_semiboosted', "m_{X}=2500 GeV, m_{Y}=800 GeV", 'cutFlowHisto_signal_SR_semiboosted.png')
+    makePlot('/STORE/HHH/Histograms/2017/20231019_162502/XToYHTo6B_MX-2500_MY-800_Histograms_unnormalized.root', 'cutFlowHisto_SR_boosted', "m_{X}=2500 GeV, m_{Y}=800 GeV", 'cutFlowHisto_signal_SR_boosted.png')
+    makePlot('/STORE/HHH/Histograms/2017/20231019_162502/XToYHTo6B_MX-2500_MY-800_Histograms_unnormalized.root', 'cutFlowHisto_SR_semiboosted', "m_{X}=2500 GeV, m_{Y}=800 GeV", 'cutFlowHisto_signal_SR_semiboosted.png')
     makePlot('/STORE/HHH/Histograms/2017/20231019_162502/JetHT_Histograms.root', 'cutFlowHisto_VR_boosted', "Data, JetHT, 2017", 'cutFlowHisto_data_VR_boosted.png', logy=True)
     makePlot('/STORE/HHH/Histograms/2017/20231019_162502/JetHT_Histograms.root', 'cutFlowHisto_VR_semiboosted', "Data, JetHT, 2017", 'cutFlowHisto_data_VR_semiboosted.png', logy=True)
