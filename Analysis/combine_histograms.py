@@ -164,7 +164,8 @@ if __name__ == '__main__':
     print ("Merging dataset files done")
 
     print ("Merging process files...")
-    for process in options.processes:
+    processes = sorted(list(set(options.processes))) # protection for duplicate entries
+    for process in processes:
         print ("Processing {0}".format(process))
         combine_histograms(process, options.delete_files, options.skip_norm, False, True, options.fit_dir)
     print ("Merging process files done")
