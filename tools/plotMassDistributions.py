@@ -3,7 +3,7 @@ import copy
 
 
 mass_points = [
-  (2500, 600), (2500, 800), (2500, 1300), (2500, 1800)
+  (2500, 600), (2500, 800), (2500, 1200), (2500, 2000)
 ]
 
 colors = [1, 2, 8, 4, 6, 7, 9]
@@ -159,7 +159,7 @@ if __name__ == '__main__':
     ROOT.gStyle.SetStatFont(42)
     ROOT.gROOT.ForceStyle()
     
-    makePlot('/STORE/HHH/Histograms/2017/20231019_162502/', 'j3_SR_pass_boosted', 'j3_SR_pass_boosted.png', 0.18, 0, 5500)
-    makePlot('/STORE/HHH/Histograms/2017/20231019_162502/', 'j3_SR_pass_semiboosted', 'j3_SR_pass_semiboosted.png', 0.18, 0, 5500)
-    makePlot('/STORE/HHH/Histograms/2017/20231019_162502/', 'mjj_vs_mjjj_SR_pass_boosted', 'j2_SR_pass_boosted.png', 0.16, 0, 3500, True)
-    makePlot('/STORE/HHH/Histograms/2017/20231019_162502/', 'mjj_vs_mjjj_SR_pass_semiboosted', 'j2_SR_pass_semiboosted.png', 0.16, 0, 3500, True)
+    makePlot('/STORE/HHH/Histograms/2017/20231220_123208/', 'j3_SR_pass_boosted_nominal', 'j3_SR_pass_boosted.png', 0.18, 0, 5500)
+    makePlot('/STORE/HHH/Histograms/2017/20231220_123208/', 'j3_SR_pass_semiboosted_nominal', 'j3_SR_pass_semiboosted.png', 0.18, 0, 5500)
+    makePlot('/STORE/HHH/Histograms/2017/20231220_123208/', 'mjj_vs_mjjj_SR_pass_boosted_nominal', 'j2_SR_pass_boosted.png', 0.16, 0, 3500, True)
+    makePlot('/STORE/HHH/Histograms/2017/20231220_123208/', 'mjj_vs_mjjj_SR_pass_semiboosted_nominal', 'j2_SR_pass_semiboosted.png', 0.16, 0, 3500, True)
