@@ -11,9 +11,13 @@ import copy
 def get_dataset_scaling_factor(process,year,sumGen):
     json_file = open(H3_DIR + "/xsecs.json")
     config = json.load(json_file)
-    xsec    = config[year][process]["xsec"]
     luminosity  = config[year]["lumi"]
-    scaling     = (xsec*luminosity)/sumGen
+    try:
+        xsec    = config[year][process]["xsec"]
+        scaling = (xsec*luminosity)/sumGen
+    except:
+        print("WARNING: Missing cross section for process {0}. Setting the scale factor to 1.\n".format(process))
+        scaling = 1.
     return scaling
 
 
