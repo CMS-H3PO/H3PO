@@ -42,7 +42,8 @@ def normalize_histograms(identifier, year, deleteFiles=False, startsWithRegion=T
         scale = get_dataset_scaling_factor(identifier, year, nev_in_sample)
         for root_fname in list_of_root_files:
             if not deleteFiles:
-                system("cp -p {0} unscaled_{1}".format(root_fname,root_fname))
+                cmd = "cp -p {0} unscaled_{1}".format(root_fname,root_fname)
+                system(cmd)
             froot = ROOT.TFile.Open(root_fname, 'UPDATE')
             list_of_keys = copy.deepcopy(froot.GetListOfKeys()) # without deepcopy the processing time explodes, no idea why
             for myKey in list_of_keys:
@@ -91,7 +92,8 @@ def combine_histograms(identifier, deleteFiles=False, skipNorm=False, startsWith
             if mvFiles:
                 mv_file(fit_dir, filename)
         else:
-            system("hadd -f {0} {1}".format(filename," ".join(list_of_root_files)))
+            cmd = "hadd -f {0} {1}".format(filename," ".join(list_of_root_files))
+            system(cmd)
             if deleteFiles:
                 remove_root_files(list_of_root_files)
             else:
