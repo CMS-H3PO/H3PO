@@ -11,9 +11,13 @@ import copy
 def get_dataset_scaling_factor(process,year,sumGen):
     json_file = open(H3_DIR + "/xsecs.json")
     config = json.load(json_file)
-    xsec    = config[year][process]["xsec"]
     luminosity  = config[year]["lumi"]
-    scaling     = (xsec*luminosity)/sumGen
+    try:
+        xsec    = config[year][process]["xsec"]
+        scaling = (xsec*luminosity)/sumGen
+    except:
+        print("WARNING: Missing cross section for process {0}. Setting the scale factor to 1.\n".format(process))
+        scaling = 1.
     return scaling
 
 
@@ -160,7 +164,8 @@ if __name__ == '__main__':
     print ("Merging dataset files done")
 
     print ("Merging process files...")
-    for process in options.processes:
+    processes = sorted(list(set(options.processes))) # protection for duplicate entries
+    for process in processes:
         print ("Processing {0}".format(process))
         combine_histograms(process, options.delete_files, options.skip_norm, False, True, options.fit_dir)
     print ("Merging process files done")
