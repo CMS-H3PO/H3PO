@@ -205,21 +205,21 @@ def fillHistos(label, event_counts, extraHistos, SR_fail_fj, SR_pass_fj, VR_fail
         hists["eta_SR_fail"].fill(eta_SR_fail=eta2_SR_fail)
         hists["eta_SR_fail"].fill(eta_SR_fail=eta3_SR_fail)
         #-----
-        ht_VR_pass_bin = hist.axis.Regular(label=f"{label} Validation Fail H_{{T}} [GeV]", name="ht_VR_pass", bins=ht_bins, start=ht_start, stop=ht_stop)
+        ht_VR_pass_bin = hist.axis.Regular(label=f"{label} Validation Pass H_{{T}} [GeV]", name="ht_VR_pass", bins=ht_bins, start=ht_start, stop=ht_stop)
         hists["ht_vs_mjjj_VR_pass"] = Hist(j3_VR_pass_bin, ht_VR_pass_bin, storage="weight")
         hists["ht_vs_mjjj_VR_pass"].fill(ht_VR_pass=ht_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
 
-        eta_VR_pass_bin = hist.axis.Regular(label=f"{label} Validation Fail Fat Jet #eta", name="eta_VR_pass", bins=eta_bins, start=eta_start, stop=eta_stop)
+        eta_VR_pass_bin = hist.axis.Regular(label=f"{label} Validation Pass Fat Jet #eta", name="eta_VR_pass", bins=eta_bins, start=eta_start, stop=eta_stop)
         hists["eta_VR_pass"] = Hist(eta_VR_pass_bin, storage="weight")
         hists["eta_VR_pass"].fill(eta_VR_pass=eta1_VR_pass)
         hists["eta_VR_pass"].fill(eta_VR_pass=eta2_VR_pass)
         hists["eta_VR_pass"].fill(eta_VR_pass=eta3_VR_pass)
         #-----
-        ht_SR_pass_bin = hist.axis.Regular(label=f"{label} Signal Fail H_{{T}} [GeV]", name="ht_SR_pass", bins=ht_bins, start=ht_start, stop=ht_stop)
+        ht_SR_pass_bin = hist.axis.Regular(label=f"{label} Signal Pass H_{{T}} [GeV]", name="ht_SR_pass", bins=ht_bins, start=ht_start, stop=ht_stop)
         hists["ht_vs_mjjj_SR_pass"] = Hist(j3_SR_pass_bin, ht_SR_pass_bin, storage="weight")
         hists["ht_vs_mjjj_SR_pass"].fill(ht_SR_pass=ht_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
 
-        eta_SR_pass_bin = hist.axis.Regular(label=f"{label} Signal Fail Fat Jet #eta", name="eta_SR_pass", bins=eta_bins, start=eta_start, stop=eta_stop)
+        eta_SR_pass_bin = hist.axis.Regular(label=f"{label} Signal Pass Fat Jet #eta", name="eta_SR_pass", bins=eta_bins, start=eta_start, stop=eta_stop)
         hists["eta_SR_pass"] = Hist(eta_SR_pass_bin, storage="weight")
         hists["eta_SR_pass"].fill(eta_SR_pass=eta1_SR_pass)
         hists["eta_SR_pass"].fill(eta_SR_pass=eta2_SR_pass)
