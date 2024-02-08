@@ -242,7 +242,7 @@ def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=N
 
         jecTag              = jecTagFromFileName(fname)
         print("JEC tag: ", jecTag)
-        fatjets             = getCalibratedAK8(events,variation,fatjetFactory,jecTag)
+        fatjets             = getCalibratedAK8(events,variation,fatjetFactory,jecTag) if len(events)>0 else events.FatJet
 
     # fat jet preselection
     fatjets = fatjets[precut(fatjets)]
@@ -291,7 +291,7 @@ def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=N
     if variation == "fromFile":
         jets_SR_sb = events_SR_sb.Jet
     else:
-        jets_SR_sb = getCalibratedAK4(events_SR_sb,variation,jetFactory,jecTag)
+        jets_SR_sb = getCalibratedAK4(events_SR_sb,variation,jetFactory,jecTag) if len(events_SR_sb)>0 else events_SR_sb.Jet
 
     event_counts["SR_semiboosted"]["Mass_cut_fatjets"] = len(fatjets_SR_sb)
 
@@ -310,7 +310,7 @@ def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=N
     if variation == "fromFile":
         jets_VR_sb = events_VR_sb.Jet
     else:
-        jets_VR_sb = getCalibratedAK4(events_VR_sb,variation,jetFactory,jecTag)
+        jets_VR_sb = getCalibratedAK4(events_VR_sb,variation,jetFactory,jecTag) if len(events_VR_sb)>0 else events_VR_sb.Jet
 
     event_counts["VR_semiboosted"]["Mass_cut_fatjets"] = len(fatjets_VR_sb)
     
@@ -328,7 +328,7 @@ def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=N
     if variation == "fromFile":
         jets_SR_sb_eq2 = events_SR_sb_eq2.Jet    
     else:
-        jets_SR_sb_eq2 = getCalibratedAK4(events_SR_sb_eq2,variation,jetFactory,jecTag)
+        jets_SR_sb_eq2 = getCalibratedAK4(events_SR_sb_eq2,variation,jetFactory,jecTag) if len(events_SR_sb_eq2)>0 else events_SR_sb_eq2.Jet
 
     event_counts["SR_semiboosted"]["Mass_cut_fatjets"] += len(fatjets_SR_sb_eq2)
 
@@ -346,7 +346,7 @@ def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=N
     if variation == "fromFile":
         jets_VR_sb_eq2 = events_VR_sb_eq2.Jet
     else:
-        jets_VR_sb_eq2 = getCalibratedAK4(events_VR_sb_eq2,variation,jetFactory,jecTag)
+        jets_VR_sb_eq2 = getCalibratedAK4(events_VR_sb_eq2,variation,jetFactory,jecTag) if len(events_VR_sb_eq2)>0 else events_VR_sb_eq2.Jet
 
     event_counts["VR_semiboosted"]["Mass_cut_fatjets"] += len(fatjets_VR_sb_eq2)
 
