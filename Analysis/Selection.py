@@ -55,6 +55,10 @@ def closest(masses):
     return is_closest
 
 
+def FatJetMass(fatjet):
+    return fatjet.msoftdrop
+
+
 def HbbvsQCD(fatjet):
     score = (fatjet.particleNetMD_Xbb/(fatjet.particleNetMD_Xbb+fatjet.particleNetMD_QCD))
     return score
@@ -79,18 +83,18 @@ def FailPassCategories(events, fatjets, jets=None):
 
 # this is a jet mask
 def HiggsMassCut(fatjets):
-    return (fatjets.msoftdrop>=mass_cut[0]) & (fatjets.msoftdrop<=mass_cut[1])
+    return (FatJetMass(fatjets)>=mass_cut[0]) & (FatJetMass(fatjets)<=mass_cut[1])
 
 # this is a jet mask
 def HiggsMassVeto(fatjets):
-    return ((fatjets.msoftdrop<mass_cut[0]) | (fatjets.msoftdrop>mass_cut[1])) & (fatjets.msoftdrop>min_jet_mass)
+    return ((FatJetMass(fatjets)<mass_cut[0]) | (FatJetMass(fatjets)>mass_cut[1])) & (FatJetMass(fatjets)>min_jet_mass)
 
 # this is an event mask
 def VR_b_JetMass_evtMask(fatjets):
     # jet mass window inverted for the 2 leading jets, applied to the 3rd one
-    return (((fatjets[:,0].msoftdrop<mass_cut[0]) | (fatjets.msoftdrop[:,0]>mass_cut[1])) & (fatjets[:,0].msoftdrop>min_jet_mass) 
-          & ((fatjets[:,1].msoftdrop<mass_cut[0]) | (fatjets[:,1].msoftdrop>mass_cut[1])) & (fatjets[:,1].msoftdrop>min_jet_mass)  
-          & (fatjets[:,2].msoftdrop>=mass_cut[0]) & (fatjets[:,2].msoftdrop<=mass_cut[1]))
+    return (((FatJetMass(fatjets[:,0])<mass_cut[0]) | (FatJetMass(fatjets[:,0])>mass_cut[1])) & (FatJetMass(fatjets[:,0])>min_jet_mass)
+          & ((FatJetMass(fatjets[:,1])<mass_cut[0]) | (FatJetMass(fatjets[:,1])>mass_cut[1])) & (FatJetMass(fatjets[:,1])>min_jet_mass)
+          & (FatJetMass(fatjets[:,2])>=mass_cut[0]) & (FatJetMass(fatjets[:,2])<=mass_cut[1]))
 
 
 def get_dijets(fatjets, jets, events, event_counts, addCounts=False):
