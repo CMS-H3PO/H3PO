@@ -11,7 +11,8 @@ from condor.paths import H3_DIR
 #---------------------------------------------
 higgs_mass = 125.
 delta_r_cut = 0.8
-min_jet_mass = 50.
+min_jet_mass = 60.
+max_jet_mass = 250.
 
 # FatJet cuts
 ptcut = 250.
@@ -87,13 +88,13 @@ def HiggsMassCut(fatjets):
 
 # this is a jet mask
 def HiggsMassVeto(fatjets):
-    return ((FatJetMass(fatjets)<mass_cut[0]) | (FatJetMass(fatjets)>mass_cut[1])) & (FatJetMass(fatjets)>min_jet_mass)
+    return ((FatJetMass(fatjets)<mass_cut[0]) | (FatJetMass(fatjets)>mass_cut[1])) & (FatJetMass(fatjets)>min_jet_mass) & (FatJetMass(fatjets)<max_jet_mass)
 
 # this is an event mask
 def VR_b_JetMass_evtMask(fatjets):
     # jet mass window inverted for the 2 leading jets, applied to the 3rd one
-    return (((FatJetMass(fatjets[:,0])<mass_cut[0]) | (FatJetMass(fatjets[:,0])>mass_cut[1])) & (FatJetMass(fatjets[:,0])>min_jet_mass)
-          & ((FatJetMass(fatjets[:,1])<mass_cut[0]) | (FatJetMass(fatjets[:,1])>mass_cut[1])) & (FatJetMass(fatjets[:,1])>min_jet_mass)
+    return (((FatJetMass(fatjets[:,0])<mass_cut[0]) | (FatJetMass(fatjets[:,0])>mass_cut[1])) & (FatJetMass(fatjets[:,0])>min_jet_mass) & (FatJetMass(fatjets[:,0])<max_jet_mass)
+          & ((FatJetMass(fatjets[:,1])<mass_cut[0]) | (FatJetMass(fatjets[:,1])>mass_cut[1])) & (FatJetMass(fatjets[:,1])>min_jet_mass) & (FatJetMass(fatjets[:,1])<max_jet_mass)
           & (FatJetMass(fatjets[:,2])>=mass_cut[0]) & (FatJetMass(fatjets[:,2])<=mass_cut[1]))
 
 
