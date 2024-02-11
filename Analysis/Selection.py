@@ -56,7 +56,7 @@ def closest(masses):
 
 
 def FatJetMass(fatjet):
-    return fatjet.msoftdrop
+    return fatjet.particleNet_mass
 
 
 def HbbvsQCD(fatjet):
