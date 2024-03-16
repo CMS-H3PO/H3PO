@@ -100,7 +100,7 @@ if __name__ == '__main__':
     ROOT.gStyle.SetStatFont(42)
     ROOT.gROOT.ForceStyle()
     
-    makePlot('/STORE/HHH/Histograms/2017/20231220_123208/', 'cutFlowHisto_SR_boosted', 'Pass', 0.25)
-    makePlot('/STORE/HHH/Histograms/2017/20231220_123208/', 'cutFlowHisto_SR_semiboosted', 'Pass', 0.25)
-    makePlot('/STORE/HHH/Histograms/2017/20231220_123208/', 'cutFlowHisto_SR_boosted', 'Fail', 0.004)
-    makePlot('/STORE/HHH/Histograms/2017/20231220_123208/', 'cutFlowHisto_SR_semiboosted', 'Fail', 0.004)
+    makePlot('/STORE/HHH/Histograms/2017/latest/', 'cutFlowHisto_SR_boosted', 'Pass', 0.50)
+    makePlot('/STORE/HHH/Histograms/2017/latest/', 'cutFlowHisto_SR_semiboosted', 'Pass', 0.50)
+    makePlot('/STORE/HHH/Histograms/2017/latest/', 'cutFlowHisto_SR_boosted', 'Fail', 0.01)
+    makePlot('/STORE/HHH/Histograms/2017/latest/', 'cutFlowHisto_SR_semiboosted', 'Fail', 0.01)
