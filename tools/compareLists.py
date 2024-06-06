@@ -11,7 +11,7 @@ for line in lines:
     # skip comment lines
     if line.strip().startswith('#'):
         continue
-    files_A.append(line)
+    files_A.append(line.strip())
 f.close()
 
 f = open(sys.argv[2], 'r')
@@ -20,7 +20,7 @@ for line in lines:
     # skip comment lines
     if line.strip().startswith('#'):
         continue
-    files_B.append(line)
+    files_B.append(line.strip())
 f.close()
 
 o_txt = open('1st_not_in_2nd.txt', 'w')

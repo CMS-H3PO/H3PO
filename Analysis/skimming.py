@@ -109,11 +109,11 @@ def localCopy(inputLFN):
     os.system(xrdcpCMD)
 
 parser = ArgumentParser()
-parser.add_argument('-i', '--input', metavar='IFILE', type='string', action='store',
+parser.add_argument('-i', '--input', metavar='IFILE', action='store',
                 default   =   '',
                 dest      =   'input',
                 help      =   'A root file or text file with multiple root file locations to analyze')
-parser.add_argument('-o', '--odir', metavar='ODIR', type='string', action='store',
+parser.add_argument('-o', '--odir', metavar='ODIR', action='store',
                 default   =   '',
                 dest      =   'outputDir',
                 help      =   'Output directory path.')
