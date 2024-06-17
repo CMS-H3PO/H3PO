@@ -1,5 +1,5 @@
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-cd CMSSW_12_3_0
+cd CMSSW_13_0_2
 cmsenv
 cd -
 source H3env/bin/activate
