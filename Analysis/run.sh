@@ -3,7 +3,7 @@
 export WORK_DIR=$PWD
 
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-cd $WORK_DIR/../../CMSSW_12_3_0/
+cd $WORK_DIR/../../CMSSW_13_0_2/
 eval `scramv1 runtime -sh`
 cd ..
 source H3env/bin/activate
