@@ -33,6 +33,10 @@ if __name__ == '__main__':
                         help="Dry run without submitting Condor jobs (default: %(default)s)",
                         default=False)
 
+    parser.add_argument("--no_timestamp", dest="no_timestamp", action="store_true",
+                        help="Don't append the time stamp to the output directory name (default: %(default)s)",
+                        default=False)
+
     parser.add_argument("-j", "--jecVariations", dest="jecVariations",
                         help="Space-separated list of JEC variations (default: %(default)s)",
                         nargs='*',
@@ -58,7 +62,10 @@ if __name__ == '__main__':
     (options, args) = parser.parse_known_args()
 
     initial_dir = H3_DIR
-    condor_dir = options.output.rstrip('/') + '_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = ''
+    if not options.no_timestamp:
+        timestamp = '_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    condor_dir = options.output.rstrip('/') + timestamp
     if not options.output.startswith('/'):
         condor_dir = join(initial_dir, condor_dir)
         
