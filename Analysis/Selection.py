@@ -24,8 +24,8 @@ pNet_cut = 0.9105
 res_ptcut = 30.
 res_etacut = 2.5
 res_mass_cut = [90.,150.]
-# loose cut = 0.0532, med_cut = 0.3040, tight_cut = 0.7476 , https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17   
-res_deepBcut = 0.0532
+# loose cut = 0.0532, med_cut = 0.3040, tight_cut = 0.7476 (https://btv-wiki.docs.cern.ch/ScaleFactors/)
+res_deepJetcut = 0.0532
 #---------------------------------------------
 def addJECVariables(jets, event_rho,isData):
     jets["pt_raw"] = (1 - jets.rawFactor)*jets.pt
@@ -100,7 +100,7 @@ def VR_b_JetMass_evtMask(fatjets):
 
 def get_dijets(fatjets, jets, events, event_counts, addCounts=False):
     # apply preselection to the resolved jets
-    jets = jets[(jets.pt > res_ptcut) & (np.absolute(jets.eta) < res_etacut) & (jets.btagDeepB>res_deepBcut)]
+    jets = jets[(jets.pt > res_ptcut) & (np.absolute(jets.eta) < res_etacut) & (jets.btagDeepFlavB>res_deepJetcut)]
 
     # require that there are at least 2 good jets present in the event
     fatjets = fatjets[ak.num(jets, axis=1)>1]
