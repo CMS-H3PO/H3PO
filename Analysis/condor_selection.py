@@ -39,13 +39,13 @@ if __name__ == '__main__':
                         default=None,
                         metavar="JECVARS")
 
-    parser.add_argument("-t", "--triggerList", help="Space-separated list of triggers (default: %(default)s);)",
+    parser.add_argument("-t", "--triggerList", help="Space-separated list of triggers (default: %(default)s)",
                         nargs="*",
                         dest="triggerList",
                         default = None
                         )
     
-    parser.add_argument("-r", "--refTriggerList", help="Space-separated list of reference triggers (default: %(default)s);)",
+    parser.add_argument("-r", "--refTriggerList", help="Space-separated list of reference triggers (default: %(default)s)",
                         nargs="*",
                         dest="refTriggerList",
                         default = None
