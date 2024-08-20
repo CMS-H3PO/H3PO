@@ -103,6 +103,7 @@ if __name__ == '__main__':
                 job_file.write('initialdir  = ' + initial_dir + '\n')
                 job_file.write('getenv = False\n')
                 job_file.write('RequestMemory = 2000\n')
+                job_file.write('requirements = (machine == "lorientree05.hep.zef.irb.hr" )\n')
                 
                 job_file.write('log    = ' + join(condor_dir_logs, 'log-' + dataset_job + '.log') + '\n')
                 job_file.write('output = ' + join(condor_dir_logs, 'tmp-' + dataset_job + '.out') + '\n')
