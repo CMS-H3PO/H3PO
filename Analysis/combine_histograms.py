@@ -129,7 +129,7 @@ if __name__ == '__main__':
     parser.add_argument("-p", "--processes", dest="processes",
                         help="Space-separated list of processes (default: %(default)s)",
                         nargs='*',
-                        default=["QCD","TTbar","JetHT","XToYHTo6B_MX-2400_MY-800"],
+                        default=["QCD","TTbar","JetHT","XToYHTo6B_MX-2500_MY-800"],
                         metavar="PROCESSES")
     
     parser.add_argument("--delete_files", dest="delete_files", action='store_true',
