@@ -8,15 +8,15 @@ import re
 import copy
 
 
-def get_dataset_scaling_factor(process,year,sumGen):
+def get_dataset_scaling_factor(dataset,year,sumGen):
     json_file = open(H3_DIR + "/xsecs.json")
     config = json.load(json_file)
     luminosity  = config[year]["lumi"]
     try:
-        xsec    = config[year][process]["xsec"]
+        xsec    = config[year][dataset]["xsec"]
         scaling = (xsec*luminosity)/sumGen
     except:
-        print("WARNING: Missing cross section for process {0}. Setting the scale factor to 1.\n".format(process))
+        print("WARNING: Missing cross section for dataset {0}. Setting the scale factor to 1.\n".format(dataset))
         scaling = 1.
     return scaling
 
@@ -31,15 +31,15 @@ def get_number_of_events_in_dataset(list_of_root_files):
     return nev
 
 
-def normalize_histograms(identifier, year, deleteFiles=False, startsWithRegion=True):
+def normalize_histograms(dataset, year, deleteFiles=False, startsWithRegion=True):
     regions = ["Histograms"]
     
     for region in regions:
         list_of_root_files = []
         cwd = getcwd()
-        list_of_root_files = get_list_of_root_files(cwd, identifier, region, startsWithRegion)
+        list_of_root_files = get_list_of_root_files(cwd, dataset, region, startsWithRegion)
         nev_in_sample = get_number_of_events_in_dataset(list_of_root_files)
-        scale = get_dataset_scaling_factor(identifier, year, nev_in_sample)
+        scale = get_dataset_scaling_factor(dataset, year, nev_in_sample)
         for root_fname in list_of_root_files:
             if not deleteFiles:
                 cmd = "cp -p {0} unscaled_{1}".format(root_fname,root_fname)
