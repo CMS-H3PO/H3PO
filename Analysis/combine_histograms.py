@@ -31,43 +31,43 @@ def get_number_of_events_in_dataset(list_of_root_files):
     return nev
 
 
-def normalize_histograms(dataset, year, deleteFiles=False, startsWithRegion=True):
-    regions = ["Histograms"]
+def normalize_histograms(dataset, year, deleteFiles=False):
+
     datasetPresent = True
-    
-    for region in regions:
-        list_of_root_files = []
-        list_of_root_files = get_list_of_root_files(dataset, region, startsWithRegion)
-        if len(list_of_root_files)>0:
-            nev_in_sample = get_number_of_events_in_dataset(list_of_root_files)
-            scale = get_dataset_scaling_factor(dataset, year, nev_in_sample)
-            for root_fname in list_of_root_files:
-                if not deleteFiles:
-                    cmd = "cp -p {0} unscaled_{1}".format(root_fname,root_fname)
-                    system(cmd)
-                froot = ROOT.TFile.Open(root_fname, 'UPDATE')
-                list_of_keys = copy.deepcopy(froot.GetListOfKeys()) # without deepcopy the processing time explodes, no idea why
-                for myKey in list_of_keys:
-                    if re.match ('TH', myKey.GetClassName()):
-                        hname = myKey.GetName()
-                        if (hname == "numberOfGenEventsHisto"):
-                            continue      
-                        h = froot.Get(hname)
-                        h.Scale(scale)
-                        h.Write("", ROOT.TObject.kOverwrite)
-                froot.Close()
-        else:
-            datasetPresent = False
+
+    list_of_root_files = []
+    list_of_root_files = get_list_of_root_files(dataset, startsWith=True)
+    if len(list_of_root_files)>0:
+        nev_in_sample = get_number_of_events_in_dataset(list_of_root_files)
+        scale = get_dataset_scaling_factor(dataset, year, nev_in_sample)
+        for root_fname in list_of_root_files:
+            if not deleteFiles:
+                cmd = "cp -p {0} unscaled_{1}".format(root_fname,root_fname)
+                system(cmd)
+            froot = ROOT.TFile.Open(root_fname, 'UPDATE')
+            list_of_keys = copy.deepcopy(froot.GetListOfKeys()) # without deepcopy the processing time explodes, no idea why
+            for myKey in list_of_keys:
+                if re.match ('TH', myKey.GetClassName()):
+                    hname = myKey.GetName()
+                    if (hname == "numberOfGenEventsHisto"):
+                        continue
+                    h = froot.Get(hname)
+                    h.Scale(scale)
+                    h.Write("", ROOT.TObject.kOverwrite)
+            froot.Close()
+    else:
+        datasetPresent = False
 
     return datasetPresent
 
-def get_list_of_root_files(identifier, region, startsWithRegion):
+
+def get_list_of_root_files(identifier, startsWith):
     cwd = getcwd()
     list_of_root_files = []
     for file in listdir(cwd):
         if not isfile(join(cwd, file)):
             continue
-        if (file.startswith(identifier) if not startsWithRegion else ('_'+identifier+'-') in file) and file.endswith('.root') and (file.startswith(region) if startsWithRegion else ('_'+region) in file):
+        if (file.startswith(identifier) if not startsWith else ('_'+identifier+'-') in file) and (file.startswith('Histograms') if startsWith else ('_Histograms') in file) and file.endswith('.root'):
             list_of_root_files.append(file)
     return list_of_root_files
 
@@ -81,31 +81,29 @@ def mv_file(dir, file):
     system("mkdir -p {0}".format(dir))
     system("mv {0} {1}".format(file,dir))
 
-def combine_histograms(identifier, deleteFiles=False, skipNorm=False, startsWithRegion=True, mvFiles=False, fit_dir="fit"):
-    
-    regions = ["Histograms"]
-    
-    for region in regions:
-        list_of_root_files = []
 
-        list_of_root_files = get_list_of_root_files(identifier, region, startsWithRegion)
-        filename = "{0}_{1}.root".format(identifier,region)
+def combine_histograms(identifier, deleteFiles=False, skipNorm=False, startsWith=True, mvFiles=False, fit_dir="fit"):
 
-        # in case of only one source file, make sure that the source and target files do not have identical names. Otherwise, hadding is not needed
-        if (len(list_of_root_files)==1 and filename==list_of_root_files[0]):
-            if mvFiles:
-                mv_file(fit_dir, filename)
+    list_of_root_files = []
+
+    list_of_root_files = get_list_of_root_files(identifier, startsWith)
+    filename = "{0}_{1}.root".format(identifier,'Histograms')
+
+    # in case of only one source file, make sure that the source and target files do not have identical names. Otherwise, hadding is not needed
+    if (len(list_of_root_files)==1 and filename==list_of_root_files[0]):
+        if mvFiles:
+            mv_file(fit_dir, filename)
+    else:
+        cmd = "hadd -f {0} {1}".format(filename," ".join(list_of_root_files))
+        system(cmd)
+        if deleteFiles:
+            remove_root_files(list_of_root_files)
         else:
-            cmd = "hadd -f {0} {1}".format(filename," ".join(list_of_root_files))
-            system(cmd)
-            if deleteFiles:
-                remove_root_files(list_of_root_files)
-            else:
-                if startsWithRegion and not skipNorm and not "JetHT" in identifier:
-                    for root_fname in list_of_root_files:
-                        system("mv unscaled_{0} {1}".format(root_fname,root_fname))
-            if mvFiles:
-                mv_file(fit_dir, filename)
+            if startsWith and not skipNorm and not "JetHT" in identifier:
+                for root_fname in list_of_root_files:
+                    system("mv unscaled_{0} {1}".format(root_fname,root_fname))
+        if mvFiles:
+            mv_file(fit_dir, filename)
 
 
 if __name__ == '__main__':
@@ -189,5 +187,5 @@ if __name__ == '__main__':
         if process in missing_datasets: # mostly relevant for signal samples where process==dataset
             continue
         print ("Processing {0}".format(process))
-        combine_histograms(process, options.delete_files, options.skip_norm, False, True, options.fit_dir)
+        combine_histograms(process, options.delete_files, options.skip_norm, startsWith=False, mvFiles=True, fit_dir=options.fit_dir)
     print ("Merging process files done")
