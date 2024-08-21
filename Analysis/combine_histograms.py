@@ -33,31 +33,36 @@ def get_number_of_events_in_dataset(list_of_root_files):
 
 def normalize_histograms(dataset, year, deleteFiles=False, startsWithRegion=True):
     regions = ["Histograms"]
+    datasetPresent = True
     
     for region in regions:
         list_of_root_files = []
-        cwd = getcwd()
-        list_of_root_files = get_list_of_root_files(cwd, dataset, region, startsWithRegion)
-        nev_in_sample = get_number_of_events_in_dataset(list_of_root_files)
-        scale = get_dataset_scaling_factor(dataset, year, nev_in_sample)
-        for root_fname in list_of_root_files:
-            if not deleteFiles:
-                cmd = "cp -p {0} unscaled_{1}".format(root_fname,root_fname)
-                system(cmd)
-            froot = ROOT.TFile.Open(root_fname, 'UPDATE')
-            list_of_keys = copy.deepcopy(froot.GetListOfKeys()) # without deepcopy the processing time explodes, no idea why
-            for myKey in list_of_keys:
-                if re.match ('TH', myKey.GetClassName()):
-                    hname = myKey.GetName()
-                    if (hname == "numberOfGenEventsHisto"):
-                        continue                    
-                    h = froot.Get(hname)
-                    h.Scale(scale)
-                    h.Write("", ROOT.TObject.kOverwrite)
-            froot.Close()
+        list_of_root_files = get_list_of_root_files(dataset, region, startsWithRegion)
+        if len(list_of_root_files)>0:
+            nev_in_sample = get_number_of_events_in_dataset(list_of_root_files)
+            scale = get_dataset_scaling_factor(dataset, year, nev_in_sample)
+            for root_fname in list_of_root_files:
+                if not deleteFiles:
+                    cmd = "cp -p {0} unscaled_{1}".format(root_fname,root_fname)
+                    system(cmd)
+                froot = ROOT.TFile.Open(root_fname, 'UPDATE')
+                list_of_keys = copy.deepcopy(froot.GetListOfKeys()) # without deepcopy the processing time explodes, no idea why
+                for myKey in list_of_keys:
+                    if re.match ('TH', myKey.GetClassName()):
+                        hname = myKey.GetName()
+                        if (hname == "numberOfGenEventsHisto"):
+                            continue      
+                        h = froot.Get(hname)
+                        h.Scale(scale)
+                        h.Write("", ROOT.TObject.kOverwrite)
+                froot.Close()
+        else:
+            datasetPresent = False
 
+    return datasetPresent
 
-def get_list_of_root_files(cwd, identifier, region, startsWithRegion):
+def get_list_of_root_files(identifier, region, startsWithRegion):
+    cwd = getcwd()
     list_of_root_files = []
     for file in listdir(cwd):
         if not isfile(join(cwd, file)):
@@ -82,9 +87,8 @@ def combine_histograms(identifier, deleteFiles=False, skipNorm=False, startsWith
     
     for region in regions:
         list_of_root_files = []
-        cwd = getcwd()
 
-        list_of_root_files = get_list_of_root_files(cwd, identifier, region, startsWithRegion)
+        list_of_root_files = get_list_of_root_files(identifier, region, startsWithRegion)
         filename = "{0}_{1}.root".format(identifier,region)
 
         # in case of only one source file, make sure that the source and target files do not have identical names. Otherwise, hadding is not needed
@@ -145,6 +149,8 @@ if __name__ == '__main__':
     
     chdir(options.input)
     
+    missing_datasets = []
+
     if not options.skip_norm:
         print ("Performing normalization...")
         for dataset in datasets[options.year]:
@@ -154,11 +160,23 @@ if __name__ == '__main__':
                 print ("Skipping {0} during normalization".format(dataset))
                 continue
             print ("Processing {0}".format(dataset))
-            normalize_histograms(dataset, options.year, options.delete_files)
+            if not normalize_histograms(dataset, options.year, options.delete_files):
+                missing_datasets.append(dataset)
+                print("WARNING: Missing files for dataset {0}. Check if this affects any of the final process files.\n".format(dataset))
         print ("Normalization done")
+    else:
+        # if not performing the normalization, still check for missing dataset files
+        for dataset in datasets[options.year]:
+            if not dataset.startswith(tuple(options.processes)):
+                continue
+            if len(get_list_of_root_files(dataset, "Histograms", True))==0:
+                missing_datasets.append(dataset)
+                print("WARNING: Missing files for dataset {0}. Check if this affects any of the final process files.\n".format(dataset))
 
     print ("Merging dataset files...")
     for dataset in datasets[options.year]:
+        if dataset in missing_datasets:
+            continue
         if not dataset.startswith(tuple(options.processes)):
             continue
         print ("Processing {0}".format(dataset))
@@ -168,6 +186,8 @@ if __name__ == '__main__':
     print ("Merging process files...")
     processes = sorted(list(set(options.processes))) # protection for duplicate entries
     for process in processes:
+        if process in missing_datasets: # mostly relevant for signal samples where process==dataset
+            continue
         print ("Processing {0}".format(process))
         combine_histograms(process, options.delete_files, options.skip_norm, False, True, options.fit_dir)
     print ("Merging process files done")
