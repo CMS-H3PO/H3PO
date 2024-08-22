@@ -59,6 +59,11 @@ if __name__ == '__main__':
                         help="Switch for producing additional histograms (default: %(default)s)",
                         default=False)
 
+    parser.add_argument("-m", "--memory", dest="memory",
+                        help="Requested memory in MB for Condor jobs (default: %(default)s)",
+                        default="2000",
+                        metavar="MEMORY")
+
     (options, args) = parser.parse_known_args()
 
     initial_dir = H3_DIR
@@ -102,7 +107,7 @@ if __name__ == '__main__':
                 job_file.write('universe    = vanilla\n')
                 job_file.write('initialdir  = ' + initial_dir + '\n')
                 job_file.write('getenv = False\n')
-                job_file.write('RequestMemory = 2000\n')
+                job_file.write('RequestMemory = {0}\n'.format(options.memory))
                 job_file.write('requirements = (machine == "lorientree05.hep.zef.irb.hr" )\n')
                 
                 job_file.write('log    = ' + join(condor_dir_logs, 'log-' + dataset_job + '.log') + '\n')
