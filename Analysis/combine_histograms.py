@@ -167,7 +167,7 @@ if __name__ == '__main__':
         for dataset in datasets[options.year]:
             if not dataset.startswith(tuple(options.processes)):
                 continue
-            if len(get_list_of_root_files(dataset, "Histograms", True))==0:
+            if len(get_list_of_root_files(dataset, startsWith=True))==0:
                 missing_datasets.append(dataset)
                 print("WARNING: Missing files for dataset {0}. Check if this affects any of the final process files.\n".format(dataset))
 
