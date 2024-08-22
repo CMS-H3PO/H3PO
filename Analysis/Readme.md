@@ -41,7 +41,7 @@ To run over all 2017 samples:
 ```
 python condor_selection.py -y 2017
 ```
-This will submit jobs to Condor for all 2017 samples. Wait until all jobs are done. Output root files will be stored in ```condor_jobs_<timestamp>``` directory. To see all available command-line options, run
+This will submit jobs to Condor for all 2017 samples. Wait until all jobs are done. Output root files will be stored in `condor_jobs_<timestamp>` directory. To see all available command-line options, run
 ```
 python condor_selection.py -h
 ```
@@ -50,7 +50,7 @@ To combine histograms:
 ```
 python combine_histograms.py -i condor_jobs_<timestamp>
 ```
-This will combine root files and store them in the ```condor_jobs_<timestamp>/fit``` subdirectory with intermediate files left in ```condor_jobs_<timestamp>```. To see all available command-line options, run
+This will combine root files and store them in the `condor_jobs_<timestamp>/fit` subdirectory with intermediate files left in `condor_jobs_<timestamp>`. To see all available command-line options, run
 ```
 python combine_histograms.py -h
 ```
@@ -157,6 +157,14 @@ cp -p ~/HHH/condor_jobs_2017_latest/fit/*.root /STORE/HHH/Histograms/2017/latest
 mkdir -p /STORE/HHH/Histograms/2018/20240822_012232/
 ln -sfn 20240822_012232 /STORE/HHH/Histograms/2018/latest
 cp -p ~/HHH/condor_jobs_2018_latest/fit/*.root /STORE/HHH/Histograms/2018/latest/
+```
+Finally, combine files from all the years
+```
+python combine_years.py -y 2016 2016APV 2017 2018
+```
+By default, the combined filed will be stored in `/STORE/HHH/Histograms/Run2/latest/`. To see all available command-line options, run
+```
+python combine_years.py -h
 ```
 
 [*] `voms-proxy-init -rfc -voms cms -valid 168:00`
