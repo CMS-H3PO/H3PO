@@ -111,25 +111,25 @@ python combine_histograms.py -y 2018 -i ~/HHH/condor_jobs_2018_latest -p JetHT T
 Produce unnormalized histograms for one signal sample for plotting the cut flow
 ```
 mv ~/HHH/condor_jobs_2016_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_2016_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root
-python combine_histograms.py -i ~/HHH/condor_jobs_2016_latest -p XToYHTo6B_MX-2500_MY-800 --skip_norm
+python combine_histograms.py -y 2016 -i ~/HHH/condor_jobs_2016_latest -p XToYHTo6B_MX-2500_MY-800 --skip_norm
 mv ~/HHH/condor_jobs_2016_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_2016_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_unnormalized.root
 mv ~/HHH/condor_jobs_2016_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root ~/HHH/condor_jobs_2016_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root
 ```
 ```
 mv ~/HHH/condor_jobs_2016APV_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_2016APV_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root
-python combine_histograms.py -i ~/HHH/condor_jobs_2016APV_latest -p XToYHTo6B_MX-2500_MY-800 --skip_norm
+python combine_histograms.py -y 2016APV -i ~/HHH/condor_jobs_2016APV_latest -p XToYHTo6B_MX-2500_MY-800 --skip_norm
 mv ~/HHH/condor_jobs_2016APV_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_2016APV_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_unnormalized.root
 mv ~/HHH/condor_jobs_2016APV_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root ~/HHH/condor_jobs_2016APV_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root
 ```
 ```
 mv ~/HHH/condor_jobs_2017_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_2017_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root
-python combine_histograms.py -i ~/HHH/condor_jobs_2017_latest -p XToYHTo6B_MX-2500_MY-800 --skip_norm
+python combine_histograms.py -y 2017 -i ~/HHH/condor_jobs_2017_latest -p XToYHTo6B_MX-2500_MY-800 --skip_norm
 mv ~/HHH/condor_jobs_2017_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_2017_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_unnormalized.root
 mv ~/HHH/condor_jobs_2017_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root ~/HHH/condor_jobs_2017_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root
 ```
 ```
 mv ~/HHH/condor_jobs_2018_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_2018_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root
-python combine_histograms.py -i ~/HHH/condor_jobs_2018_latest -p XToYHTo6B_MX-2500_MY-800 --skip_norm
+python combine_histograms.py -y 2018 -i ~/HHH/condor_jobs_2018_latest -p XToYHTo6B_MX-2500_MY-800 --skip_norm
 mv ~/HHH/condor_jobs_2018_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_2018_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_unnormalized.root
 mv ~/HHH/condor_jobs_2018_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root ~/HHH/condor_jobs_2018_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root
 ```
