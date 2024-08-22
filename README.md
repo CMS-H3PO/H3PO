@@ -26,10 +26,10 @@ cd -
 source H3env/bin/activate
 cd H3PO
 ```
-or alternatively just run
+or alternatively just source the activation script
 ```
-source H3PO/activate_env
 cd H3PO
+source activate_env
 ```
 
 # Running the notebooks from a server
