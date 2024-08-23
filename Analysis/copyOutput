@@ -1,0 +1,3 @@
+mkdir -p /STORE/HHH/Histograms/${YEAR}/${TIMESTAMP}/
+ln -sfn ${TIMESTAMP} /STORE/HHH/Histograms/${YEAR}/latest
+cp -p ~/HHH/condor_jobs_${YEAR}_latest/fit/*.root /STORE/HHH/Histograms/${YEAR}/latest/

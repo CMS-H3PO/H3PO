@@ -112,51 +112,30 @@ python combine_histograms.py -y 2017 -i ~/HHH/condor_jobs_2017_latest -p JetHT T
 ```
 python combine_histograms.py -y 2018 -i ~/HHH/condor_jobs_2018_latest -p JetHT TTbar XToYHTo6B_MX-1000_MY-300 XToYHTo6B_MX-1000_MY-600 XToYHTo6B_MX-1000_MY-800 XToYHTo6B_MX-1200_MY-300 XToYHTo6B_MX-1200_MY-600 XToYHTo6B_MX-1200_MY-800 XToYHTo6B_MX-1200_MY-1000 XToYHTo6B_MX-1600_MY-300 XToYHTo6B_MX-1600_MY-600 XToYHTo6B_MX-1600_MY-800 XToYHTo6B_MX-1600_MY-1000 XToYHTo6B_MX-1600_MY-1200 XToYHTo6B_MX-1600_MY-1400 XToYHTo6B_MX-2000_MY-300 XToYHTo6B_MX-2000_MY-600 XToYHTo6B_MX-2000_MY-800 XToYHTo6B_MX-2000_MY-1000 XToYHTo6B_MX-2000_MY-1200 XToYHTo6B_MX-2000_MY-1600 XToYHTo6B_MX-2000_MY-1800 XToYHTo6B_MX-2500_MY-300 XToYHTo6B_MX-2500_MY-600 XToYHTo6B_MX-2500_MY-800 XToYHTo6B_MX-2500_MY-1000 XToYHTo6B_MX-2500_MY-1200 XToYHTo6B_MX-2500_MY-1600 XToYHTo6B_MX-2500_MY-2000 XToYHTo6B_MX-2500_MY-2200 XToYHTo6B_MX-3000_MY-300 XToYHTo6B_MX-3000_MY-600 XToYHTo6B_MX-3000_MY-800 XToYHTo6B_MX-3000_MY-1000 XToYHTo6B_MX-3000_MY-1200 XToYHTo6B_MX-3000_MY-1600 XToYHTo6B_MX-3000_MY-2000 XToYHTo6B_MX-3000_MY-2500 XToYHTo6B_MX-3000_MY-2800 XToYHTo6B_MX-3500_MY-300 XToYHTo6B_MX-3500_MY-600 XToYHTo6B_MX-3500_MY-800 XToYHTo6B_MX-3500_MY-1000 XToYHTo6B_MX-3500_MY-1200 XToYHTo6B_MX-3500_MY-1600 XToYHTo6B_MX-3500_MY-2000 XToYHTo6B_MX-3500_MY-2500 XToYHTo6B_MX-3500_MY-2800 XToYHTo6B_MX-4000_MY-300 XToYHTo6B_MX-4000_MY-600 XToYHTo6B_MX-4000_MY-800 XToYHTo6B_MX-4000_MY-1000 XToYHTo6B_MX-4000_MY-1200 XToYHTo6B_MX-4000_MY-1600 XToYHTo6B_MX-4000_MY-2000 XToYHTo6B_MX-4000_MY-2500 XToYHTo6B_MX-4000_MY-2800
 ```
-Produce unnormalized histograms for one signal sample for plotting the cut flow
+Produce unnormalized histograms for one signal sample for plotting the cut flow and copy output files to a central location
 ```
-mv ~/HHH/condor_jobs_2016_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_2016_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root
-python combine_histograms.py -y 2016 -i ~/HHH/condor_jobs_2016_latest -p XToYHTo6B_MX-2500_MY-800 --skip_norm
-mv ~/HHH/condor_jobs_2016_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_2016_latest/fit/XToYHTo6B_MX-2500_MY-800_unnormalized_Histograms.root
-mv ~/HHH/condor_jobs_2016_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root ~/HHH/condor_jobs_2016_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root
-```
-```
-mv ~/HHH/condor_jobs_2016APV_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_2016APV_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root
-python combine_histograms.py -y 2016APV -i ~/HHH/condor_jobs_2016APV_latest -p XToYHTo6B_MX-2500_MY-800 --skip_norm
-mv ~/HHH/condor_jobs_2016APV_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_2016APV_latest/fit/XToYHTo6B_MX-2500_MY-800_unnormalized_Histograms.root
-mv ~/HHH/condor_jobs_2016APV_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root ~/HHH/condor_jobs_2016APV_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root
+export YEAR=2016
+export TIMESTAMP=20240822_011857
+source produceUnnormalized
+source copyOutput
 ```
 ```
-mv ~/HHH/condor_jobs_2017_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_2017_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root
-python combine_histograms.py -y 2017 -i ~/HHH/condor_jobs_2017_latest -p XToYHTo6B_MX-2500_MY-800 --skip_norm
-mv ~/HHH/condor_jobs_2017_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_2017_latest/fit/XToYHTo6B_MX-2500_MY-800_unnormalized_Histograms.root
-mv ~/HHH/condor_jobs_2017_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root ~/HHH/condor_jobs_2017_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root
+export YEAR=2016APV
+export TIMESTAMP=20240822_012207
+source produceUnnormalized
+source copyOutput
 ```
 ```
-mv ~/HHH/condor_jobs_2018_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_2018_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root
-python combine_histograms.py -y 2018 -i ~/HHH/condor_jobs_2018_latest -p XToYHTo6B_MX-2500_MY-800 --skip_norm
-mv ~/HHH/condor_jobs_2018_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_2018_latest/fit/XToYHTo6B_MX-2500_MY-800_unnormalized_Histograms.root
-mv ~/HHH/condor_jobs_2018_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root ~/HHH/condor_jobs_2018_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root
-```
-Copy output files to a central location
-```
-mkdir -p /STORE/HHH/Histograms/2016/20240822_011857/
-ln -sfn 20240822_011857 /STORE/HHH/Histograms/2016/latest
-cp -p ~/HHH/condor_jobs_2016_latest/fit/*.root /STORE/HHH/Histograms/2016/latest/
+export YEAR=2017
+export TIMESTAMP=20240814_140411
+source produceUnnormalized
+source copyOutput
 ```
 ```
-mkdir -p /STORE/HHH/Histograms/2016APV/20240822_012207/
-ln -sfn 20240822_012207 /STORE/HHH/Histograms/2016APV/latest
-cp -p ~/HHH/condor_jobs_2016APV_latest/fit/*.root /STORE/HHH/Histograms/2016APV/latest/
-```
-```
-mkdir -p /STORE/HHH/Histograms/2017/20240814_140411/
-ln -sfn 20240814_140411 /STORE/HHH/Histograms/2017/latest
-cp -p ~/HHH/condor_jobs_2017_latest/fit/*.root /STORE/HHH/Histograms/2017/latest/
-```
-```
-mkdir -p /STORE/HHH/Histograms/2018/20240822_012232/
-ln -sfn 20240822_012232 /STORE/HHH/Histograms/2018/latest
-cp -p ~/HHH/condor_jobs_2018_latest/fit/*.root /STORE/HHH/Histograms/2018/latest/
+export YEAR=2018
+export TIMESTAMP=20240822_012232
+source produceUnnormalized
+source copyOutput
 ```
 Finally, combine files from all the years
 ```
