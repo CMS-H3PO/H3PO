@@ -1,5 +1,5 @@
-mv ~/HHH/condor_jobs_${YEAR}_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_${YEAR}_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root
+mv -v ~/HHH/condor_jobs_${YEAR}_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_${YEAR}_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root
 python combine_histograms.py -y ${YEAR} -i ~/HHH/condor_jobs_${YEAR}_latest -p XToYHTo6B_MX-2500_MY-800 --skip_norm
-mv ~/HHH/condor_jobs_${YEAR}_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_${YEAR}_latest/fit/XToYHTo6B_MX-2500_MY-800_unnormalized_Histograms.root
-mv ~/HHH/condor_jobs_${YEAR}_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root ~/HHH/condor_jobs_${YEAR}_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root
+mv -v ~/HHH/condor_jobs_${YEAR}_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root ~/HHH/condor_jobs_${YEAR}_latest/fit/XToYHTo6B_MX-2500_MY-800_unnormalized_Histograms.root
+mv -v ~/HHH/condor_jobs_${YEAR}_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms_normalized.root ~/HHH/condor_jobs_${YEAR}_latest/fit/XToYHTo6B_MX-2500_MY-800_Histograms.root
 

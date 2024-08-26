@@ -92,7 +92,7 @@ export TIMESTAMP=20240822_011857
 ```
 1) Create a symbolic link to the output directory to make the commands that follow more generic
 ```
-ln -sfn condor_jobs_${YEAR}_PNmass_DeepJet_${TIMESTAMP} ~/HHH/condor_jobs_${YEAR}_latest
+ln -sfnv condor_jobs_${YEAR}_PNmass_DeepJet_${TIMESTAMP} ~/HHH/condor_jobs_${YEAR}_latest
 ```
 2) Combine output files
 ```
