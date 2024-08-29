@@ -26,7 +26,7 @@ if __name__ == '__main__':
     parser.add_argument("-d", "--datasets", dest="datasets",
                         help="Space-separated list of datasets (default: %(default)s)",
                         nargs='*',
-                        default=["QCD","TTbar","JetHT","XToYHTo6B_MX-2500_MY-800"],
+                        default=["TTbar","JetHT","XToYHTo6B_MX-2500_MY-800"],
                         metavar="DATASETS")
 
     parser.add_argument("--dry_run", dest="dry_run", action="store_true",
