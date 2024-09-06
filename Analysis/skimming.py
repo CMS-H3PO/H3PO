@@ -66,7 +66,7 @@ def skim(inputFile,outputFile,eventsToRead=None):
     events = NanoEventsFactory.from_root(inputFile,schemaclass=NanoAODSchema,entry_stop=eventsToRead).events()
     mcFlag = isMC(events)
     ptCut  = 200
-    msdCut = 50
+    massCut = 50
     etaCut = 2.5
     print("MC flag is {0}".format(mcFlag))
 
@@ -77,12 +77,12 @@ def skim(inputFile,outputFile,eventsToRead=None):
 
 
     ptMask       = events.FatJet.pt>ptCut
-    msdMask      = events.FatJet.msoftdrop>msdCut
+    massMask     = events.FatJet.msoftdrop>massCut | events.FatJet.particleNet_mass>massCut
     etaMask      = np.abs(events.FatJet.eta)<etaCut
 
-    #We require at least two FatJets satisfying pt, eta and msd requirements
+    #We require at least two FatJets satisfying pt, eta and mass requirements
     #This allows for 3+0 or 2+1 (AK8Jet+AK4Jet topologies)
-    skimmingMask = ak.sum(ptMask & msdMask & etaMask, axis=1)>1
+    skimmingMask = ak.sum(ptMask & massMask & etaMask, axis=1)>1
     if mcFlag:
         skimmed      = events[skimmingMask]
     else:
