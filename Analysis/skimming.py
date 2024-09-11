@@ -77,7 +77,7 @@ def skim(inputFile,outputFile,eventsToRead=None):
 
 
     ptMask       = events.FatJet.pt>ptCut
-    massMask     = events.FatJet.msoftdrop>massCut | events.FatJet.particleNet_mass>massCut
+    massMask     = ((events.FatJet.msoftdrop>massCut) | (events.FatJet.particleNet_mass>massCut))
     etaMask      = np.abs(events.FatJet.eta)<etaCut
 
     #We require at least two FatJets satisfying pt, eta and mass requirements
