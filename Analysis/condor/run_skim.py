@@ -7,7 +7,7 @@ from paths import SKIM_DIR, SKIM_JOB_DIR
 
 def createDirIfNotExist(path):
     if not os.path.exists(path):
-        #print("CREATING DIR: ", path)
+        print("CREATING DIR: ", path)
         os.makedirs(path)
 
 def removeProcessedFiles(inputFiles,outputDir):
@@ -36,11 +36,7 @@ def create_jobs(config,year="2016",jobs_dir="",out_dir=""):
 
         exeScript     = skim_template.replace("JOB_DIR",sampleJobs_dir)
         open(os.path.join(sampleJobs_dir, 'input', 'run_{}.sh'.format(sample)), 'w').write(exeScript)
-
-        condor_script = re.sub('EXEC',os.path.join(sampleJobs_dir, 'input', 'run_{}.sh'.format(sample)), selection_condor)
-        condor_script = re.sub('ARGFILE',os.path.join(sampleJobs_dir, 'input', 'args_{}.txt'.format(sample)), condor_script)
-        condor_script = re.sub('OUTPUT',os.path.join(sampleJobs_dir, 'output'), condor_script)
-        open(os.path.join(sampleJobs_dir, 'input', 'condor_{}.condor'.format(sample)), 'w').write(condor_script)
+        os.system("chmod +x {0}".format(os.path.join(sampleJobs_dir, 'input', 'run_{}.sh'.format(sample))))
 
         #Get input files
         dataset     = sample_cfg["dataset"]
@@ -63,15 +59,22 @@ def create_jobs(config,year="2016",jobs_dir="",out_dir=""):
         if(len(allFiles)==0):
             continue
 
-        #Create file with arguments to the python script
-        argsFile       = open(os.path.join(sampleJobs_dir, 'input', 'args_{}.txt'.format(sample)), 'w')
-        for iFile in allFiles:
+        #Create file with Condor commands
+        cmdFile       = open(os.path.join(sampleJobs_dir, 'input', 'cmds_{}.txt'.format(sample)), 'w')
+        #Loop over files to be processed
+        for i, iFile in enumerate(allFiles):
             fName      = iFile.split("/")[-1]
-            argsFile.write("-i {0} -o {1}\n".format(iFile,sampleOut_dir))
 
-        #Submit
-        os.system("chmod +x {0}".format(os.path.join(sampleJobs_dir, 'input', 'run_{}.sh'.format(sample))))
-        submissionCmds.append("condor_submit {0}".format(os.path.join(sampleJobs_dir, 'input', 'condor_{}.condor'.format(sample))))
+            condor_script = re.sub('EXEC',os.path.join(sampleJobs_dir, 'input', 'run_{}.sh'.format(sample)), selection_condor)
+            condor_script = re.sub('OUTPUT',os.path.join(sampleJobs_dir, 'output'), condor_script)
+            condor_script = re.sub('JOB','{}'.format(i), condor_script)
+            condor_script = re.sub('ARGS',"-i {} -o {}".format(iFile,sampleOut_dir), condor_script)
+            open(os.path.join(sampleJobs_dir, 'input', 'condor_{}_{}.condor'.format(sample, i)), 'w').write(condor_script)
+            #Submit command
+            cmdFile.write("condor_submit {0}\n".format(os.path.join(sampleJobs_dir, 'input', 'condor_{}_{}.condor'.format(sample, i))))
+
+        #Commands to source
+        submissionCmds.append("source {0}".format(os.path.join(sampleJobs_dir, 'input', 'cmds_{}.txt'.format(sample))))
     
     for cmd in submissionCmds:
         print(cmd)
@@ -90,8 +93,8 @@ def main():
 
     print(args)
 
-    out_dir  = "{0}/{1}".format(SKIM_DIR,args.year)
-    jobs_dir = "{0}/{1}".format(SKIM_JOB_DIR,args.year)
+    out_dir  = os.path.join(SKIM_DIR,args.year)
+    jobs_dir = os.path.join(SKIM_JOB_DIR,args.year)
 
     with open(args.config, 'r') as config_file:
         config = json.load(config_file)

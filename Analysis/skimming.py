@@ -26,11 +26,11 @@ def getYearFromRun(events):
 
 def getGoldenJson(dataYear):
     if(dataYear==2016):
-        jsonPath = H3_DIR+"/../data/LumiJson/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt"
+        jsonPath = os.path.join(H3_DIR,"../data/LumiJson/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt")
     elif(dataYear==2017):
-        jsonPath = H3_DIR+"/../data/LumiJson/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt"
+        jsonPath = os.path.join(H3_DIR,"../data/LumiJson/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt")
     else:
-        jsonPath = H3_DIR+"/../data/LumiJson/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt"
+        jsonPath = os.path.join(H3_DIR,"../data/LumiJson/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt")
     
     return jsonPath        
 
@@ -133,8 +133,8 @@ if(".txt" in options.input):
             print("CREATING DIR: ", odir)
             os.makedirs(odir)
 
-        skim(fileName,"{0}/{1}".format(odir,fileName),eventsToRead=None)
-        copyRunsTree(fileName,"{0}/{1}".format(odir,fileName))
+        skim(fileName,os.path.join(odir,fileName),eventsToRead=None)
+        copyRunsTree(fileName,os.path.join(odir,fileName))
         print("Removing local file {0}".format(fileName))
         os.system("rm {0}".format(fileName))
 
@@ -147,8 +147,8 @@ else:
         print("CREATING DIR: ", odir)
         os.makedirs(odir)
 
-    skim(fileName,"{0}/{1}".format(odir,fileName),eventsToRead=None)
-    copyRunsTree(fileName,"{0}/{1}".format(odir,fileName))
+    skim(fileName,os.path.join(odir,fileName),eventsToRead=None)
+    copyRunsTree(fileName,os.path.join(odir,fileName))
     print("Removing local file {0}".format(fileName))
     os.system("rm {0}".format(fileName))
 

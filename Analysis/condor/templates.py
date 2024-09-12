@@ -2,12 +2,12 @@ from paths import CMSSW_DIR, H3_DIR, H3ENV_DIR
 
 selection_condor = """universe              = vanilla
 executable            = EXEC
-output                = OUTPUT/output_$(Process).out
-error                 = OUTPUT/output_$(Process).err
-log                   = OUTPUT/output_$(Process).log
-Arguments = "$(args)"
+output                = OUTPUT/output_JOB.out
+error                 = OUTPUT/output_JOB.err
+log                   = OUTPUT/output_JOB.log
+RequestMemory = 4000
+Arguments = "ARGS"
 use_x509userproxy = true
-Queue args from ARGFILE
 queue
 """
 
