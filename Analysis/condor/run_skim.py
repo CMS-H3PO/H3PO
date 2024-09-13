@@ -69,9 +69,9 @@ def create_jobs(config,year="2016",jobs_dir="",out_dir=""):
             condor_script = re.sub('OUTPUT',os.path.join(sampleJobs_dir, 'output'), condor_script)
             condor_script = re.sub('JOB','{}'.format(i), condor_script)
             condor_script = re.sub('ARGS',"-i {} -o {}".format(iFile,sampleOut_dir), condor_script)
-            open(os.path.join(sampleJobs_dir, 'input', 'condor_{}_{}.condor'.format(sample, i)), 'w').write(condor_script)
+            open(os.path.join(sampleJobs_dir, 'input', 'condor_{}_{}.jdl'.format(sample, i)), 'w').write(condor_script)
             #Submit command
-            cmdFile.write("condor_submit {0}\n".format(os.path.join(sampleJobs_dir, 'input', 'condor_{}_{}.condor'.format(sample, i))))
+            cmdFile.write("condor_submit {0}\n".format(os.path.join(sampleJobs_dir, 'input', 'condor_{}_{}.jdl'.format(sample, i))))
 
         #Commands to source
         submissionCmds.append("source {0}".format(os.path.join(sampleJobs_dir, 'input', 'cmds_{}.txt'.format(sample))))
