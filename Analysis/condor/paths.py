@@ -9,4 +9,4 @@ SKIM_JOB_DIR        = os.path.join(H3_DIR, "condor/skim_jobs")
 #Location of the CMSSW dir
 CMSSW_DIR           = os.path.join(H3ENV_DIR, "CMSSW_13_0_2")
 #Where to store skimmed NanoAODs
-SKIM_DIR            = "/STORE/matej/H3_skims/"
+SKIM_DIR            = "/STORE/HHH/skims/"
