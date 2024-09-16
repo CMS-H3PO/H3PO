@@ -5,6 +5,7 @@ import numpy as np
 import ROOT as r
 from argparse import ArgumentParser
 import os
+import sys
 import time
 from condor.paths import H3_DIR
 from coffea.lumi_tools import LumiMask
@@ -106,7 +107,10 @@ def copyRunsTree(inputFile,outputFile):
 def localCopy(inputLFN):
     xrdcpCMD = "xrdcp root://cms-xrd-global.cern.ch//{0} .".format(inputLFN)
     print(xrdcpCMD)
-    os.system(xrdcpCMD)
+    result = os.system(xrdcpCMD)
+    if result:
+        print("File copying failed. Exiting")
+        sys.exit(1)
 
 parser = ArgumentParser()
 parser.add_argument('-i', '--input', metavar='IFILE', action='store',
