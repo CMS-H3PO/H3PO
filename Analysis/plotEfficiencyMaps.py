@@ -17,11 +17,10 @@ mass_points = [
 def makePlot(path, cut_flow, step, hmax):
 
     selection = 'boosted'
-    if 'semiboosted' in cut_flow:
-        selection = 'semiboosted'
+
 
     gr_limit = copy.deepcopy(ROOT.TGraph2D())
-    gr_limit.SetTitle(";m_{X} [GeV];m_{Y} [GeV];Selection efficiency (" + selection + ", " + step + ")")
+    gr_limit.SetTitle(";m_{X} [GeV];m_{Y} [GeV];Selection efficiency (boosted, " + step + ")")
 
     max_eff = 0.
     bin_total = 1
@@ -68,7 +67,7 @@ def makePlot(path, cut_flow, step, hmax):
 
     #c.SetLogz()
 
-    c.SaveAs('Signal_efficiency_map_{0}_{1}.png'.format(selection, step))
+    c.SaveAs('Signal_efficiency_map_boosted_{0}.png'.format(step))
 
 
 if __name__ == '__main__':
@@ -100,7 +99,5 @@ if __name__ == '__main__':
     ROOT.gStyle.SetStatFont(42)
     ROOT.gROOT.ForceStyle()
     
-    makePlot('/STORE/HHH/Histograms/2017/latest/', 'cutFlowHisto_SR_boosted', 'Pass', 0.50)
-    makePlot('/STORE/HHH/Histograms/2017/latest/', 'cutFlowHisto_SR_semiboosted', 'Pass', 0.50)
-    makePlot('/STORE/HHH/Histograms/2017/latest/', 'cutFlowHisto_SR_boosted', 'Fail', 0.01)
-    makePlot('/STORE/HHH/Histograms/2017/latest/', 'cutFlowHisto_SR_semiboosted', 'Fail', 0.01)
+    makePlot('~/condor_jobs_2017_background_20240925_124521/fit', 'cutFlowHisto_SR_boosted', 'Pass', 0.40)
+    makePlot('~/condor_jobs_2017_background_20240925_124521/fit', 'cutFlowHisto_SR_boosted', 'Fail', 0.03)
