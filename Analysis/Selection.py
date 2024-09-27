@@ -21,8 +21,6 @@ mass_cut = [100.,150.]
 pNet_cut = 0.9105
 
 
-
-#---------------------------------------------
 def addJECVariables(jets, event_rho,isData):
     jets["pt_raw"] = (1 - jets.rawFactor)*jets.pt
     jets["mass_raw"] = (1 - jets.rawFactor)*jets.mass
@@ -45,87 +43,6 @@ def yearFromInputFile(inputFile):
     else:       
         raise ValueError('Could not determine year from input file: {0}'.format(inputFile))
 
-
-def closest(masses):
-    delta = abs(higgs_mass - masses)
-    min_delta = ak.min(delta, axis=1)
-    is_closest = (delta == min_delta)
-    return is_closest
-
-
-def FatJetMass(fatjet):
-    #return fatjet.particleNet_mass
-	return fatjet.msoftdrop
-
-
-
-def HbbvsQCD(fatjet):
-    score = (fatjet.particleNetMD_Xbb/(fatjet.particleNetMD_Xbb+fatjet.particleNetMD_QCD))
-    return score
-
-# this is a jet mask
-def precut(fatjets):
-    return (fatjets.pt>ptcut) & (np.absolute(fatjets.eta)<etacut)
-
-
-def FailPassCategories(events, fatjets, jets=None):
-    # sort the fat jets in the descending pNet HbbvsQCD score
-    sorted_fatjets = fatjets[ak.argsort(-HbbvsQCD(fatjets),axis=-1)]
-
-    # fail region: 0 fat jets passing the pNet cut
-    # pass region: at least 1 fat jets passing the pNet cut
-    fail_mask = (HbbvsQCD(sorted_fatjets[:,0])<=pNet_cut)
-    pass_mask = (HbbvsQCD(sorted_fatjets[:,0])>pNet_cut)
-    if jets is not None:
-        return events[fail_mask], events[pass_mask], fatjets[fail_mask], fatjets[pass_mask], jets[fail_mask], jets[pass_mask]
-    else:
-        return events[fail_mask], events[pass_mask], fatjets[fail_mask], fatjets[pass_mask]
-
-
-# this is an event mask
-def SR_b_JetMass_evtMask(fatjets):
-    # one jet mass is in mass window [ mass_cut[0], mass_cut[1] ], one grater than mass_cut[1]
-    return ( ( ( FatJetMass(fatjets[:,0]) >= mass_cut[0] ) & ( FatJetMass(fatjets[:,0]) <= mass_cut[1] ) & ( FatJetMass(fatjets[:,1]) >= mass_cut[1] ) )
-			| ( ( FatJetMass(fatjets[:,1]) >= mass_cut[0] ) & ( FatJetMass(fatjets[:,1]) <= mass_cut[1] ) & ( FatJetMass(fatjets[:,0]) >= mass_cut[1] ) ) )
-
-
-
-# this is an event mask
-def VR_b_JetMass_evtMask(fatjets):
-    # jet mass window inverted for the Higgs candidate, Y candidate is same as in SR
-    return ( ( ( ( FatJetMass(fatjets[:,0]) < mass_cut[0] ) | ( FatJetMass(fatjets[:,0]) > mass_cut[1] ) ) & ( FatJetMass(fatjets[:,0]) > min_jet_mass ) & ( FatJetMass(fatjets[:,0]) < max_jet_mass )
-        & ( FatJetMass(fatjets[:,1]) > mass_cut[1] ) )
-		| ( ( ( FatJetMass(fatjets[:,1]) < mass_cut[0] ) | ( FatJetMass(fatjets[:,1]) > mass_cut[1] ) ) & ( FatJetMass(fatjets[:,1]) > min_jet_mass ) & ( FatJetMass(fatjets[:,1]) < max_jet_mass ) 
-		&  ( FatJetMass(fatjets[:,0]) > mass_cut[1] ) ) )
-
-#this is an event cut
-def phi_evtMask(fatjets):
-	return (abs(fatjets[:,0].delta_phi(fatjets[:,1])) > 2)
-
-
-
-def getCalibratedAK8(events,variation,fatjetFactory,jecTag):
-    AK8jecCache         = {}
-    if("mc" in jecTag):
-        isData = False
-    else:
-        isData = True
-    fatjetsCalib        = fatjetFactory[jecTag].build(addJECVariables(events.FatJet, events.fixedGridRhoFastjetAll,isData), AK8jecCache)
-
-    if(variation=="nominal"):
-        fatjets         = fatjetsCalib
-    elif(variation=="jesUp"):
-        fatjets         = fatjetsCalib.JES_jes.up
-    elif(variation=="jesDown"):
-        fatjets         = fatjetsCalib.JES_jes.down
-    elif(variation=="jerUp"):
-        fatjets         = fatjetsCalib.JER.up
-    elif(variation=="jerDown"):
-        fatjets         = fatjetsCalib.JER.down
-    else:       
-        raise ValueError('Invalid variation: ', variation)
-
-    return fatjets
 
 def jecTagFromFileName(fname):
     year    = yearFromInputFile(fname)
@@ -152,6 +69,98 @@ def jecTagFromFileName(fname):
     elif year=="2018":
         jecTag = year+"Run"+era
         return jecTag
+
+
+def FailPassCategories(events, fatjets, jets=None):
+    # sort the fat jets in the descending pNet HbbvsQCD score
+    sorted_fatjets = fatjets[ak.argsort(-HbbvsQCD(fatjets),axis=-1)]
+
+    # fail region: 0 fat jets passing the pNet cut
+    # pass region: at least 1 fat jets passing the pNet cut
+    fail_mask = (HbbvsQCD(sorted_fatjets[:,0])<=pNet_cut)
+    pass_mask = (HbbvsQCD(sorted_fatjets[:,0])>pNet_cut)
+    if jets is not None:
+        return events[fail_mask], events[pass_mask], fatjets[fail_mask], fatjets[pass_mask], jets[fail_mask], jets[pass_mask]
+    else:
+        return events[fail_mask], events[pass_mask], fatjets[fail_mask], fatjets[pass_mask]
+
+
+def getCalibratedAK8(events,variation,fatjetFactory,jecTag):
+    AK8jecCache         = {}
+    if("mc" in jecTag):
+        isData = False
+    else:
+        isData = True
+    fatjetsCalib        = fatjetFactory[jecTag].build(addJECVariables(events.FatJet, events.fixedGridRhoFastjetAll,isData), AK8jecCache)
+
+    if(variation=="nominal"):
+        fatjets         = fatjetsCalib
+    elif(variation=="jesUp"):
+        fatjets         = fatjetsCalib.JES_jes.up
+    elif(variation=="jesDown"):
+        fatjets         = fatjetsCalib.JES_jes.down
+    elif(variation=="jerUp"):
+        fatjets         = fatjetsCalib.JER.up
+    elif(variation=="jerDown"):
+        fatjets         = fatjetsCalib.JER.down
+    else:       
+        raise ValueError('Invalid variation: ', variation)
+
+    return fatjets
+
+
+
+
+
+
+
+def HbbvsQCD(fatjet):
+    score = (fatjet.particleNetMD_Xbb/(fatjet.particleNetMD_Xbb+fatjet.particleNetMD_QCD))
+    return score
+
+
+def FatJetMass_sd(fatjet):
+	return fatjet.msoftdrop
+
+def FatJetMass_pn(fatjet):
+	return fatjet.particleNet_mass
+
+# this is a jet mask
+def precut(fatjets):
+    return (fatjets.pt>ptcut) & (np.absolute(fatjets.eta)<etacut)
+
+# this is an event mask
+def SR_b_JetMass_evtMask(fatjets):
+    # one jet mass is in mass window [ mass_cut[0], mass_cut[1] ], one grater than mass_cut[1]
+    return ( ( ( FatJetMass_sd(fatjets[:,0]) >= mass_cut[0] ) & ( FatJetMass_sd(fatjets[:,0]) <= mass_cut[1] ) & ( FatJetMass_sd(fatjets[:,1]) > max_jet_mass ) )
+				| ( ( FatJetMass_sd(fatjets[:,1]) >= mass_cut[0] ) & ( FatJetMass_sd(fatjets[:,1]) <= mass_cut[1] ) & ( FatJetMass_sd(fatjets[:,0]) > max_jet_mass ) ) )
+	
+
+
+# this is an event mask
+def VR_b_JetMass_evtMask(fatjets):
+    # jet mass window inverted for the Higgs candidate, Y candidate is same as in SR
+    return ( ( ( ( FatJetMass_sd(fatjets[:,0]) < mass_cut[0] ) | ( FatJetMass_sd(fatjets[:,0]) > mass_cut[1] ) ) & ( FatJetMass_sd(fatjets[:,0]) > min_jet_mass ) & ( FatJetMass_sd(fatjets[:,0]) < max_jet_mass )
+        & ( FatJetMass_sd(fatjets[:,1]) > max_jet_mass ) )
+		| ( ( ( FatJetMass_sd(fatjets[:,1]) < mass_cut[0] ) | ( FatJetMass_sd(fatjets[:,1]) > mass_cut[1] ) ) & ( FatJetMass_sd(fatjets[:,1]) > min_jet_mass ) & ( FatJetMass_sd(fatjets[:,1]) < max_jet_mass ) 
+		&  ( FatJetMass_sd(fatjets[:,0]) > max_jet_mass ) ) )
+
+#this is an event cut
+#phicut = 2
+#def phi_evtMask(fatjets):
+#	return (abs(fatjets[:,0].delta_phi(fatjets[:,1])) > phicut)
+
+
+
+#this is a jet mask
+def higgsCandidateMask(fatjets):
+	return (FatJetMass_sd(fatjets) >= mass_cut[0]) & (FatJetMass_sd(fatjets) <= mass_cut[1])
+
+#this is a jet mask
+def yCandidateMask(fatjets):
+	return FatJetMass_sd(fatjets) >= max_jet_mass
+
+
 
 def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
@@ -196,9 +205,9 @@ def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=N
 
 
     # SR boosted
-    # apply the SR jet mass cut to the 2 leading (in pT) fat jets. 
+    # apply the SR jet mass cut to the 2 leading (in pT) fat jets.
 	# Pass on only the 2 leading fat jets (to avoid events passing or failing due to the 3rd or higher leading fat jet)
-    fatjets_SR_b_evtMask = SR_b_JetMass_evtMask(fatjets) & phi_evtMask(fatjets)
+    fatjets_SR_b_evtMask = SR_b_JetMass_evtMask(fatjets)# & phi_evtMask(fatjets)
     events_SR_b  =     events[fatjets_SR_b_evtMask]
     fatjets_SR_b =    fatjets[fatjets_SR_b_evtMask][:,0:2]
 
