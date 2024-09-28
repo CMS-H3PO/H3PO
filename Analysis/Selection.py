@@ -130,20 +130,29 @@ def precut(fatjets):
     return (fatjets.pt>ptcut) & (np.absolute(fatjets.eta)<etacut)
 
 # this is an event mask
-def SR_b_JetMass_evtMask(fatjets):
+def SR_b_JetMass_evtMask(fatjets, version="new"):
     # one jet mass is in mass window [ mass_cut[0], mass_cut[1] ], one grater than mass_cut[1]
-    return ( ( ( FatJetMass_sd(fatjets[:,0]) >= mass_cut[0] ) & ( FatJetMass_sd(fatjets[:,0]) <= mass_cut[1] ) & ( FatJetMass_sd(fatjets[:,1]) > max_jet_mass ) )
+	if "old" in version:
+		return ( ( ( FatJetMass_sd(fatjets[:,0]) >= mass_cut[0] ) & ( FatJetMass_sd(fatjets[:,0]) <= mass_cut[1] ) & ( FatJetMass_sd(fatjets[:,1]) > max_jet_mass ) )
 				| ( ( FatJetMass_sd(fatjets[:,1]) >= mass_cut[0] ) & ( FatJetMass_sd(fatjets[:,1]) <= mass_cut[1] ) & ( FatJetMass_sd(fatjets[:,0]) > max_jet_mass ) ) )
+
+	return ( ( ( FatJetMass_pn(fatjets[:,0]) >= mass_cut[0] ) & ( FatJetMass_pn(fatjets[:,0]) <= mass_cut[1] ) & ( FatJetMass_sd(fatjets[:,1]) > max_jet_mass ) & ( FatJetMass_pn(fatjets[:,1]) > mass_cut[1] ) )
+				|  ( ( FatJetMass_pn(fatjets[:,1]) >= mass_cut[0] ) & ( FatJetMass_pn(fatjets[:,1]) <= mass_cut[1] ) & ( FatJetMass_sd(fatjets[:,0]) > max_jet_mass ) & ( FatJetMass_pn(fatjets[:,0]) > mass_cut[1] ) ))
 	
 
 
 # this is an event mask
-def VR_b_JetMass_evtMask(fatjets):
+def VR_b_JetMass_evtMask(fatjets, version="new"):
     # jet mass window inverted for the Higgs candidate, Y candidate is same as in SR
-    return ( ( ( ( FatJetMass_sd(fatjets[:,0]) < mass_cut[0] ) | ( FatJetMass_sd(fatjets[:,0]) > mass_cut[1] ) ) & ( FatJetMass_sd(fatjets[:,0]) > min_jet_mass ) & ( FatJetMass_sd(fatjets[:,0]) < max_jet_mass )
-        & ( FatJetMass_sd(fatjets[:,1]) > max_jet_mass ) )
-		| ( ( ( FatJetMass_sd(fatjets[:,1]) < mass_cut[0] ) | ( FatJetMass_sd(fatjets[:,1]) > mass_cut[1] ) ) & ( FatJetMass_sd(fatjets[:,1]) > min_jet_mass ) & ( FatJetMass_sd(fatjets[:,1]) < max_jet_mass ) 
-		&  ( FatJetMass_sd(fatjets[:,0]) > max_jet_mass ) ) )
+	if "old" in version:
+		return ( ( ( ( FatJetMass_sd(fatjets[:,0]) < mass_cut[0] ) | ( FatJetMass_sd(fatjets[:,0]) > mass_cut[1] ) ) & ( FatJetMass_sd(fatjets[:,0]) > min_jet_mass ) & ( FatJetMass_sd(fatjets[:,0]) < max_jet_mass )
+        	& ( FatJetMass_sd(fatjets[:,1]) > max_jet_mass ) )
+			| ( ( ( FatJetMass_sd(fatjets[:,1]) < mass_cut[0] ) | ( FatJetMass_sd(fatjets[:,1]) > mass_cut[1] ) ) & ( FatJetMass_sd(fatjets[:,1]) > min_jet_mass ) & ( FatJetMass_sd(fatjets[:,1]) < max_jet_mass ) 
+			&  ( FatJetMass_sd(fatjets[:,0]) > max_jet_mass ) ) )
+	
+	return ( ( ( FatJetMass_pn(fatjets[:,0]) > min_jet_mass ) & ( FatJetMass_pn(fatjets[:,0]) < mass_cut[0] ) & ( FatJetMass_sd(fatjets[:,1]) > max_jet_mass ) & ( FatJetMass_pn(fatjets[:,1]) > mass_cut[1] ) )
+		| ( ( FatJetMass_pn(fatjets[:,1]) > min_jet_mass ) & ( FatJetMass_pn(fatjets[:,1]) < mass_cut[0] ) & ( FatJetMass_sd(fatjets[:,0]) > max_jet_mass ) & ( FatJetMass_pn(fatjets[:,0]) > mass_cut[1] ) ) )
+	
 
 #this is an event cut
 #phicut = 2
@@ -153,12 +162,37 @@ def VR_b_JetMass_evtMask(fatjets):
 
 
 #this is a jet mask
-def higgsCandidateMask(fatjets):
-	return (FatJetMass_sd(fatjets) >= mass_cut[0]) & (FatJetMass_sd(fatjets) <= mass_cut[1])
+def higgsCandidateMask_SR(fatjets, version="new"):
+	if "old" in version:
+		return (FatJetMass_sd(fatjets) >= mass_cut[0]) & (FatJetMass_sd(fatjets) <= mass_cut[1])
+
+	return (FatJetMass_pn(fatjets) >= mass_cut[0]) & (FatJetMass_pn(fatjets) <= mass_cut[1])
+
 
 #this is a jet mask
-def yCandidateMask(fatjets):
-	return FatJetMass_sd(fatjets) >= max_jet_mass
+def yCandidateMask_SR(fatjets, version="new"):
+	if "old" in version:
+		return FatJetMass_sd(fatjets) > max_jet_mass
+
+	return ( FatJetMass_sd(fatjets) > max_jet_mass ) & ( FatJetMass_pn(fatjets) > mass_cut[1] )
+
+
+#this is a jet mask
+def higgsCandidateMask_VR(fatjets, version="new"):
+	if "old" in version:
+		return ( ( FatJetMass_sd(fatjets) < mass_cut[0] ) | ( FatJetMass_sd(fatjets) > mass_cut[1] ) ) & ( FatJetMass_sd(fatjets) > min_jet_mass ) & ( FatJetMass_sd(fatjets) < max_jet_mass )
+
+	return ( FatJetMass_pn(fatjets) > min_jet_mass ) & ( FatJetMass_pn(fatjets) < mass_cut[0] )
+
+
+#this is a jet mask
+def yCandidateMask_VR(fatjets, version="new"):
+	if "old" in version:
+		return ( FatJetMass_sd(fatjets) > max_jet_mass )
+
+	return ( FatJetMass_sd(fatjets) > max_jet_mass ) & ( FatJetMass_pn(fatjets) > mass_cut[1] )
+
+
 
 
 

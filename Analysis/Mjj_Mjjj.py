@@ -190,44 +190,59 @@ def fillHistos(label, event_counts, extraHistos, SR_fail_fj, SR_pass_fj, VR_fail
 		hists["eta_VR_pass"].fill(eta_VR_pass=eta2_VR_pass)
 
 
-	jet1_mass_SR_fail = FatJetMass_sd(SR_fail_fj[:,0])
-	jet2_mass_SR_fail = FatJetMass_sd(SR_fail_fj[:,1])
-	jet1_mass_SR_pass = FatJetMass_sd(SR_pass_fj[:,0])
-	jet2_mass_SR_pass = FatJetMass_sd(SR_pass_fj[:,1])
-
-	jet1_mass_VR_fail = FatJetMass_sd(VR_fail_fj[:,0])
-	jet2_mass_VR_fail = FatJetMass_sd(VR_fail_fj[:,1])
-	jet1_mass_VR_pass = FatJetMass_sd(VR_pass_fj[:,0])
-	jet2_mass_VR_pass = FatJetMass_sd(VR_pass_fj[:,1])
+	jet1_higgs_SR_fail = SR_fail_fj[:,0][higgsCandidateMask_SR(SR_fail_fj[:,0])]
+	jet2_higgs_SR_fail = SR_fail_fj[:,1][higgsCandidateMask_SR(SR_fail_fj[:,1])]
+	jet1_y_SR_fail = SR_fail_fj[:,0][yCandidateMask_SR(SR_fail_fj[:,0])]
+	jet2_y_SR_fail = SR_fail_fj[:,1][yCandidateMask_SR(SR_fail_fj[:,1])]
 
 
-	jet1_higgs_mass_SR_fail = jet1_mass_SR_fail[higgsCandidateMask(SR_fail_fj[:,0])]
-	jet2_higgs_mass_SR_fail = jet2_mass_SR_fail[higgsCandidateMask(SR_fail_fj[:,1])]
-	jet1_y_mass_SR_fail = jet1_mass_SR_fail[yCandidateMask(SR_fail_fj[:,0])]
-	jet2_y_mass_SR_fail = jet2_mass_SR_fail[yCandidateMask(SR_fail_fj[:,1])]
+	jet1_higgs_SR_pass = SR_pass_fj[:,0][higgsCandidateMask_SR(SR_pass_fj[:,0])]
+	jet2_higgs_SR_pass = SR_pass_fj[:,1][higgsCandidateMask_SR(SR_pass_fj[:,1])]
+	jet1_y_SR_pass = SR_pass_fj[:,0][yCandidateMask_SR(SR_pass_fj[:,0])]
+	jet2_y_SR_pass = SR_pass_fj[:,1][yCandidateMask_SR(SR_pass_fj[:,1])]
 
-	jet1_higgs_mass_SR_pass = jet1_mass_SR_pass[higgsCandidateMask(SR_pass_fj[:,0])]
-	jet2_higgs_mass_SR_pass = jet2_mass_SR_pass[higgsCandidateMask(SR_pass_fj[:,1])]
-	jet1_y_mass_SR_pass = jet1_mass_SR_pass[yCandidateMask(SR_pass_fj[:,0])]
-	jet2_y_mass_SR_pass = jet2_mass_SR_pass[yCandidateMask(SR_pass_fj[:,1])]
 
-	jet1_higgs_mass_VR_fail = jet1_mass_VR_fail[higgsCandidateMask(VR_fail_fj[:,0])]
-	jet2_higgs_mass_VR_fail = jet2_mass_VR_fail[higgsCandidateMask(VR_fail_fj[:,1])]
-	jet1_y_mass_VR_fail = jet1_mass_VR_fail[yCandidateMask(VR_fail_fj[:,0])]
-	jet2_y_mass_VR_fail = jet2_mass_VR_fail[yCandidateMask(VR_fail_fj[:,1])]
 
-	jet1_higgs_mass_VR_pass = jet1_mass_VR_pass[higgsCandidateMask(VR_pass_fj[:,0])]
-	jet2_higgs_mass_VR_pass = jet2_mass_VR_pass[higgsCandidateMask(VR_pass_fj[:,1])]
-	jet1_y_mass_VR_pass = jet1_mass_VR_pass[yCandidateMask(VR_pass_fj[:,0])]
-	jet2_y_mass_VR_pass = jet2_mass_VR_pass[yCandidateMask(VR_pass_fj[:,1])]
+	jet1_higgs_VR_fail = VR_fail_fj[:,0][higgsCandidateMask_VR(VR_fail_fj[:,0])]
+	jet2_higgs_VR_fail = VR_fail_fj[:,1][higgsCandidateMask_VR(VR_fail_fj[:,1])]
+	jet1_y_VR_fail = VR_fail_fj[:,0][yCandidateMask_VR(VR_fail_fj[:,0])]
+	jet2_y_VR_fail = VR_fail_fj[:,1][yCandidateMask_VR(VR_fail_fj[:,1])]
+
+
+	jet1_higgs_VR_pass = VR_pass_fj[:,0][higgsCandidateMask_VR(VR_pass_fj[:,0])]
+	jet2_higgs_VR_pass = VR_pass_fj[:,1][higgsCandidateMask_VR(VR_pass_fj[:,1])]
+	jet1_y_VR_pass = VR_pass_fj[:,0][yCandidateMask_VR(VR_pass_fj[:,0])]
+	jet2_y_VR_pass = VR_pass_fj[:,1][yCandidateMask_VR(VR_pass_fj[:,1])]
+
+
+
+	jet1_higgs_mass_SR_fail = FatJetMass_pn(jet1_higgs_SR_fail)
+	jet2_higgs_mass_SR_fail = FatJetMass_pn(jet2_higgs_SR_fail)
+	jet1_y_mass_SR_fail = FatJetMass_sd(jet1_y_SR_fail)
+	jet2_y_mass_SR_fail = FatJetMass_sd(jet2_y_SR_fail)
+
+	jet1_higgs_mass_SR_pass = FatJetMass_pn(jet1_higgs_SR_pass)
+	jet2_higgs_mass_SR_pass = FatJetMass_pn(jet2_higgs_SR_pass)
+	jet1_y_mass_SR_pass = FatJetMass_sd(jet1_y_SR_pass)
+	jet2_y_mass_SR_pass = FatJetMass_sd(jet2_y_SR_pass)
+
+	jet1_higgs_mass_VR_fail = FatJetMass_pn(jet1_higgs_VR_fail)
+	jet2_higgs_mass_VR_fail = FatJetMass_pn(jet2_higgs_VR_fail)
+	jet1_y_mass_VR_fail = FatJetMass_sd(jet1_y_VR_fail)
+	jet2_y_mass_VR_fail = FatJetMass_sd(jet2_y_VR_fail)
+
+	jet1_higgs_mass_VR_pass = FatJetMass_pn(jet1_higgs_VR_pass)
+	jet2_higgs_mass_VR_pass = FatJetMass_pn(jet2_higgs_VR_pass)
+	jet1_y_mass_VR_pass = FatJetMass_sd(jet1_y_VR_pass)
+	jet2_y_mass_VR_pass = FatJetMass_sd(jet2_y_VR_pass)
 
 
 
 
 	j1_SR_fail_bin = hist.axis.Regular(label=f"{label} Signal Fail Jet Mass [GeV]", name="jet_mass_SR_fail", bins=j1_bins, start=j1_start, stop=j1_stop)
 	hists["mj_vs_mjj_SR_fail"] = Hist(j2_SR_fail_bin, j1_SR_fail_bin, storage="weight")
-	hists["mj_vs_mjj_SR_fail"].fill(jet_mass_SR_fail=jet1_mass_SR_fail,dijet_mass_SR_fail=dijet_mass_SR_fail)
-	hists["mj_vs_mjj_SR_fail"].fill(jet_mass_SR_fail=jet2_mass_SR_fail,dijet_mass_SR_fail=dijet_mass_SR_fail)
+	hists["mj_vs_mjj_SR_fail"].fill(jet_mass_SR_fail=jet1_y_mass_SR_fail, dijet_mass_SR_fail=dijet_mass_SR_fail[yCandidateMask_SR(SR_fail_fj[:,0])])
+	hists["mj_vs_mjj_SR_fail"].fill(jet_mass_SR_fail=jet2_y_mass_SR_fail, dijet_mass_SR_fail=dijet_mass_SR_fail[yCandidateMask_SR(SR_fail_fj[:,1])])
 
 	hists["j1_higgs_mass_SR_fail"] = Hist(j1_SR_fail_bin, storage="weight")
 	hists["j1_higgs_mass_SR_fail"].fill(jet_mass_SR_fail=jet1_higgs_mass_SR_fail)
@@ -241,8 +256,8 @@ def fillHistos(label, event_counts, extraHistos, SR_fail_fj, SR_pass_fj, VR_fail
 
 	j1_SR_pass_bin = hist.axis.Regular(label=f"{label} Signal Pass Jet Mass [GeV]", name="jet_mass_SR_pass", bins=j1_bins, start=j1_start, stop=j1_stop)
 	hists["mj_vs_mjj_SR_pass"] = Hist(j2_SR_pass_bin, j1_SR_pass_bin, storage="weight")
-	hists["mj_vs_mjj_SR_pass"].fill(jet_mass_SR_pass=jet1_mass_SR_pass,dijet_mass_SR_pass=dijet_mass_SR_pass)
-	hists["mj_vs_mjj_SR_pass"].fill(jet_mass_SR_pass=jet2_mass_SR_pass,dijet_mass_SR_pass=dijet_mass_SR_pass)
+	hists["mj_vs_mjj_SR_pass"].fill(jet_mass_SR_pass=jet1_y_mass_SR_pass, dijet_mass_SR_pass=dijet_mass_SR_pass[yCandidateMask_SR(SR_pass_fj[:,0])])
+	hists["mj_vs_mjj_SR_pass"].fill(jet_mass_SR_pass=jet2_y_mass_SR_pass, dijet_mass_SR_pass=dijet_mass_SR_pass[yCandidateMask_SR(SR_pass_fj[:,1])])
 
 	hists["j1_higgs_mass_SR_pass"] = Hist(j1_SR_pass_bin, storage="weight")
 	hists["j1_higgs_mass_SR_pass"].fill(jet_mass_SR_pass=jet1_higgs_mass_SR_pass)
@@ -250,16 +265,13 @@ def fillHistos(label, event_counts, extraHistos, SR_fail_fj, SR_pass_fj, VR_fail
 	hists["j1_y_mass_SR_pass"] = Hist(j1_SR_pass_bin, storage="weight")
 	hists["j1_y_mass_SR_pass"].fill(jet_mass_SR_pass=jet1_y_mass_SR_pass)
 	hists["j1_y_mass_SR_pass"].fill(jet_mass_SR_pass=jet2_y_mass_SR_pass)
-	hists["j1_tot_mass_SR_pass"] = Hist(j1_SR_pass_bin, storage="weight")
-	hists["j1_tot_mass_SR_pass"].fill(jet_mass_SR_pass=jet1_mass_SR_pass)
-	hists["j1_tot_mass_SR_pass"].fill(jet_mass_SR_pass=jet2_mass_SR_pass)
 
 
 
 	j1_VR_fail_bin = hist.axis.Regular(label=f"{label} Validation Fail Jet Mass [GeV]", name="jet_mass_VR_fail", bins=j1_bins, start=j1_start, stop=j1_stop)
 	hists["mj_vs_mjj_VR_fail"] = Hist(j2_VR_fail_bin, j1_VR_fail_bin, storage="weight")
-	hists["mj_vs_mjj_VR_fail"].fill(jet_mass_VR_fail=jet1_mass_VR_fail,dijet_mass_VR_fail=dijet_mass_VR_fail)
-	hists["mj_vs_mjj_VR_fail"].fill(jet_mass_VR_fail=jet2_mass_VR_fail,dijet_mass_VR_fail=dijet_mass_VR_fail)
+	hists["mj_vs_mjj_VR_fail"].fill(jet_mass_VR_fail=jet1_y_mass_VR_fail, dijet_mass_VR_fail=dijet_mass_VR_fail[yCandidateMask_VR(VR_fail_fj[:,0])])
+	hists["mj_vs_mjj_VR_fail"].fill(jet_mass_VR_fail=jet2_y_mass_VR_fail, dijet_mass_VR_fail=dijet_mass_VR_fail[yCandidateMask_VR(VR_fail_fj[:,1])])
 
 	hists["j1_higgs_mass_VR_fail"] = Hist(j1_VR_fail_bin, storage="weight")
 	hists["j1_higgs_mass_VR_fail"].fill(jet_mass_VR_fail=jet1_higgs_mass_VR_fail)
@@ -272,8 +284,8 @@ def fillHistos(label, event_counts, extraHistos, SR_fail_fj, SR_pass_fj, VR_fail
 
 	j1_VR_pass_bin = hist.axis.Regular(label=f"{label} Validation Pass Jet Mass [GeV]", name="jet_mass_VR_pass", bins=j1_bins, start=j1_start, stop=j1_stop)
 	hists["mj_vs_mjj_VR_pass"] = Hist(j2_VR_pass_bin, j1_VR_pass_bin, storage="weight")
-	hists["mj_vs_mjj_VR_pass"].fill(jet_mass_VR_pass=jet1_mass_VR_pass,dijet_mass_VR_pass=dijet_mass_VR_pass)
-	hists["mj_vs_mjj_VR_pass"].fill(jet_mass_VR_pass=jet2_mass_VR_pass,dijet_mass_VR_pass=dijet_mass_VR_pass)
+	hists["mj_vs_mjj_VR_pass"].fill(jet_mass_VR_pass=jet1_y_mass_VR_pass, dijet_mass_VR_pass=dijet_mass_VR_pass[yCandidateMask_VR(VR_pass_fj[:,0])])
+	hists["mj_vs_mjj_VR_pass"].fill(jet_mass_VR_pass=jet2_y_mass_VR_pass, dijet_mass_VR_pass=dijet_mass_VR_pass[yCandidateMask_VR(VR_pass_fj[:,1])])
 
 	hists["j1_higgs_mass_VR_pass"] = Hist(j1_VR_pass_bin, storage="weight")
 	hists["j1_higgs_mass_VR_pass"].fill(jet_mass_VR_pass=jet1_higgs_mass_VR_pass)
