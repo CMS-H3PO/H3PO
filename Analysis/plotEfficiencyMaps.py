@@ -16,9 +16,6 @@ mass_points = [
 
 def makePlot(path, cut_flow, step, hmax):
 
-    selection = 'boosted'
-
-
     gr_limit = copy.deepcopy(ROOT.TGraph2D())
     gr_limit.SetTitle(";m_{X} [GeV];m_{Y} [GeV];Selection efficiency (boosted, " + step + ")")
 
@@ -67,7 +64,7 @@ def makePlot(path, cut_flow, step, hmax):
 
     #c.SetLogz()
 
-    c.SaveAs('Signal_efficiency_map_boosted_{0}.png'.format(step))
+    c.SaveAs('Signal_efficiency_map_{0}.png'.format(step))
 
 
 if __name__ == '__main__':
@@ -99,5 +96,5 @@ if __name__ == '__main__':
     ROOT.gStyle.SetStatFont(42)
     ROOT.gROOT.ForceStyle()
     
-    makePlot('~/condor_jobs_2017_background_20240927_143200/fit', 'cutFlowHisto_SR_boosted', 'Pass', 0.40)
-    makePlot('~/condor_jobs_2017_background_20240927_143200/fit', 'cutFlowHisto_SR_boosted', 'Fail', 0.03)
+    makePlot('~/condor_jobs_2017_background_20241009_105319/fit', 'cutFlowHisto_SR_boosted', 'Pass', 0.40)
+    makePlot('~/condor_jobs_2017_background_20241009_105319/fit', 'cutFlowHisto_SR_boosted', 'Fail', 0.03)
