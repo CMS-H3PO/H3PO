@@ -64,6 +64,10 @@ if __name__ == '__main__':
                         default="2000",
                         metavar="MEMORY")
 
+    parser.add_argument("--requirements", dest="requirements",
+                        help="Additional job requirements",
+                        metavar="REQUIREMENTS")
+
     (options, args) = parser.parse_known_args()
 
     initial_dir = H3_DIR
@@ -108,7 +112,8 @@ if __name__ == '__main__':
                 job_file.write('initialdir  = ' + initial_dir + '\n')
                 job_file.write('getenv = False\n')
                 job_file.write('RequestMemory = {0}\n'.format(options.memory))
-                job_file.write('requirements = (machine == "lorientree05.hep.zef.irb.hr" )\n')
+                if options.requirements:
+                    job_file.write('requirements = ({})\n'.format(options.requirements))
                 
                 job_file.write('log    = ' + join(condor_dir_logs, 'log-' + dataset_job + '.log') + '\n')
                 job_file.write('output = ' + join(condor_dir_logs, 'tmp-' + dataset_job + '.out') + '\n')
