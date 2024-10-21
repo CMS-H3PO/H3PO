@@ -27,7 +27,7 @@ python ../tools/makeFileList.py HHH_samples_2017.txt HHH_files_2017.txt
 python ../tools/makeFileList.py HHH_samples_2018.txt HHH_files_2018.txt
 ```
 
-The above file lists were used to transfer files to the local cluster (requires initialized GRID proxy [*])
+The above file lists were used to transfer files to the local cluster (requires initialized GRID proxy [*]). In practice it turned out to be more robust to transfer files outside the H3env environment to avoid getting errors related to self-signed certificates, etc. Hence, the command to call Python is `python3`
 ```
 python3 ../tools/transfer_XRootD2RBI_HHH.py HHH_files_2016.txt 2016
 python3 ../tools/transfer_XRootD2RBI_HHH.py HHH_files_2016APV.txt 2016APV
