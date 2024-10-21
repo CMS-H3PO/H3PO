@@ -43,6 +43,8 @@ for r in remote_files:
     os.system(cmd)
 
     cmd = f'xrdcp -f "root://xrootd-cms.infn.it//{r}" "{dest}"'
+    # use system-installed xrdcp in a clean shell
+    cmd = "/bin/bash -c 'env -i {}'".format(cmd)
     print(cmd + '\n')
     exit_code = os.system(cmd)
     if exit_code == 0:
