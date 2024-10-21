@@ -55,6 +55,7 @@
  "XToYHTo6B_MX-2500_MY-1800": {"xsec": 0.1},
  "XToYHTo6B_MX-2500_MY-2000": {"xsec": 0.1},
  "XToYHTo6B_MX-2500_MY-2200": {"xsec": 0.1},
+ "XToYHTo6B_MX-2500_MY-2300": {"xsec": 0.1},
  "XToYHTo6B_MX-3000_MY-300": {"xsec": 1.0},
  "XToYHTo6B_MX-3000_MY-600": {"xsec": 0.1},
  "XToYHTo6B_MX-3000_MY-800": {"xsec": 0.1},
@@ -79,6 +80,8 @@
  "XToYHTo6B_MX-3500_MY-2000": {"xsec": 0.01},
  "XToYHTo6B_MX-3500_MY-2500": {"xsec": 0.01},
  "XToYHTo6B_MX-3500_MY-2800": {"xsec": 0.01},
+ "XToYHTo6B_MX-3500_MY-3000": {"xsec": 0.01},
+ "XToYHTo6B_MX-3500_MY-3300": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-300": {"xsec": 1.0},
  "XToYHTo6B_MX-4000_MY-600": {"xsec": 0.1},
  "XToYHTo6B_MX-4000_MY-800": {"xsec": 0.1},
@@ -90,6 +93,9 @@
  "XToYHTo6B_MX-4000_MY-2200": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-2500": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-2800": {"xsec": 0.01},
+ "XToYHTo6B_MX-4000_MY-3000": {"xsec": 0.01},
+ "XToYHTo6B_MX-4000_MY-3500": {"xsec": 0.01},
+ "XToYHTo6B_MX-4000_MY-3800": {"xsec": 0.01},
  "lumi":16800
  },
 "2016APV":{
@@ -144,6 +150,7 @@
  "XToYHTo6B_MX-2500_MY-1800": {"xsec": 0.1},
  "XToYHTo6B_MX-2500_MY-2000": {"xsec": 0.1},
  "XToYHTo6B_MX-2500_MY-2200": {"xsec": 0.1},
+ "XToYHTo6B_MX-2500_MY-2300": {"xsec": 0.1},
  "XToYHTo6B_MX-3000_MY-300": {"xsec": 1.0},
  "XToYHTo6B_MX-3000_MY-600": {"xsec": 0.1},
  "XToYHTo6B_MX-3000_MY-800": {"xsec": 0.1},
@@ -168,6 +175,8 @@
  "XToYHTo6B_MX-3500_MY-2000": {"xsec": 0.01},
  "XToYHTo6B_MX-3500_MY-2500": {"xsec": 0.01},
  "XToYHTo6B_MX-3500_MY-2800": {"xsec": 0.01},
+ "XToYHTo6B_MX-3500_MY-3000": {"xsec": 0.01},
+ "XToYHTo6B_MX-3500_MY-3300": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-300": {"xsec": 1.0},
  "XToYHTo6B_MX-4000_MY-600": {"xsec": 0.1},
  "XToYHTo6B_MX-4000_MY-800": {"xsec": 0.1},
@@ -179,6 +188,9 @@
  "XToYHTo6B_MX-4000_MY-2200": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-2500": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-2800": {"xsec": 0.01},
+ "XToYHTo6B_MX-4000_MY-3000": {"xsec": 0.01},
+ "XToYHTo6B_MX-4000_MY-3500": {"xsec": 0.01},
+ "XToYHTo6B_MX-4000_MY-3800": {"xsec": 0.01},
  "lumi":19500
  },
 "2017":{
@@ -233,6 +245,7 @@
  "XToYHTo6B_MX-2500_MY-1800": {"xsec": 0.1},
  "XToYHTo6B_MX-2500_MY-2000": {"xsec": 0.1},
  "XToYHTo6B_MX-2500_MY-2200": {"xsec": 0.1},
+ "XToYHTo6B_MX-2500_MY-2300": {"xsec": 0.1},
  "XToYHTo6B_MX-3000_MY-300": {"xsec": 1.0},
  "XToYHTo6B_MX-3000_MY-600": {"xsec": 0.1},
  "XToYHTo6B_MX-3000_MY-800": {"xsec": 0.1},
@@ -257,6 +270,8 @@
  "XToYHTo6B_MX-3500_MY-2000": {"xsec": 0.01},
  "XToYHTo6B_MX-3500_MY-2500": {"xsec": 0.01},
  "XToYHTo6B_MX-3500_MY-2800": {"xsec": 0.01},
+ "XToYHTo6B_MX-3500_MY-3000": {"xsec": 0.01},
+ "XToYHTo6B_MX-3500_MY-3300": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-300": {"xsec": 1.0},
  "XToYHTo6B_MX-4000_MY-600": {"xsec": 0.1},
  "XToYHTo6B_MX-4000_MY-800": {"xsec": 0.1},
@@ -268,6 +283,9 @@
  "XToYHTo6B_MX-4000_MY-2200": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-2500": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-2800": {"xsec": 0.01},
+ "XToYHTo6B_MX-4000_MY-3000": {"xsec": 0.01},
+ "XToYHTo6B_MX-4000_MY-3500": {"xsec": 0.01},
+ "XToYHTo6B_MX-4000_MY-3800": {"xsec": 0.01},
  "lumi":41500
 },
  "2018":{
@@ -322,6 +340,7 @@
  "XToYHTo6B_MX-2500_MY-1800": {"xsec": 0.1},
  "XToYHTo6B_MX-2500_MY-2000": {"xsec": 0.1},
  "XToYHTo6B_MX-2500_MY-2200": {"xsec": 0.1},
+ "XToYHTo6B_MX-2500_MY-2300": {"xsec": 0.1},
  "XToYHTo6B_MX-3000_MY-300": {"xsec": 1.0},
  "XToYHTo6B_MX-3000_MY-600": {"xsec": 0.1},
  "XToYHTo6B_MX-3000_MY-800": {"xsec": 0.1},
@@ -346,6 +365,8 @@
  "XToYHTo6B_MX-3500_MY-2000": {"xsec": 0.01},
  "XToYHTo6B_MX-3500_MY-2500": {"xsec": 0.01},
  "XToYHTo6B_MX-3500_MY-2800": {"xsec": 0.01},
+ "XToYHTo6B_MX-3500_MY-3000": {"xsec": 0.01},
+ "XToYHTo6B_MX-3500_MY-3300": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-300": {"xsec": 1.0},
  "XToYHTo6B_MX-4000_MY-600": {"xsec": 0.1},
  "XToYHTo6B_MX-4000_MY-800": {"xsec": 0.1},
@@ -357,6 +378,9 @@
  "XToYHTo6B_MX-4000_MY-2200": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-2500": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-2800": {"xsec": 0.01},
+ "XToYHTo6B_MX-4000_MY-3000": {"xsec": 0.01},
+ "XToYHTo6B_MX-4000_MY-3500": {"xsec": 0.01},
+ "XToYHTo6B_MX-4000_MY-3800": {"xsec": 0.01},
  "lumi":59800
  }
 }
