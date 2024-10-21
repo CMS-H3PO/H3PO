@@ -36,7 +36,7 @@ for r in remote_files:
     mx = split[2]
     my = split[3]
     
-    dest = f'/STORE/matej/H3_skims/{year}/XToYHTo6B_{mx}_{my}'
+    dest = f'/STORE/HHH/skims/{year}/XToYHTo6B_{mx}_{my}'
     
     cmd = f"mkdir -p {dest}"
     print('\n' + cmd)
