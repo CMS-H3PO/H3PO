@@ -12,7 +12,7 @@ from condor.paths import H3_DIR
 higgs_mass = 125.
 delta_r_cut = 0.8
 min_jet_mass = 60.
-max_jet_mass = 250.
+max_jet_mass = 150.
 
 # FatJet cuts
 ptcut = 250.
