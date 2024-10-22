@@ -90,7 +90,16 @@ def skim(inputFile,outputFile,eventsToRead=None):
         skimmed      = events[skimmingMask & lumiMask]
     
     with uproot.recreate(outputFile) as fout:
-        fout["Events"] = uproot_writeable(skimmed)
+        # ignore exception due to empty skim
+        try:
+            fout["Events"] = uproot_writeable(skimmed)
+        except ValueError as e:
+            if 'zero-size array' in str(e):
+                print("WARNING: Empty skim. Ignoring ValueError:", e)
+            else:
+                raise
+        except:
+            raise
 
 def copyRunsTree(inputFile,outputFile):
     print("Storing Runs tree in {0}".format(outputFile))
