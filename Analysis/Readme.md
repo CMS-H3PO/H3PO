@@ -1,4 +1,5 @@
 # Files:
+
 skimming.py - perform a loose selection on the files and store "skimmed" files. Execution time of the selection script is significantly reduced if skims are used as input\
 Selection.py - implements all the selection
 
@@ -27,13 +28,32 @@ python ../tools/makeFileList.py HHH_samples_2017.txt HHH_files_2017.txt
 python ../tools/makeFileList.py HHH_samples_2018.txt HHH_files_2018.txt
 ```
 
-The above file lists were used to transfer files to the local cluster (requires initialized GRID proxy [*])
+The above file lists were used to transfer signal files to the local cluster (requires initialized GRID proxy [*])
 ```
 python ../tools/transfer_XRootD2RBI_HHH.py HHH_files_2016.txt 2016
 python ../tools/transfer_XRootD2RBI_HHH.py HHH_files_2016APV.txt 2016APV
 python ../tools/transfer_XRootD2RBI_HHH.py HHH_files_2017.txt 2017
 python ../tools/transfer_XRootD2RBI_HHH.py HHH_files_2018.txt 2018
 ```
+
+A single file can be skimmed as in the following example (requires initialized GRID proxy [*])
+```
+python skimming.py -i /store/mc/RunIISummer20UL16NanoAODAPVv9/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v1/120000/2DD52229-3161-1C4D-9D73-B638B33B259C.root -o test_output
+```
+
+Large scale skimming of JetHT and TTbar datasets was done using the following commands:
+```
+cd condor/
+python run_skim.py -c skim_configs/2016APV/mc.json -y 2016APV
+python run_skim.py -c skim_configs/2016APV/data.json -y 2016APV
+python run_skim.py -c skim_configs/2016/mc.json -y 2016
+python run_skim.py -c skim_configs/2016/data.json -y 2016
+python run_skim.py -c skim_configs/2017/mc.json -y 2017
+python run_skim.py -c skim_configs/2017/data.json -y 2017
+python run_skim.py -c skim_configs/2018/mc.json -y 2018
+python run_skim.py -c skim_configs/2018/data.json -y 2018
+```
+Each of the above commands prints out `source` commands to be executed in order to submit skimming Condor jobs.
 
 # Make histograms with signal, backgrounds and data for SR (Signal Region) and VR (Validation Region):
 
@@ -56,11 +76,6 @@ python combine_histograms.py -h
 ```
 
 # Example commands:
-
-GRID proxy needs to be initialized [*] before running skimming to access the file on the store
-```
-python skimming.py -i /store/mc/RunIISummer20UL17NanoAODv9/QCD_HT1500to2000_TuneCP5_PSWeights_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/100000/D5426269-CD07-CA4C-8E9E-E2336514139F.root -o test_output
-```
 
 Commands from the last round of histogram production:
 
