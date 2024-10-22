@@ -114,7 +114,7 @@ def copyRunsTree(inputFile,outputFile):
     inputFile.Close()
 
 def localCopy(inputLFN):
-    xrdcpCMD = "xrdcp root://cms-xrd-global.cern.ch//{0} .".format(inputLFN)
+    xrdcpCMD = "xrdcp -f root://cms-xrd-global.cern.ch//{0} .".format(inputLFN)
     print(xrdcpCMD)
     result = os.system(xrdcpCMD)
     if result:
