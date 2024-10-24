@@ -67,7 +67,7 @@ def get_list_of_root_files(identifier, startsWith):
     for file in listdir(cwd):
         if not isfile(join(cwd, file)):
             continue
-        if (file.startswith(identifier) if not startsWith else ('_'+identifier+'-') in file) and (file.startswith('Histograms') if startsWith else ('_Histograms') in file) and file.endswith('.root'):
+        if (file.startswith(identifier+'_' if ('XToYHTo6B' in identifier) else identifier) if not startsWith else ('_'+identifier+'-') in file) and (file.startswith('Histograms') if startsWith else ('_Histograms') in file) and file.endswith('.root'):
             list_of_root_files.append(file)
     return list_of_root_files
 
