@@ -115,7 +115,7 @@ if __name__ == '__main__':
                 if options.requirements:
                     job_file.write('requirements = ({})\n'.format(options.requirements))
                 
-                job_file.write('log    = ' + join(condor_dir_logs, 'log-' + dataset_job + '.log') + '\n')
+                job_file.write('log    = ' + join(condor_dir_logs, 'tmp-' + dataset_job + '.log') + '\n')
                 job_file.write('output = ' + join(condor_dir_logs, 'tmp-' + dataset_job + '.out') + '\n')
                 job_file.write('error  = ' + join(condor_dir_logs, 'tmp-' + dataset_job + '.err') + '\n')
                 job_file.write('arguments = "' + args + '"\n')
