@@ -48,9 +48,8 @@ if __name__ == '__main__':
     files_dict = {}
     files_set = set()
     out_dir_name = ''
-    timestamp = ''
     if not options.no_timestamp:
-        timestamp = '_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        out_dir_name += datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # fill the file dictionary and the file set
     for year in sorted_years:
@@ -61,12 +60,11 @@ if __name__ == '__main__':
 
     if options.suffix:
         out_dir_name += ("_"+options.suffix)
-    out_dir_name += timestamp
 
     out_dir_path = os.path.join(options.output, out_dir_name)
-    os.system("mkdir -p {0}".format(out_dir_path))
+    os.system("mkdir -pv {0}".format(out_dir_path))
     if not options.no_symlink:
-        os.system("ln -sfn {0} {1}".format(out_dir_name, os.path.join(options.output, "latest")))
+        os.system("ln -sfnv {0} {1}".format(out_dir_name, os.path.join(options.output, "latest")))
     
     os.chdir(out_dir_path)
 
