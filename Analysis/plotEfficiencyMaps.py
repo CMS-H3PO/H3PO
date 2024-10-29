@@ -96,5 +96,5 @@ if __name__ == '__main__':
     ROOT.gStyle.SetStatFont(42)
     ROOT.gROOT.ForceStyle()
     
-    makePlot('~/condor_jobs_2017_background_20241009_105319/fit', 'cutFlowHisto_SR_boosted', 'Pass', 0.40)
-    makePlot('~/condor_jobs_2017_background_20241009_105319/fit', 'cutFlowHisto_SR_boosted', 'Fail', 0.03)
+    makePlot('~/condor_jobs_2017_background_20241021_093354/fit', 'cutFlowHisto_SR_boosted', 'Pass', 0.40)
+    makePlot('~/condor_jobs_2017_background_20241021_093354/fit', 'cutFlowHisto_SR_boosted', 'Fail', 0.03)

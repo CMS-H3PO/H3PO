@@ -18,7 +18,7 @@ ptcut = 250.
 etacut = 2.5
 mass_cut = [100.,150.]
 pNet_cut = 0.9105
-phi_cut = 2.5
+phi_cut = 2
 
 version = "new"
 

@@ -9,10 +9,25 @@ from Selection import *
 from Util import *
 
 
+j2_bins=120
+j2_start=0
+j2_stop=6000
+
 j1_bins=120
 j1_start=0
-j1_stop=500
+j1_stop=600
 
+ht_bins=120
+ht_start=0
+ht_stop=6000
+
+eta_bins=100
+eta_start=-5
+eta_stop=5
+
+phi_bins = 100
+phi_start = - np.pi
+phi_stop = np.pi
 
 version = "new"
 
@@ -22,7 +37,7 @@ def getTriggerEvtMask(events, trigList):
 	return np.logical_or.reduce(refTriggerBits, axis=0)
 
 
-def fillHistos(event_counts, extraHistos, fatjets, refTrigList=None, trigList=None):
+def fillHistos(event_counts, extraHistos, SR_fail_fj, SR_pass_fj, VR_fail_fj, VR_pass_fj, SR_fail_e=None, SR_pass_e=None, VR_fail_e=None, VR_pass_e=None, refTrigList=None, trigList=None):
 	if refTrigList != None:
 		# SR fail
 		trigEvtMask = getTriggerEvtMask(SR_fail_e, refTrigList)
@@ -86,25 +101,282 @@ def fillHistos(event_counts, extraHistos, fatjets, refTrigList=None, trigList=No
 
 
 
-	particleNet_mass = ak.flatten(FatJetMass_pn(fatjets)[:,0:2])
-	softdrop_mass = ak.flatten(FatJetMass_sd(fatjets)[:,0:2])
+	particleNet_mass_SR_fail = ak.flatten(FatJetMass_pn(SR_fail_fj))
+	particleNet_mass_SR_pass = ak.flatten(FatJetMass_pn(SR_pass_fj))
+	particleNet_mass_VR_fail = ak.flatten(FatJetMass_pn(VR_fail_fj))
+	particleNet_mass_VR_pass = ak.flatten(FatJetMass_pn(VR_pass_fj))
+
+	softdrop_mass_SR_fail = ak.flatten(FatJetMass_sd(SR_fail_fj))
+	softdrop_mass_SR_pass = ak.flatten(FatJetMass_sd(SR_pass_fj))
+	softdrop_mass_VR_fail = ak.flatten(FatJetMass_sd(VR_fail_fj))
+	softdrop_mass_VR_pass = ak.flatten(FatJetMass_sd(VR_pass_fj))
 
 
 
-	pn_mass_bin = hist.axis.Regular(label=f"ParticleNet Mass [GeV]", name="pn_mass", bins=j1_bins, start=j1_start, stop=j1_stop)
-	sd_mass_bin = hist.axis.Regular(label=f"Softdrop Mass [GeV]", name="sd_mass", bins=j1_bins, start=j1_start, stop=j1_stop)
-	hists["sd_vs_pn"] = Hist(pn_mass_bin, sd_mass_bin, storage="weight")
-	hists["sd_vs_pn"].fill(sd_mass=softdrop_mass, pn_mass=particleNet_mass)
+	pn_mass_SR_bin = hist.axis.Regular(label=f"Signal ParticleNet Mass [GeV]", name="pn_mass_SR", bins=j1_bins, start=j1_start, stop=j1_stop)
+	sd_mass_SR_bin = hist.axis.Regular(label=f"Signal Softdrop Mass [GeV]", name="sd_mass_SR", bins=j1_bins, start=j1_start, stop=j1_stop)
+	hists["sd_vs_pn_SR"] = Hist(pn_mass_SR_bin, sd_mass_SR_bin, storage="weight")
+	hists["sd_vs_pn_SR"].fill(sd_mass_SR=softdrop_mass_SR_fail, pn_mass_SR=particleNet_mass_SR_fail)
+	hists["sd_vs_pn_SR"].fill(sd_mass_SR=softdrop_mass_SR_pass, pn_mass_SR=particleNet_mass_SR_pass)
 
 
+
+	pn_mass_VR_bin = hist.axis.Regular(label=f"Validation ParticleNet Mass [GeV]", name="pn_mass_VR", bins=j1_bins, start=j1_start, stop=j1_stop)
+	sd_mass_VR_bin = hist.axis.Regular(label=f"Validation Softdrop Mass [GeV]", name="sd_mass_VR", bins=j1_bins, start=j1_start, stop=j1_stop)
+	hists["sd_vs_pn_VR"] = Hist(pn_mass_VR_bin, sd_mass_VR_bin, storage="weight")
+	hists["sd_vs_pn_VR"].fill(sd_mass_VR=softdrop_mass_VR_fail, pn_mass_VR=particleNet_mass_VR_fail)
+	hists["sd_vs_pn_VR"].fill(sd_mass_VR=softdrop_mass_VR_pass, pn_mass_VR=particleNet_mass_VR_pass)
+
+
+
+
+
+
+
+
+	dijet_mass_SR_fail = (SR_fail_fj[:,0]+SR_fail_fj[:,1]).mass
+	dijet_mass_SR_pass = (SR_pass_fj[:,0]+SR_pass_fj[:,1]).mass
+	dijet_mass_VR_fail = (VR_fail_fj[:,0]+VR_fail_fj[:,1]).mass
+	dijet_mass_VR_pass = (VR_pass_fj[:,0]+VR_pass_fj[:,1]).mass
+
+
+	if extraHistos:
+		ht_SR_fail = SR_fail_fj[:,0].pt+SR_fail_fj[:,1].pt
+		ht_SR_pass = SR_pass_fj[:,0].pt+SR_pass_fj[:,1].pt
+		ht_VR_fail = VR_fail_fj[:,0].pt+VR_fail_fj[:,1].pt
+		ht_VR_pass = VR_pass_fj[:,0].pt+VR_pass_fj[:,1].pt
+
+
+	eta1_SR_fail = SR_fail_fj[:,0].eta
+	eta2_SR_fail = SR_fail_fj[:,1].eta
+	eta1_SR_pass = SR_pass_fj[:,0].eta
+	eta2_SR_pass = SR_pass_fj[:,1].eta
+
+	eta1_VR_fail = VR_fail_fj[:,0].eta
+	eta2_VR_fail = VR_fail_fj[:,1].eta
+	eta1_VR_pass = VR_pass_fj[:,0].eta
+	eta2_VR_pass = VR_pass_fj[:,1].eta
+
+	deltaEta_SR_fail = eta1_SR_fail - eta2_SR_fail
+	deltaEta_SR_pass = eta1_SR_pass - eta2_SR_pass
+	deltaEta_VR_fail = eta1_VR_fail - eta2_VR_fail
+	deltaEta_VR_pass = eta1_VR_pass - eta2_VR_pass
+
+
+	deltaPhi_SR_fail = SR_fail_fj[:,0].delta_phi(SR_fail_fj[:,1])	
+	deltaPhi_SR_pass = SR_pass_fj[:,0].delta_phi(SR_pass_fj[:,1])
+	deltaPhi_VR_fail = VR_fail_fj[:,0].delta_phi(VR_fail_fj[:,1])
+	deltaPhi_VR_pass = VR_pass_fj[:,0].delta_phi(VR_pass_fj[:,1])
+
+
+
+	j2_SR_fail_bin = hist.axis.Regular(label=f"Signal Fail Dijet Mass [GeV]", name="dijet_mass_SR_fail", bins=j2_bins, start=j2_start, stop=j2_stop)
+	hists["j2_SR_fail"] = Hist(j2_SR_fail_bin, storage="weight")
+	hists["j2_SR_fail"].fill(dijet_mass_SR_fail=dijet_mass_SR_fail)
+
+	j2_SR_pass_bin = hist.axis.Regular(label=f"Signal Pass Dijet Mass [GeV]", name="dijet_mass_SR_pass", bins=j2_bins, start=j2_start, stop=j2_stop)
+	hists["j2_SR_pass"] = Hist(j2_SR_pass_bin, storage="weight")
+	hists["j2_SR_pass"].fill(dijet_mass_SR_pass=dijet_mass_SR_pass)
+
+	j2_VR_fail_bin = hist.axis.Regular(label=f"Validation Fail Dijet Mass [GeV]", name="dijet_mass_VR_fail", bins=j2_bins, start=j2_start, stop=j2_stop)
+	hists["j2_VR_fail"] = Hist(j2_VR_fail_bin, storage="weight")
+	hists["j2_VR_fail"].fill(dijet_mass_VR_fail=dijet_mass_VR_fail)
+
+	j2_VR_pass_bin = hist.axis.Regular(label=f"Validation Pass Dijet Mass [GeV]", name="dijet_mass_VR_pass", bins=j2_bins, start=j2_start, stop=j2_stop)
+	hists["j2_VR_pass"] = Hist(j2_VR_pass_bin, storage="weight")
+	hists["j2_VR_pass"].fill(dijet_mass_VR_pass=dijet_mass_VR_pass)
+
+	if extraHistos:
+		ht_SR_fail_bin = hist.axis.Regular(label=f"Signal Fail H_{{T}} [GeV]", name="ht_SR_fail", bins=ht_bins, start=ht_start, stop=ht_stop)
+		hists["ht_vs_mjj_SR_fail"] = Hist(j2_SR_fail_bin, ht_SR_fail_bin, storage="weight")
+		hists["ht_vs_mjj_SR_fail"].fill(ht_SR_fail=ht_SR_fail,dijet_mass_SR_fail=dijet_mass_SR_fail)
+
+		eta_SR_fail_bin = hist.axis.Regular(label=f"Signal Fail Fat Jet #eta", name="eta_SR_fail", bins=eta_bins, start=eta_start, stop=eta_stop)
+		hists["eta_SR_fail"] = Hist(eta_SR_fail_bin, storage="weight")
+		hists["eta_SR_fail"].fill(eta_SR_fail=eta1_SR_fail)
+		hists["eta_SR_fail"].fill(eta_SR_fail=eta2_SR_fail)
+
+		ht_SR_pass_bin = hist.axis.Regular(label=f"Signal Pass H_{{T}} [GeV]", name="ht_SR_pass", bins=ht_bins, start=ht_start, stop=ht_stop)
+		hists["ht_vs_mjj_SR_pass"] = Hist(j2_SR_pass_bin, ht_SR_pass_bin, storage="weight")
+		hists["ht_vs_mjj_SR_pass"].fill(ht_SR_pass=ht_SR_pass,dijet_mass_SR_pass=dijet_mass_SR_pass)
+
+		eta_SR_pass_bin = hist.axis.Regular(label=f"Signal Pass Fat Jet #eta", name="eta_SR_pass", bins=eta_bins, start=eta_start, stop=eta_stop)
+		hists["eta_SR_pass"] = Hist(eta_SR_pass_bin, storage="weight")
+		hists["eta_SR_pass"].fill(eta_SR_pass=eta1_SR_pass)
+		hists["eta_SR_pass"].fill(eta_SR_pass=eta2_SR_pass)
+
+		ht_VR_fail_bin = hist.axis.Regular(label=f"{label} Validation Fail H_{{T}} [GeV]", name="ht_VR_fail", bins=ht_bins, start=ht_start, stop=ht_stop)
+		hists["ht_vs_mjj_VR_fail"] = Hist(j2_VR_fail_bin, ht_VR_fail_bin, storage="weight")
+		hists["ht_vs_mjj_VR_fail"].fill(ht_VR_fail=ht_VR_fail,dijet_mass_VR_fail=dijet_mass_VR_fail)
+
+		eta_VR_fail_bin = hist.axis.Regular(label=f"Validation Fail Fat Jet #eta", name="eta_VR_fail", bins=eta_bins, start=eta_start, stop=eta_stop)
+		hists["eta_VR_fail"] = Hist(eta_VR_fail_bin, storage="weight")
+		hists["eta_VR_fail"].fill(eta_VR_fail=eta1_VR_fail)
+		hists["eta_VR_fail"].fill(eta_VR_fail=eta2_VR_fail)
+
+		ht_VR_pass_bin = hist.axis.Regular(label=f"Validation Pass H_{{T}} [GeV]", name="ht_VR_pass", bins=ht_bins, start=ht_start, stop=ht_stop)
+		hists["ht_vs_mjj_VR_pass"] = Hist(j2_VR_pass_bin, ht_VR_pass_bin, storage="weight")
+		hists["ht_vs_mjj_VR_pass"].fill(ht_VR_pass=ht_VR_pass,dijet_mass_VR_pass=dijet_mass_VR_pass)
+
+		eta_VR_pass_bin = hist.axis.Regular(label=f"Validation Pass Fat Jet #eta", name="eta_VR_pass", bins=eta_bins, start=eta_start, stop=eta_stop)
+		hists["eta_VR_pass"] = Hist(eta_VR_pass_bin, storage="weight")
+		hists["eta_VR_pass"].fill(eta_VR_pass=eta1_VR_pass)
+		hists["eta_VR_pass"].fill(eta_VR_pass=eta2_VR_pass)
+
+
+	jet1_higgs_SR_fail = SR_fail_fj[:,0][higgsCandidateMask_SR(SR_fail_fj[:,0], version)]
+	jet2_higgs_SR_fail = SR_fail_fj[:,1][higgsCandidateMask_SR(SR_fail_fj[:,1], version)]
+	jet1_y_SR_fail = SR_fail_fj[:,0][yCandidateMask_SR(SR_fail_fj[:,0], version)]
+	jet2_y_SR_fail = SR_fail_fj[:,1][yCandidateMask_SR(SR_fail_fj[:,1], version)]
+
+
+	jet1_higgs_SR_pass = SR_pass_fj[:,0][higgsCandidateMask_SR(SR_pass_fj[:,0], version)]
+	jet2_higgs_SR_pass = SR_pass_fj[:,1][higgsCandidateMask_SR(SR_pass_fj[:,1], version)]
+	jet1_y_SR_pass = SR_pass_fj[:,0][yCandidateMask_SR(SR_pass_fj[:,0], version)]
+	jet2_y_SR_pass = SR_pass_fj[:,1][yCandidateMask_SR(SR_pass_fj[:,1], version)]
+
+
+	jet1_higgs_VR_fail = VR_fail_fj[:,0][higgsCandidateMask_VR(VR_fail_fj[:,0], version)]
+	jet2_higgs_VR_fail = VR_fail_fj[:,1][higgsCandidateMask_VR(VR_fail_fj[:,1], version)]
+	jet1_y_VR_fail = VR_fail_fj[:,0][yCandidateMask_VR(VR_fail_fj[:,0], version)]
+	jet2_y_VR_fail = VR_fail_fj[:,1][yCandidateMask_VR(VR_fail_fj[:,1], version)]
+
+
+	jet1_higgs_VR_pass = VR_pass_fj[:,0][higgsCandidateMask_VR(VR_pass_fj[:,0], version)]
+	jet2_higgs_VR_pass = VR_pass_fj[:,1][higgsCandidateMask_VR(VR_pass_fj[:,1], version)]
+	jet1_y_VR_pass = VR_pass_fj[:,0][yCandidateMask_VR(VR_pass_fj[:,0], version)]
+	jet2_y_VR_pass = VR_pass_fj[:,1][yCandidateMask_VR(VR_pass_fj[:,1], version)]
+
+
+
+	jet1_higgs_mass_SR_fail = FatJetMass_pn(jet1_higgs_SR_fail)
+	jet2_higgs_mass_SR_fail = FatJetMass_pn(jet2_higgs_SR_fail)
+	jet1_y_mass_SR_fail = FatJetMass_sd(jet1_y_SR_fail)
+	jet2_y_mass_SR_fail = FatJetMass_sd(jet2_y_SR_fail)
+
+	jet1_higgs_mass_SR_pass = FatJetMass_pn(jet1_higgs_SR_pass)
+	jet2_higgs_mass_SR_pass = FatJetMass_pn(jet2_higgs_SR_pass)
+	jet1_y_mass_SR_pass = FatJetMass_sd(jet1_y_SR_pass)
+	jet2_y_mass_SR_pass = FatJetMass_sd(jet2_y_SR_pass)
+
+	jet1_higgs_mass_VR_fail = FatJetMass_pn(jet1_higgs_VR_fail)
+	jet2_higgs_mass_VR_fail = FatJetMass_pn(jet2_higgs_VR_fail)
+	jet1_y_mass_VR_fail = FatJetMass_sd(jet1_y_VR_fail)
+	jet2_y_mass_VR_fail = FatJetMass_sd(jet2_y_VR_fail)
+
+	jet1_higgs_mass_VR_pass = FatJetMass_pn(jet1_higgs_VR_pass)
+	jet2_higgs_mass_VR_pass = FatJetMass_pn(jet2_higgs_VR_pass)
+	jet1_y_mass_VR_pass = FatJetMass_sd(jet1_y_VR_pass)
+	jet2_y_mass_VR_pass = FatJetMass_sd(jet2_y_VR_pass)
+
+
+
+
+	j1_SR_fail_bin = hist.axis.Regular(label=f"Signal Fail Jet Mass [GeV]", name="jet_mass_SR_fail", bins=j1_bins, start=j1_start, stop=j1_stop)
+	hists["mj_vs_mjj_SR_fail"] = Hist(j2_SR_fail_bin, j1_SR_fail_bin, storage="weight")
+	hists["mj_vs_mjj_SR_fail"].fill(jet_mass_SR_fail=jet1_y_mass_SR_fail, dijet_mass_SR_fail=dijet_mass_SR_fail[yCandidateMask_SR(SR_fail_fj[:,0], version)])
+	hists["mj_vs_mjj_SR_fail"].fill(jet_mass_SR_fail=jet2_y_mass_SR_fail, dijet_mass_SR_fail=dijet_mass_SR_fail[yCandidateMask_SR(SR_fail_fj[:,1], version)])
+
+	hists["j1_higgs_mass_SR_fail"] = Hist(j1_SR_fail_bin, storage="weight")
+	hists["j1_higgs_mass_SR_fail"].fill(jet_mass_SR_fail=jet1_higgs_mass_SR_fail)
+	hists["j1_higgs_mass_SR_fail"].fill(jet_mass_SR_fail=jet2_higgs_mass_SR_fail)
+
+	hists["j1_y_mass_SR_fail"] = Hist(j1_SR_fail_bin, storage="weight")
+	hists["j1_y_mass_SR_fail"].fill(jet_mass_SR_fail=jet1_y_mass_SR_fail)
+	hists["j1_y_mass_SR_fail"].fill(jet_mass_SR_fail=jet2_y_mass_SR_fail)
+
+
+
+
+	j1_SR_pass_bin = hist.axis.Regular(label=f"Signal Pass Jet Mass [GeV]", name="jet_mass_SR_pass", bins=j1_bins, start=j1_start, stop=j1_stop)
+	hists["mj_vs_mjj_SR_pass"] = Hist(j2_SR_pass_bin, j1_SR_pass_bin, storage="weight")
+	hists["mj_vs_mjj_SR_pass"].fill(jet_mass_SR_pass=jet1_y_mass_SR_pass, dijet_mass_SR_pass=dijet_mass_SR_pass[yCandidateMask_SR(SR_pass_fj[:,0], version)])
+	hists["mj_vs_mjj_SR_pass"].fill(jet_mass_SR_pass=jet2_y_mass_SR_pass, dijet_mass_SR_pass=dijet_mass_SR_pass[yCandidateMask_SR(SR_pass_fj[:,1], version)])
+
+	hists["j1_higgs_mass_SR_pass"] = Hist(j1_SR_pass_bin, storage="weight")
+	hists["j1_higgs_mass_SR_pass"].fill(jet_mass_SR_pass=jet1_higgs_mass_SR_pass)
+	hists["j1_higgs_mass_SR_pass"].fill(jet_mass_SR_pass=jet2_higgs_mass_SR_pass)
+
+	hists["j1_y_mass_SR_pass"] = Hist(j1_SR_pass_bin, storage="weight")
+	hists["j1_y_mass_SR_pass"].fill(jet_mass_SR_pass=jet1_y_mass_SR_pass)
+	hists["j1_y_mass_SR_pass"].fill(jet_mass_SR_pass=jet2_y_mass_SR_pass)
+
+
+
+	j1_VR_fail_bin = hist.axis.Regular(label=f"Validation Fail Jet Mass [GeV]", name="jet_mass_VR_fail", bins=j1_bins, start=j1_start, stop=j1_stop)
+	hists["mj_vs_mjj_VR_fail"] = Hist(j2_VR_fail_bin, j1_VR_fail_bin, storage="weight")
+	hists["mj_vs_mjj_VR_fail"].fill(jet_mass_VR_fail=jet1_y_mass_VR_fail, dijet_mass_VR_fail=dijet_mass_VR_fail[yCandidateMask_VR(VR_fail_fj[:,0], version)])
+	hists["mj_vs_mjj_VR_fail"].fill(jet_mass_VR_fail=jet2_y_mass_VR_fail, dijet_mass_VR_fail=dijet_mass_VR_fail[yCandidateMask_VR(VR_fail_fj[:,1], version)])
+
+	hists["j1_higgs_mass_VR_fail"] = Hist(j1_VR_fail_bin, storage="weight")
+	hists["j1_higgs_mass_VR_fail"].fill(jet_mass_VR_fail=jet1_higgs_mass_VR_fail)
+	hists["j1_higgs_mass_VR_fail"].fill(jet_mass_VR_fail=jet2_higgs_mass_VR_fail)
+
+	hists["j1_y_mass_VR_fail"] = Hist(j1_VR_fail_bin, storage="weight")
+	hists["j1_y_mass_VR_fail"].fill(jet_mass_VR_fail=jet1_y_mass_VR_fail)
+	hists["j1_y_mass_VR_fail"].fill(jet_mass_VR_fail=jet2_y_mass_VR_fail)
+
+
+
+	j1_VR_pass_bin = hist.axis.Regular(label=f"Validation Pass Jet Mass [GeV]", name="jet_mass_VR_pass", bins=j1_bins, start=j1_start, stop=j1_stop)
+	hists["mj_vs_mjj_VR_pass"] = Hist(j2_VR_pass_bin, j1_VR_pass_bin, storage="weight")
+	hists["mj_vs_mjj_VR_pass"].fill(jet_mass_VR_pass=jet1_y_mass_VR_pass, dijet_mass_VR_pass=dijet_mass_VR_pass[yCandidateMask_VR(VR_pass_fj[:,0], version)])
+	hists["mj_vs_mjj_VR_pass"].fill(jet_mass_VR_pass=jet2_y_mass_VR_pass, dijet_mass_VR_pass=dijet_mass_VR_pass[yCandidateMask_VR(VR_pass_fj[:,1], version)])
+
+	hists["j1_higgs_mass_VR_pass"] = Hist(j1_VR_pass_bin, storage="weight")
+	hists["j1_higgs_mass_VR_pass"].fill(jet_mass_VR_pass=jet1_higgs_mass_VR_pass)
+	hists["j1_higgs_mass_VR_pass"].fill(jet_mass_VR_pass=jet2_higgs_mass_VR_pass)
+
+	hists["j1_y_mass_VR_pass"] = Hist(j1_VR_pass_bin, storage="weight")
+	hists["j1_y_mass_VR_pass"].fill(jet_mass_VR_pass=jet1_y_mass_VR_pass)
+	hists["j1_y_mass_VR_pass"].fill(jet_mass_VR_pass=jet2_y_mass_VR_pass)
+
+
+
+
+
+	deltaEta_SR_fail_bin = hist.axis.Regular(label=f"Signal Fail Delta #eta", name="deltaEta_SR_fail", bins=eta_bins, start=eta_start, stop=eta_stop)
+	hists["deltaEta_SR_fail"] = Hist(deltaEta_SR_fail_bin, storage="weight")
+	hists["deltaEta_SR_fail"].fill(deltaEta_SR_fail=deltaEta_SR_fail)
+
+	deltaEta_SR_pass_bin = hist.axis.Regular(label=f"Signal Pass Delta #eta", name="deltaEta_SR_pass", bins=eta_bins, start=eta_start, stop=eta_stop)
+	hists["deltaEta_SR_pass"] = Hist(deltaEta_SR_pass_bin, storage="weight")
+	hists["deltaEta_SR_pass"].fill(deltaEta_SR_pass=deltaEta_SR_pass)
+
+	deltaEta_VR_fail_bin = hist.axis.Regular(label=f"Validation Fail Delta #eta", name="deltaEta_VR_fail", bins=eta_bins, start=eta_start, stop=eta_stop)
+	hists["deltaEta_VR_fail"] = Hist(deltaEta_VR_fail_bin, storage="weight")
+	hists["deltaEta_VR_fail"].fill(deltaEta_VR_fail=deltaEta_VR_fail)
+
+	deltaEta_VR_pass_bin = hist.axis.Regular(label=f"Validation Pass Delta #eta", name="deltaEta_VR_pass", bins=eta_bins, start=eta_start, stop=eta_stop)
+	hists["deltaEta_VR_pass"] = Hist(deltaEta_VR_pass_bin, storage="weight")
+	hists["deltaEta_VR_pass"].fill(deltaEta_VR_pass=deltaEta_VR_pass)
+
+
+
+
+	deltaPhi_SR_fail_bin = hist.axis.Regular(label=f"Signal Fail Delta #phi", name="deltaPhi_SR_fail", bins=phi_bins, start=phi_start, stop=phi_stop)
+	hists["deltaPhi_SR_fail"] = Hist(deltaPhi_SR_fail_bin, storage="weight")
+	hists["deltaPhi_SR_fail"].fill(deltaPhi_SR_fail=deltaPhi_SR_fail)
+
+	deltaPhi_SR_pass_bin = hist.axis.Regular(label=f"Signal Pass Delta #phi", name="deltaPhi_SR_pass", bins=phi_bins, start=phi_start, stop=phi_stop)
+	hists["deltaPhi_SR_pass"] = Hist(deltaPhi_SR_pass_bin, storage="weight")
+	hists["deltaPhi_SR_pass"].fill(deltaPhi_SR_pass=deltaPhi_SR_pass)
+
+	deltaPhi_VR_fail_bin = hist.axis.Regular(label=f"Validation Fail Delta #phi", name="deltaPhi_VR_fail", bins=phi_bins, start=phi_start, stop=phi_stop)
+	hists["deltaPhi_VR_fail"] = Hist(deltaPhi_VR_fail_bin, storage="weight")
+	hists["deltaPhi_VR_fail"].fill(deltaPhi_VR_fail=deltaPhi_VR_fail)
+
+	deltaPhi_VR_pass_bin = hist.axis.Regular(label=f"Validation Pass Delta #phi", name="deltaPhi_VR_pass", bins=phi_bins, start=phi_start, stop=phi_stop)
+	hists["deltaPhi_VR_pass"] = Hist(deltaPhi_VR_pass_bin, storage="weight")
+	hists["deltaPhi_VR_pass"].fill(deltaPhi_VR_pass=deltaPhi_VR_pass)
 
 	return hists
 
 
-def fillAllHistos(outHists, variation, event_counts, extraHistos, fatjets, refTrigList=None, trigList=None):
+def fillAllHistos(outHists, variation, event_counts, extraHistos, SR_fail_fj, SR_pass_fj, VR_fail_fj, VR_pass_fj, SR_fail_e=None, SR_pass_e=None, VR_fail_e=None, VR_pass_e=None, refTrigList=None, trigList=None):
 
 	hists = {}
-	hists["boosted"] = fillHistos(event_counts, extraHistos, fatjets, refTrigList, trigList)
+	hists["boosted"] = fillHistos(event_counts, extraHistos, SR_fail_fj, SR_pass_fj, VR_fail_fj, VR_pass_fj, SR_fail_e, SR_pass_e, VR_fail_e, VR_pass_e, refTrigList, trigList)
 
 
 	selections = ["boosted"]
@@ -213,16 +485,20 @@ if __name__ == "__main__":
 			saveOnceMCDone = True
 			outHists["numberOfGenEventsHisto"] = numberOfGenEventsHisto
 
-		events, fatjets = Event_selection(input,process,event_counts,variation=variation, refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None, version_of_selection="new")
+		SR_fail_e, SR_pass_e, SR_fail_fj, SR_pass_fj, VR_fail_e, VR_pass_e, VR_fail_fj, VR_pass_fj = Event_selection(input,process,event_counts,variation=variation, refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
 
 		# fill all histograms
-		fillAllHistos(outHists, variation, event_counts, args.extra_histos, fatjets)
+		fillAllHistos(outHists, variation, event_counts, args.extra_histos, SR_fail_fj, SR_pass_fj, VR_fail_fj, VR_pass_fj)
 
 		if not saveOnceDone and variation in ["nominal","fromFile"]:
 			# give priority to 'nominal' if running both 'nominal' and 'fromFile'
 			if variation=="nominal":
 				saveOnceDone = True
 
+			event_counts["SR_boosted"]["Fail"] = len(SR_fail_fj)
+			event_counts["SR_boosted"]["Pass"] = len(SR_pass_fj)
+			event_counts["VR_boosted"]["Fail"] = len(VR_fail_fj)
+			event_counts["VR_boosted"]["Pass"] = len(VR_pass_fj)
 
 
 			# if doing trigger efficiency studies
