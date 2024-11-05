@@ -13,9 +13,9 @@ j2_bins=120
 j2_start=0
 j2_stop=6000
 
-j1_bins=120
+j1_bins=200
 j1_start=0
-j1_stop=600
+j1_stop=2000
 
 ht_bins=120
 ht_start=0
@@ -29,7 +29,7 @@ phi_bins = 100
 phi_start = - np.pi
 phi_stop = np.pi
 
-version = "new"
+version = "old"
 
 
 def getTriggerEvtMask(events, trigList):
