@@ -31,12 +31,12 @@ def get_number_of_events_in_dataset(list_of_root_files):
     return nev
 
 
-def normalize_histograms(dataset, year, deleteFiles=False):
+def normalize_histograms(signal_base, dataset, year, deleteFiles=False):
 
     datasetPresent = True
 
     list_of_root_files = []
-    list_of_root_files = get_list_of_root_files(dataset, startsWith=True)
+    list_of_root_files = get_list_of_root_files(signal_base, dataset, startsWith=True)
     if len(list_of_root_files)>0:
         nev_in_sample = get_number_of_events_in_dataset(list_of_root_files)
         scale = get_dataset_scaling_factor(dataset, year, nev_in_sample)
@@ -61,13 +61,13 @@ def normalize_histograms(dataset, year, deleteFiles=False):
     return datasetPresent
 
 
-def get_list_of_root_files(identifier, startsWith):
+def get_list_of_root_files(signal_base, identifier, startsWith):
     cwd = getcwd()
     list_of_root_files = []
     for file in listdir(cwd):
         if not isfile(join(cwd, file)):
             continue
-        if (file.startswith(identifier+'_' if ('XToYHTo6B' in identifier) else identifier) if not startsWith else ('_'+identifier+'-') in file) and (file.startswith('Histograms') if startsWith else ('_Histograms') in file) and file.endswith('.root'):
+        if (file.startswith(identifier+'_' if (signal_base in identifier) else identifier) if not startsWith else ('_'+identifier+'-') in file) and (file.startswith('Histograms') if startsWith else ('_Histograms') in file) and file.endswith('.root'):
             list_of_root_files.append(file)
     return list_of_root_files
 
@@ -82,11 +82,11 @@ def mv_file(dir, file):
     system("mv {0} {1}".format(file,dir))
 
 
-def combine_histograms(identifier, deleteFiles=False, skipNorm=False, startsWith=True, mvFiles=False, fit_dir="fit"):
+def combine_histograms(signal_base, identifier, deleteFiles=False, skipNorm=False, startsWith=True, mvFiles=False, fit_dir="fit"):
 
     list_of_root_files = []
 
-    list_of_root_files = get_list_of_root_files(identifier, startsWith)
+    list_of_root_files = get_list_of_root_files(signal_base, identifier, startsWith)
     filename = "{0}_{1}.root".format(identifier,'Histograms')
 
     # in case of only one source file, make sure that the source and target files do not have identical names. Otherwise, hadding is not needed
@@ -104,6 +104,13 @@ def combine_histograms(identifier, deleteFiles=False, skipNorm=False, startsWith
                     system("mv unscaled_{0} {1}".format(root_fname,root_fname))
         if mvFiles:
             mv_file(fit_dir, filename)
+
+
+def keep_dataset(signal_base, dataset, process_list):
+    if signal_base not in process_list and (signal_base + "_") in dataset:
+        return dataset.endswith(tuple(process_list))
+    else:
+        return dataset.startswith(tuple(process_list))
 
 
 if __name__ == '__main__':
@@ -131,9 +138,14 @@ if __name__ == '__main__':
     parser.add_argument("-p", "--processes", dest="processes",
                         help="Space-separated list of processes (default: %(default)s)",
                         nargs='*',
-                        default=["QCD","TTbar","JetHT","XToYHTo6B_MX-2500_MY-800"],
+                        default=["TTbar","JetHT","XToYHTo6B_MX-2500_MY-800"],
                         metavar="PROCESSES")
-    
+
+    parser.add_argument("--signal_base", dest="signal_base",
+                        help="Signal process base name (default: %(default)s)",
+                        default="XToYHTo6B",
+                        metavar="SIGNAL_BASE")
+
     parser.add_argument("--delete_files", dest="delete_files", action='store_true',
                       help="Delete Condor output root files (default: %(default)s)",
                       default=False)
@@ -149,23 +161,30 @@ if __name__ == '__main__':
     
     missing_datasets = []
 
+    signal_base = options.signal_base
+    process_list = copy.deepcopy(options.processes)
+    # can't have individual and merged signal samples at the same time
+    if signal_base in process_list and process_list.count(signal_base + "_")>0:
+        print("WARNING: Not possible to produce histograms for individual and merged signal samples at the same time. Dropping merged histograms.\n")
+        process_list.remove(signal_base)
+
     if not options.skip_norm:
         print ("Performing normalization...")
         for dataset in datasets[options.year]:
-            if not dataset.startswith(tuple(options.processes)):
+            if not keep_dataset(signal_base, dataset, process_list):
                 continue
             if ("JetHT" in dataset):
                 print ("Skipping {0} during normalization".format(dataset))
                 continue
             print ("Processing {0}".format(dataset))
-            if not normalize_histograms(dataset, options.year, options.delete_files):
+            if not normalize_histograms(signal_base, dataset, options.year, options.delete_files):
                 missing_datasets.append(dataset)
                 print("WARNING: Missing files for dataset {0}. Check if this affects any of the final process files.\n".format(dataset))
         print ("Normalization done")
     else:
         # if not performing the normalization, still check for missing dataset files
         for dataset in datasets[options.year]:
-            if not dataset.startswith(tuple(options.processes)):
+            if not keep_dataset(signal_base, dataset, process_list):
                 continue
             if len(get_list_of_root_files(dataset, startsWith=True))==0:
                 missing_datasets.append(dataset)
@@ -175,17 +194,17 @@ if __name__ == '__main__':
     for dataset in datasets[options.year]:
         if dataset in missing_datasets:
             continue
-        if not dataset.startswith(tuple(options.processes)):
+        if not keep_dataset(signal_base, dataset, process_list):
             continue
         print ("Processing {0}".format(dataset))
-        combine_histograms(dataset, options.delete_files, options.skip_norm)
+        combine_histograms(signal_base, dataset, options.delete_files, options.skip_norm)
     print ("Merging dataset files done")
 
     print ("Merging process files...")
-    processes = sorted(list(set(options.processes))) # protection for duplicate entries
+    processes = sorted(list(set(process_list))) # protection for duplicate entries
     for process in processes:
         if process in missing_datasets: # mostly relevant for signal samples where process==dataset
             continue
         print ("Processing {0}".format(process))
-        combine_histograms(process, options.delete_files, options.skip_norm, startsWith=False, mvFiles=True, fit_dir=options.fit_dir)
+        combine_histograms(signal_base, process, options.delete_files, options.skip_norm, startsWith=False, mvFiles=True, fit_dir=options.fit_dir)
     print ("Merging process files done")

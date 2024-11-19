@@ -3,7 +3,15 @@ from condor.datasets import *
 from os import listdir, system
 from os.path import join, isfile
 import datetime
+import copy
 from argparse import ArgumentParser
+
+
+def keep_dataset(signal_base, dataset, dataset_list):
+    if signal_base not in dataset_list and (signal_base + "_") in dataset:
+        return dataset.endswith(tuple(dataset_list))
+    else:
+        return dataset.startswith(tuple(dataset_list))
 
 
 if __name__ == '__main__':
@@ -28,6 +36,11 @@ if __name__ == '__main__':
                         nargs='*',
                         default=["TTbar","JetHT","XToYHTo6B_MX-2500_MY-800"],
                         metavar="DATASETS")
+
+    parser.add_argument("--signal_base", dest="signal_base",
+                        help="Signal process base name (default: %(default)s)",
+                        default="XToYHTo6B",
+                        metavar="SIGNAL_BASE")
 
     parser.add_argument("--dry_run", dest="dry_run", action="store_true",
                         help="Dry run without submitting Condor jobs (default: %(default)s)",
@@ -83,9 +96,16 @@ if __name__ == '__main__':
     os.system('mkdir -p ' + condor_dir_jobs)
     os.system('mkdir -p ' + condor_dir_logs)
 
+    signal_base = options.signal_base
+    dataset_list = copy.deepcopy(options.datasets)
+    # can't specify individual and all signal samples at the same time
+    if signal_base in dataset_list and dataset_list.count(signal_base + "_")>0:
+        print("WARNING: Not possible to request jobs for individual and all signal samples at the same time. Will run over individually specified datasets only.\n")
+        dataset_list.remove(signal_base)
+
     num_of_jobs = {}
     for dataset in datasets[options.year]:
-        if not dataset.startswith(tuple(options.datasets)):
+        if not keep_dataset(signal_base, dataset, dataset_list):
             continue
         dataset_path = join(datasets[options.year][dataset], options.year, dataset)
         num_of_jobs[dataset] = 0
