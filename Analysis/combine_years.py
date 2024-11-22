@@ -15,12 +15,12 @@ if __name__ == '__main__':
 
     parser.add_argument("-i", "--input", dest="input",
                         help="Input directories path (default: %(default)s)",
-                        default="/STORE/HHH/Histograms/",
+                        default="/users/ina/",
                         metavar="INPUT")
     
     parser.add_argument("-o", "--output", dest="output",
                         help="Output directory path (default: %(default)s)",
-                        default="/STORE/HHH/Histograms/Run2/",
+                        default="/users/ina/Run2/",
                         metavar="OUTPUT")
 
     parser.add_argument("-y", "--years", dest="years",

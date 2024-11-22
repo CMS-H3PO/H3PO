@@ -136,7 +136,7 @@ def precut(fatjets):
 
 # this is an event mask
 def SR_JetMass_evtMask(fatjets, version):
-    # one jet mass is in mass window [ mass_cut[0], mass_cut[1] ], one grater than mass_cut[1]
+    # one jet mass is in mass window [ mass_cut[0], mass_cut[1] ], one grater than max_jet_mass
 	if "old" in version:
 		return ( ( ( FatJetMass_sd(fatjets[:,0]) >= mass_cut[0] ) & ( FatJetMass_sd(fatjets[:,0]) <= mass_cut[1] ) & ( FatJetMass_sd(fatjets[:,1]) > max_jet_mass ) )
 				| ( ( FatJetMass_sd(fatjets[:,1]) >= mass_cut[0] ) & ( FatJetMass_sd(fatjets[:,1]) <= mass_cut[1] ) & ( FatJetMass_sd(fatjets[:,0]) > max_jet_mass ) ) )
