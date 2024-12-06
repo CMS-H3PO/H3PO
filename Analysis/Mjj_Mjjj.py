@@ -29,7 +29,7 @@ phi_bins = 100
 phi_start = - np.pi
 phi_stop = np.pi
 
-version = "old"
+version = "new"
 
 
 def getTriggerEvtMask(events, trigList):
