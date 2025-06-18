@@ -80,8 +80,8 @@ python combine_histograms.py -h
 Commands from the last round of histogram production:
 
 ```
-export SUFFIX=SDmass_Thesis
-export CONDOR_OUTPUT=~/HHH__241029
+export SUFFIX=PNmass_SDmassPrecut
+export CONDOR_OUTPUT=~/HHH
 ```
 Submit Condor jobs
 ```
@@ -99,7 +99,7 @@ python condor_selection.py -y 2018 -o ${CONDOR_OUTPUT}/condor_jobs_2018_${SUFFIX
 Once all jobs complete successfully, the following 4 steps need to be done for each year:
 ```
 export YEAR=2016APV
-export TIMESTAMP=20241029_194022
+export TIMESTAMP=20250509_144703
 ```
 1) Create a symbolic link to the output directory to make the commands that follow more generic
 ```
@@ -120,15 +120,15 @@ source copyOutput
 Repeat the above 4 steps for the remaining years
 ```
 export YEAR=2016
-export TIMESTAMP=20241029_194038
+export TIMESTAMP=20250509_144720
 ```
 ```
 export YEAR=2017
-export TIMESTAMP=20241029_194100
+export TIMESTAMP=20250509_130645
 ```
 ```
 export YEAR=2018
-export TIMESTAMP=20241029_194137
+export TIMESTAMP=20250509_144744
 ```
 Finally, combine files from all the years
 ```
