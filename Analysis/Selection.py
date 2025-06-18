@@ -57,7 +57,7 @@ def closest(masses):
 
 
 def FatJetMass(fatjet):
-    return fatjet.msoftdrop
+    return fatjet.particleNet_mass
 
 
 def HbbvsQCD(fatjet):
@@ -66,7 +66,7 @@ def HbbvsQCD(fatjet):
 
 # this is a jet mask
 def precut(fatjets):
-    return (fatjets.pt>ptcut) & (np.absolute(fatjets.eta)<etacut)
+    return (fatjets.pt>ptcut) & (np.absolute(fatjets.eta)<etacut) & (fatjets.msoftdrop>min_jet_mass) & (fatjets.msoftdrop<max_jet_mass)
 
 
 def FailPassCategories(events, fatjets, jets=None):
