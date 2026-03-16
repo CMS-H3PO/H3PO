@@ -5,6 +5,7 @@ import json
 import gzip
 import cloudpickle
 from condor.paths import H3_DIR
+from tools.jerc import *
 
 #---------------------------------------------
 # Selection cuts
@@ -27,27 +28,6 @@ res_mass_cut = [90.,150.]
 # loose cut = 0.0532, med_cut = 0.3040, tight_cut = 0.7476 (https://btv-wiki.docs.cern.ch/ScaleFactors/)
 res_deepJetcut = 0.0532
 #---------------------------------------------
-def addJECVariables(jets, event_rho,isData):
-    jets["pt_raw"] = (1 - jets.rawFactor)*jets.pt
-    jets["mass_raw"] = (1 - jets.rawFactor)*jets.mass
-    jets["event_rho"] = ak.broadcast_arrays(event_rho, jets.pt)[0]
-    if not isData:
-        jets["pt_gen"] = ak.values_astype(ak.fill_none(jets.matched_gen.pt, 0), np.float32)
-    return jets
-
-def yearFromInputFile(inputFile):
-    if("2016APV" in inputFile):
-        return "2016APV"
-    #Because 2016 repeats, ordering is important
-    elif("2016" in inputFile):
-        return "2016"
-    elif("2017" in inputFile):
-        return "2017"
-    elif("2018" in inputFile):
-        return "2018" 
-    else:       
-        raise ValueError('Could not determine year from input file: {0}'.format(inputFile))
-
 
 def closest(masses):
     delta = abs(higgs_mass - masses)
@@ -147,79 +127,6 @@ def get_dijets(fatjets, jets, events, event_counts, addCounts=False):
     return fatjets, good_dijets, events
 
 
-def getCalibratedAK4(events,variation,jetFactory,jecTag):
-    AK4jecCache         = {}
-    if("mc" in jecTag):
-        isData = False
-    else:
-        isData = True
-    jetsCalib           = jetFactory[jecTag].build(addJECVariables(events.Jet, events.fixedGridRhoFastjetAll,isData), AK4jecCache)
-        
-    if(variation=="nominal"):
-        jets         = jetsCalib
-    elif(variation=="jesUp"):
-        jets         = jetsCalib.JES_jes.up
-    elif(variation=="jesDown"):
-        jets         = jetsCalib.JES_jes.down
-    elif(variation=="jerUp"):
-        jets         = jetsCalib.JER.up
-    elif(variation=="jerDown"):
-        jets         = jetsCalib.JER.down
-    else:       
-        raise ValueError('Invalid variation: ', variation)
-
-    return jets
-
-
-def getCalibratedAK8(events,variation,fatjetFactory,jecTag):
-    AK8jecCache         = {}
-    if("mc" in jecTag):
-        isData = False
-    else:
-        isData = True
-    fatjetsCalib        = fatjetFactory[jecTag].build(addJECVariables(events.FatJet, events.fixedGridRhoFastjetAll,isData), AK8jecCache)
-
-    if(variation=="nominal"):
-        fatjets         = fatjetsCalib
-    elif(variation=="jesUp"):
-        fatjets         = fatjetsCalib.JES_jes.up
-    elif(variation=="jesDown"):
-        fatjets         = fatjetsCalib.JES_jes.down
-    elif(variation=="jerUp"):
-        fatjets         = fatjetsCalib.JER.up
-    elif(variation=="jerDown"):
-        fatjets         = fatjetsCalib.JER.down
-    else:       
-        raise ValueError('Invalid variation: ', variation)
-
-    return fatjets
-
-def jecTagFromFileName(fname):
-    year    = yearFromInputFile(fname)
-    #MC
-    if not "JetHT" in fname:
-        jecTag  = year+"mc"
-        return jecTag
-    
-    #Data
-    era = fname.split("JetHT"+year)[1][0]#E.g.targetting "B" in JetHT2018B: first character in a string AFTER the JetHT$year
-    if year=="2016APV":
-        if era in "BCD":
-            return "2016APVRunBCD"
-        else:
-            return "2016APVRunEF"
-
-    elif year=="2016":
-        return "2016RunFGH"
-
-    elif year=="2017":
-        jecTag = year+"Run"+era
-        return jecTag
-
-    elif year=="2018":
-        jecTag = year+"Run"+era
-        return jecTag
-
 def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
 
@@ -247,7 +154,7 @@ def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=N
 
         jecTag              = jecTagFromFileName(fname)
         print("JEC tag: ", jecTag)
-        fatjets             = getCalibratedAK8(events,variation,fatjetFactory,jecTag) if len(events)>0 else events.FatJet
+        fatjets = getCalibratedJets(events.FatJet,events.fixedGridRhoFastjetAll,variation,fatjetFactory,jecTag) if len(events)>0 else events.FatJet
 
     # fat jet preselection
     fatjets = fatjets[precut(fatjets)]
@@ -296,7 +203,7 @@ def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=N
     if variation == "fromFile":
         jets_SR_sb = events_SR_sb.Jet
     else:
-        jets_SR_sb = getCalibratedAK4(events_SR_sb,variation,jetFactory,jecTag) if len(events_SR_sb)>0 else events_SR_sb.Jet
+        jets_SR_sb = getCalibratedJets(events_SR_sb.Jet,events_SR_sb.fixedGridRhoFastjetAll,variation,jetFactory,jecTag) if len(events_SR_sb)>0 else events_SR_sb.Jet
 
     event_counts["SR_semiboosted"]["Mass_cut_fatjets"] = len(fatjets_SR_sb)
 
@@ -315,7 +222,7 @@ def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=N
     if variation == "fromFile":
         jets_VR_sb = events_VR_sb.Jet
     else:
-        jets_VR_sb = getCalibratedAK4(events_VR_sb,variation,jetFactory,jecTag) if len(events_VR_sb)>0 else events_VR_sb.Jet
+        jets_VR_sb = getCalibratedJets(events_VR_sb.Jet,events_VR_sb.fixedGridRhoFastjetAll,variation,jetFactory,jecTag) if len(events_VR_sb)>0 else events_VR_sb.Jet
 
     event_counts["VR_semiboosted"]["Mass_cut_fatjets"] = len(fatjets_VR_sb)
     
@@ -333,7 +240,7 @@ def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=N
     if variation == "fromFile":
         jets_SR_sb_eq2 = events_SR_sb_eq2.Jet    
     else:
-        jets_SR_sb_eq2 = getCalibratedAK4(events_SR_sb_eq2,variation,jetFactory,jecTag) if len(events_SR_sb_eq2)>0 else events_SR_sb_eq2.Jet
+        jets_SR_sb_eq2 = getCalibratedJets(events_SR_sb_eq2.Jet,events_SR_sb_eq2.fixedGridRhoFastjetAll,variation,jetFactory,jecTag) if len(events_SR_sb_eq2)>0 else events_SR_sb_eq2.Jet
 
     event_counts["SR_semiboosted"]["Mass_cut_fatjets"] += len(fatjets_SR_sb_eq2)
 
@@ -351,7 +258,7 @@ def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=N
     if variation == "fromFile":
         jets_VR_sb_eq2 = events_VR_sb_eq2.Jet
     else:
-        jets_VR_sb_eq2 = getCalibratedAK4(events_VR_sb_eq2,variation,jetFactory,jecTag) if len(events_VR_sb_eq2)>0 else events_VR_sb_eq2.Jet
+        jets_VR_sb_eq2 = getCalibratedJets(events_VR_sb_eq2.Jet,events_VR_sb_eq2.fixedGridRhoFastjetAll,variation,jetFactory,jecTag) if len(events_VR_sb_eq2)>0 else events_VR_sb_eq2.Jet
 
     event_counts["VR_semiboosted"]["Mass_cut_fatjets"] += len(fatjets_VR_sb_eq2)
 

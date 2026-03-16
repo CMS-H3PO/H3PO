@@ -6,7 +6,7 @@ import awkward as ak
 import hist
 from hist import Hist
 from Selection import *
-from Util import *
+from tools.utils import *
 
 
 j3_bins=120
