@@ -2,13 +2,13 @@ import awkward as ak
 from coffea.nanoevents import NanoEventsFactory, NanoAODSchema
 from coffea.analysis_tools import PackedSelection
 import numpy as np
-import json
 import gzip
 import cloudpickle
 from condor.paths import H3_DIR
 from tools.jerc import *
 
 NanoAODSchema.warn_missing_crossrefs = False
+jerc = JERC()
 
 #---------------------------------------------
 # Selection cuts
@@ -132,14 +132,9 @@ def Event_selection(fname,process,isMC,event_counts,variation="nominal",refTrigL
         print("JEC re-application turned off")
         fatjets = events.FatJet
     else:
-        with gzip.open(H3_DIR+"/../data/jec/jme_UL_pickled.pkl") as fin:
-            jmeDB           = cloudpickle.load(fin)
-            fatjetFactory   = jmeDB["fatjet_factory"]
-            jetFactory      = jmeDB["jet_factory"]
-
-        jecTag              = jecTagFromFileName(fname)
+        jecTag = jecTagFromFileName(fname)
         print("JEC tag: ", jecTag)
-        fatjets = getCalibratedJets(events.FatJet,events.fixedGridRhoFastjetAll,variation,fatjetFactory,jecTag) if len(events)>0 else events.FatJet
+        fatjets = getCalibratedJets(events.FatJet,events.fixedGridRhoFastjetAll,variation,jerc.fatjetFactory,jecTag) if len(events)>0 else events.FatJet
 
     # fat jet preselection
     fatjets = fatjets[precut(fatjets)]
@@ -193,7 +188,7 @@ def Event_selection(fname,process,isMC,event_counts,variation="nominal",refTrigL
     if variation == "fromFile":
         jets = events.Jet
     else:
-        jets = getCalibratedJets(events.Jet,events.fixedGridRhoFastjetAll,variation,jetFactory,jecTag) if len(events)>0 else events.Jet
+        jets = getCalibratedJets(events.Jet,events.fixedGridRhoFastjetAll,variation,jerc.jetFactory,jecTag) if len(events)>0 else events.Jet
 
     # apply preselection to the standard jets
     jets = jets[(jets.pt > res_ptcut) & (np.absolute(jets.eta) < res_etacut) & (jets.btagDeepFlavB>res_deepJetcut)]

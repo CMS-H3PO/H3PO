@@ -1,6 +1,16 @@
 import awkward as ak
 import numpy as np
+import gzip
+import cloudpickle
+from condor.paths import H3_DIR
 from tools.utils import *
+
+
+class JERC:
+    def __init__(self):
+        jmeDB              = cloudpickle.load(gzip.open(H3_DIR+"/../data/jec/jme_UL_pickled.pkl"))
+        self.fatjetFactory = jmeDB["fatjet_factory"]
+        self.jetFactory    = jmeDB["jet_factory"]
 
 
 def jecTagFromFileName(fname):
