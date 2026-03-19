@@ -362,8 +362,10 @@ if __name__ == "__main__":
         print("No appropriate JEC variation(s) for data specified. Defaulting to 'nominal'.")
         variations.append("nominal")
     numberOfGenEvents = 0.
+    # flag defining whether the dataset being processed is MC or not
+    isMC = ("JetHT" not in process)
     # if MC sample
-    if ("JetHT" not in process):
+    if isMC:
         numberOfGenEvents = getNumberOfGenEvents(input)
         variations        = acceptedVariations
     numberOfGenEventsAxis = hist.axis.Integer(0, 1, label="Number of generated events", underflow=False, overflow=False)
@@ -371,12 +373,12 @@ if __name__ == "__main__":
     numberOfGenEventsHisto[0] = numberOfGenEvents
 
     event_counts = {}
-    first_bin = ("Total" if "JetHT" not in process else "Dataset_and_skim")
+    first_bin = ("Total" if isMC else "Dataset_and_skim")
     
     regions = ["SR_boosted", "VR_boosted", "SR_semiboosted", "VR_semiboosted"]
     for r in regions:
         event_counts[r] = {}
-        event_counts[r][first_bin] = (numberOfGenEvents if "JetHT" not in process else getNumberOfEvents(input))   
+        event_counts[r][first_bin] = (numberOfGenEvents if isMC else getNumberOfEvents(input))
 
     outHists = {}
     cutFlowHistos = {}
@@ -385,11 +387,11 @@ if __name__ == "__main__":
 
     for variation in variations:
         # save the total number of generated events for MC samples
-        if not saveOnceMCDone and "JetHT" not in process and variation in ["nominal","fromFile"]:
+        if not saveOnceMCDone and isMC and variation in ["nominal","fromFile"]:
             saveOnceMCDone = True
             outHists["numberOfGenEventsHisto"] = numberOfGenEventsHisto
 
-        SR_b_fail_e, SR_b_pass_e, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_e, VR_b_pass_e, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_e, SR_sb_pass_e, SR_sb_fail_fj, SR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_e, VR_sb_pass_e, VR_sb_fail_fj, VR_sb_pass_fj, VR_sb_fail_j, VR_sb_pass_j = Event_selection(input,process,event_counts,variation=variation,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
+        SR_b_fail_e, SR_b_pass_e, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_e, VR_b_pass_e, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_e, SR_sb_pass_e, SR_sb_fail_fj, SR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_e, VR_sb_pass_e, VR_sb_fail_fj, VR_sb_pass_fj, VR_sb_fail_j, VR_sb_pass_j = Event_selection(input,process,isMC,event_counts,variation=variation,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
 
         # fill all histograms
         fillAllHistos(outHists, variation, event_counts, args.extra_histos, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j)

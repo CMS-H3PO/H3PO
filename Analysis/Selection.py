@@ -100,7 +100,7 @@ def get_dijets(fatjets, jets, selection, event_counts, region):
     return good_dijets
 
 
-def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
+def Event_selection(fname,process,isMC,event_counts,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
 
 
@@ -109,7 +109,7 @@ def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=N
     # accept all events in the input file to add the skimming step in the cut flow
     selection.add("Skim", ak.Array([True] * len(events)))
 
-    if "JetHT" not in process:
+    if isMC:
         for r in event_counts.keys():
             event_counts[r]["Skim"] = ak.sum(selection.all("Skim"), axis=0)
 
