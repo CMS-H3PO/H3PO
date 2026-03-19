@@ -9,5 +9,5 @@ cd ..
 source H3env/bin/activate
 cd $WORK_DIR
 
-echo $WORK_DIR/Mjj_Mjjj.py $*
-python $WORK_DIR/Mjj_Mjjj.py $*
+echo $WORK_DIR/Runner.py $*
+python $WORK_DIR/Runner.py $*
