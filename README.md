@@ -3,9 +3,9 @@
 The following steps need to be done only once for the initial installation
 ```
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-export SCRAM_ARCH=el9_amd64_gcc11
-cmsrel CMSSW_13_0_2
-cd CMSSW_13_0_2
+export SCRAM_ARCH=el9_amd64_gcc13
+cmsrel CMSSW_16_0_3
+cd CMSSW_16_0_3
 cmsenv
 cd -
 
@@ -20,7 +20,7 @@ You now have all the required software installed and the enviroment set up.
 To set up environment in a new shell, run the following
 ```
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-cd CMSSW_13_0_2
+cd CMSSW_16_0_3
 cmsenv
 cd -
 source H3env/bin/activate

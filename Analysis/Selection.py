@@ -100,7 +100,7 @@ def get_dijets(fatjets, jets, selection, region):
 
 def Event_selection(fname,process,isMC,apply_corrections,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
     # get events array
-    events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
+    events = NanoEventsFactory.from_root({fname:"Events"},schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
 
     # event selection
     selection = PackedSelection()
