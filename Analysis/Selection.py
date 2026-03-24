@@ -222,9 +222,7 @@ def Event_selection(fname,process,isMC,event_counts,variation="nominal",refTrigL
     #---------------------------------------------
     # VR semiboosted
     # select events with 2 good leading fat jets and reject overlap with both SRs and the VR boosted
-    fatjets_padded = ak.pad_none(fatjets, 2)
-    fatjets_VR_sb = fatjets_padded[HiggsMassVeto(fatjets_padded[:,0:2])]
-    VR_sb_evtMask = (ak.num(fatjets_VR_sb, axis=1)==2) & ~(SR_b_evtMask | SR_sb_evtMask | VR_b_evtMask)
+    VR_sb_evtMask = (ak.num(fatjets[HiggsMassVeto(fatjets[:,0:2])], axis=1)==2) & ~(SR_b_evtMask | SR_sb_evtMask | VR_b_evtMask)
     selection.add("Mass_cut_VR_semiboosted", VR_sb_evtMask)
 
     event_counts["VR_semiboosted"]["Mass_cut_fatjets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_VR_semiboosted"), axis=0)
@@ -232,7 +230,7 @@ def Event_selection(fname,process,isMC,event_counts,variation="nominal",refTrigL
     event_counts["VR_semiboosted"]["Preselection_jets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_VR_semiboosted","Preselection_jets"), axis=0)
 
     # get good dijets
-    good_dijets_VR_sb = get_dijets(fatjets_VR_sb, jets, selection, event_counts, "VR_semiboosted")
+    good_dijets_VR_sb = get_dijets(fatjets[:,0:2], jets, selection, event_counts, "VR_semiboosted")
 
     # select events with at least 1 good dijet (by construction there can be at most 1 per event)
     selection.add("Good_dijet_VR_semiboosted", ak.num(good_dijets_VR_sb, axis=1)>0)
@@ -240,11 +238,11 @@ def Event_selection(fname,process,isMC,event_counts,variation="nominal",refTrigL
     event_counts["VR_semiboosted"]["Good_dijet"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_VR_semiboosted","Preselection_jets","Away_jets_VR_semiboosted","Good_dijet_VR_semiboosted"), axis=0)
 
     # select events in the Pass category of the SR semiboosted
-    selection.add("VR_semiboosted_Pass", ak.where(VR_sb_evtMask, PassCategory(ak.pad_none(fatjets_VR_sb, 1)), False))
+    selection.add("VR_semiboosted_Pass", ak.where(VR_sb_evtMask, PassCategory(ak.pad_none(fatjets[:,0:2], 1)), False))
 
     # define Pass and Fail category event masks
     VR_sb_Pass_evtMask = selection.all("Trigger","Preselection_ge2fj","Mass_cut_VR_semiboosted","Preselection_jets","Away_jets_VR_semiboosted","Good_dijet_VR_semiboosted","VR_semiboosted_Pass")
     VR_sb_Fail_evtMask = selection.require(Trigger=True,Preselection_ge2fj=True,Mass_cut_VR_semiboosted=True,Preselection_jets=True,Away_jets_VR_semiboosted=True,Good_dijet_VR_semiboosted=True,VR_semiboosted_Pass=False)
     #---------------------------------------------
 
-    return events[SR_b_Fail_evtMask], events[SR_b_Pass_evtMask], fatjets_SR[SR_b_Fail_evtMask][:,0:3], fatjets_SR[SR_b_Pass_evtMask][:,0:3], events[VR_b_Fail_evtMask], events[VR_b_Pass_evtMask], fatjets[VR_b_Fail_evtMask][:,0:3], fatjets[VR_b_Pass_evtMask][:,0:3], events[SR_sb_Fail_evtMask], events[SR_sb_Pass_evtMask], fatjets_SR[SR_sb_Fail_evtMask], fatjets_SR[SR_sb_Pass_evtMask], good_dijets_SR_sb[SR_sb_Fail_evtMask], good_dijets_SR_sb[SR_sb_Pass_evtMask], events[VR_sb_Fail_evtMask], events[VR_sb_Pass_evtMask], fatjets_VR_sb[VR_sb_Fail_evtMask], fatjets_VR_sb[VR_sb_Pass_evtMask], good_dijets_VR_sb[VR_sb_Fail_evtMask], good_dijets_VR_sb[VR_sb_Pass_evtMask]
+    return events[SR_b_Fail_evtMask], events[SR_b_Pass_evtMask], fatjets_SR[SR_b_Fail_evtMask], fatjets_SR[SR_b_Pass_evtMask], events[VR_b_Fail_evtMask], events[VR_b_Pass_evtMask], fatjets[VR_b_Fail_evtMask], fatjets[VR_b_Pass_evtMask], events[SR_sb_Fail_evtMask], events[SR_sb_Pass_evtMask], fatjets_SR[SR_sb_Fail_evtMask], fatjets_SR[SR_sb_Pass_evtMask], good_dijets_SR_sb[SR_sb_Fail_evtMask], good_dijets_SR_sb[SR_sb_Pass_evtMask], events[VR_sb_Fail_evtMask], events[VR_sb_Pass_evtMask], fatjets[VR_sb_Fail_evtMask], fatjets[VR_sb_Pass_evtMask], good_dijets_VR_sb[VR_sb_Fail_evtMask], good_dijets_VR_sb[VR_sb_Pass_evtMask]
