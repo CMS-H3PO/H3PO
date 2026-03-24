@@ -1,14 +1,15 @@
 import os
 import copy
-import re
 import uproot
 import awkward as ak
 import hist
 from hist import Hist
 from Selection import *
 from tools.utils import *
+from tools.cutflow import *
 
 
+# histogram bins
 j3_bins=120
 j3_start=0
 j3_stop=6000
@@ -29,9 +30,48 @@ def getTriggerEvtMask(events, trigList):
     return np.logical_or.reduce(refTriggerBits, axis=0)
 
 
-def fillHistos(label, event_yield, extraHistos, SR_fail_fj, SR_pass_fj, VR_fail_fj, VR_pass_fj, SR_fail_j=None, SR_pass_j=None, VR_fail_j=None, VR_pass_j=None, SR_fail_e=None, SR_pass_e=None, VR_fail_e=None, VR_pass_e=None, refTrigList=None, trigList=None):
+def fillHistos(channel, suffix, events, selection, event_yield, extraHistos, refTrigList=None, trigList=None):
 
-    isBoosted = ("Semiboosted" not in label)
+    isBoosted = ("semiboosted" not in channel.lower())
+
+    # define Pass and Fail category event masks
+    if isBoosted:
+        SR_pass_evtMask = selection.require(**cuts_Pass["SR_boosted"])
+        SR_fail_evtMask = selection.require(**cuts_Fail["SR_boosted"])
+        VR_pass_evtMask = selection.require(**cuts_Pass["VR_boosted"])
+        VR_fail_evtMask = selection.require(**cuts_Fail["VR_boosted"])
+
+        event_yield[f"SR_boosted{suffix}"]["Fail"] = ak.sum(SR_fail_evtMask, axis=0)
+        event_yield[f"SR_boosted{suffix}"]["Pass"] = ak.sum(SR_pass_evtMask, axis=0)
+        event_yield[f"VR_boosted{suffix}"]["Fail"] = ak.sum(VR_fail_evtMask, axis=0)
+        event_yield[f"VR_boosted{suffix}"]["Pass"] = ak.sum(VR_pass_evtMask, axis=0)
+    else:
+        SR_pass_evtMask = selection.require(**cuts_Pass["SR_semiboosted"])
+        SR_fail_evtMask = selection.require(**cuts_Fail["SR_semiboosted"])
+        VR_pass_evtMask = selection.require(**cuts_Pass["VR_semiboosted"])
+        VR_fail_evtMask = selection.require(**cuts_Fail["VR_semiboosted"])
+
+        event_yield[f"SR_semiboosted{suffix}"]["Fail"] = ak.sum(SR_fail_evtMask, axis=0)
+        event_yield[f"SR_semiboosted{suffix}"]["Pass"] = ak.sum(SR_pass_evtMask, axis=0)
+        event_yield[f"VR_semiboosted{suffix}"]["Fail"] = ak.sum(VR_fail_evtMask, axis=0)
+        event_yield[f"VR_semiboosted{suffix}"]["Pass"] = ak.sum(VR_pass_evtMask, axis=0)
+
+    # select events
+    SR_pass_e = events[SR_pass_evtMask]
+    SR_fail_e = events[SR_fail_evtMask]
+    VR_pass_e = events[VR_pass_evtMask]
+    VR_fail_e = events[VR_fail_evtMask]
+    # get fat jets
+    SR_pass_fj = SR_pass_e.fatjets_SR
+    SR_fail_fj = SR_fail_e.fatjets_SR
+    VR_pass_fj = VR_pass_e.fatjets_VR
+    VR_fail_fj = VR_fail_e.fatjets_VR
+    # get dijets for the semiboosted channel
+    if not isBoosted:
+        SR_pass_j = SR_pass_e.good_dijets_SR
+        SR_fail_j = SR_fail_e.good_dijets_SR
+        VR_pass_j = VR_pass_e.good_dijets_VR
+        VR_fail_j = VR_fail_e.good_dijets_VR
 
     if refTrigList != None:
         # SR fail
@@ -61,15 +101,15 @@ def fillHistos(label, event_yield, extraHistos, SR_fail_fj, SR_pass_fj, VR_fail_
 
         # add reference trigger selection to the cut flow event counts
         if isBoosted:
-            event_yield["SR_boosted"]["Fail_refTrigger"] = len(SR_fail_fj)
-            event_yield["SR_boosted"]["Pass_refTrigger"] = len(SR_pass_fj)
-            event_yield["VR_boosted"]["Fail_refTrigger"] = len(VR_fail_fj)
-            event_yield["VR_boosted"]["Pass_refTrigger"] = len(VR_pass_fj)
+            event_yield[f"SR_boosted{suffix}"]["Fail_refTrigger"] = len(SR_fail_fj)
+            event_yield[f"SR_boosted{suffix}"]["Pass_refTrigger"] = len(SR_pass_fj)
+            event_yield[f"VR_boosted{suffix}"]["Fail_refTrigger"] = len(VR_fail_fj)
+            event_yield[f"VR_boosted{suffix}"]["Pass_refTrigger"] = len(VR_pass_fj)
         else:
-            event_yield["SR_semiboosted"]["Fail_refTrigger"] = len(SR_fail_fj)
-            event_yield["SR_semiboosted"]["Pass_refTrigger"] = len(SR_pass_fj)
-            event_yield["VR_semiboosted"]["Fail_refTrigger"] = len(VR_fail_fj)
-            event_yield["VR_semiboosted"]["Pass_refTrigger"] = len(VR_pass_fj)
+            event_yield[f"SR_semiboosted{suffix}"]["Fail_refTrigger"] = len(SR_fail_fj)
+            event_yield[f"SR_semiboosted{suffix}"]["Pass_refTrigger"] = len(SR_pass_fj)
+            event_yield[f"VR_semiboosted{suffix}"]["Fail_refTrigger"] = len(VR_fail_fj)
+            event_yield[f"VR_semiboosted{suffix}"]["Pass_refTrigger"] = len(VR_pass_fj)
 
     if trigList != None:
         # SR fail
@@ -99,15 +139,15 @@ def fillHistos(label, event_yield, extraHistos, SR_fail_fj, SR_pass_fj, VR_fail_
 
         # add analysis trigger selection to the cut flow event counts
         if isBoosted:
-            event_yield["SR_boosted"]["Fail_trigger"] = len(SR_fail_fj)
-            event_yield["SR_boosted"]["Pass_trigger"] = len(SR_pass_fj)
-            event_yield["VR_boosted"]["Fail_trigger"] = len(VR_fail_fj)
-            event_yield["VR_boosted"]["Pass_trigger"] = len(VR_pass_fj)
+            event_yield[f"SR_boosted{suffix}"]["Fail_trigger"] = len(SR_fail_fj)
+            event_yield[f"SR_boosted{suffix}"]["Pass_trigger"] = len(SR_pass_fj)
+            event_yield[f"VR_boosted{suffix}"]["Fail_trigger"] = len(VR_fail_fj)
+            event_yield[f"VR_boosted{suffix}"]["Pass_trigger"] = len(VR_pass_fj)
         else:
-            event_yield["SR_semiboosted"]["Fail_trigger"] = len(SR_fail_fj)
-            event_yield["SR_semiboosted"]["Pass_trigger"] = len(SR_pass_fj)
-            event_yield["VR_semiboosted"]["Fail_trigger"] = len(VR_fail_fj)
-            event_yield["VR_semiboosted"]["Pass_trigger"] = len(VR_pass_fj)
+            event_yield[f"SR_semiboosted{suffix}"]["Fail_trigger"] = len(SR_fail_fj)
+            event_yield[f"SR_semiboosted{suffix}"]["Pass_trigger"] = len(SR_pass_fj)
+            event_yield[f"VR_semiboosted{suffix}"]["Fail_trigger"] = len(VR_fail_fj)
+            event_yield[f"VR_semiboosted{suffix}"]["Pass_trigger"] = len(VR_pass_fj)
 
     hists = {}
 
@@ -166,58 +206,58 @@ def fillHistos(label, event_yield, extraHistos, SR_fail_fj, SR_pass_fj, VR_fail_
             eta2_VR_pass = VR_pass_fj[:,1].eta
             eta3_VR_pass = (VR_pass_j[:,0]['i0']+VR_pass_j[:,0]['i1']).eta
 
-    j3_SR_fail_bin = hist.axis.Regular(label=f"{label} Signal Fail Trijet Mass [GeV]", name="trijet_mass_SR_fail", bins=j3_bins, start=j3_start, stop=j3_stop)
+    j3_SR_fail_bin = hist.axis.Regular(label=f"{channel} Signal Fail Trijet Mass [GeV]", name="trijet_mass_SR_fail", bins=j3_bins, start=j3_start, stop=j3_stop)
     hists["j3_SR_fail"] = Hist(j3_SR_fail_bin, storage="weight")
     hists["j3_SR_fail"].fill(trijet_mass_SR_fail=trijet_mass_SR_fail)
 
-    j3_SR_pass_bin = hist.axis.Regular(label=f"{label} Signal Pass Trijet Mass [GeV]", name="trijet_mass_SR_pass", bins=j3_bins, start=j3_start, stop=j3_stop)
+    j3_SR_pass_bin = hist.axis.Regular(label=f"{channel} Signal Pass Trijet Mass [GeV]", name="trijet_mass_SR_pass", bins=j3_bins, start=j3_start, stop=j3_stop)
     hists["j3_SR_pass"] = Hist(j3_SR_pass_bin, storage="weight")
     hists["j3_SR_pass"].fill(trijet_mass_SR_pass=trijet_mass_SR_pass)
 
-    j3_VR_fail_bin = hist.axis.Regular(label=f"{label} Validation Fail Trijet Mass [GeV]", name="trijet_mass_VR_fail", bins=j3_bins, start=j3_start, stop=j3_stop)
+    j3_VR_fail_bin = hist.axis.Regular(label=f"{channel} Validation Fail Trijet Mass [GeV]", name="trijet_mass_VR_fail", bins=j3_bins, start=j3_start, stop=j3_stop)
     hists["j3_VR_fail"] = Hist(j3_VR_fail_bin, storage="weight")
     hists["j3_VR_fail"].fill(trijet_mass_VR_fail=trijet_mass_VR_fail)
 
-    j3_VR_pass_bin = hist.axis.Regular(label=f"{label} Validation Pass Trijet Mass [GeV]", name="trijet_mass_VR_pass", bins=j3_bins, start=j3_start, stop=j3_stop)
+    j3_VR_pass_bin = hist.axis.Regular(label=f"{channel} Validation Pass Trijet Mass [GeV]", name="trijet_mass_VR_pass", bins=j3_bins, start=j3_start, stop=j3_stop)
     hists["j3_VR_pass"] = Hist(j3_VR_pass_bin, storage="weight")
     hists["j3_VR_pass"].fill(trijet_mass_VR_pass=trijet_mass_VR_pass)
 
     if extraHistos:
-        ht_SR_fail_bin = hist.axis.Regular(label=f"{label} Signal Fail H_{{T}} [GeV]", name="ht_SR_fail", bins=ht_bins, start=ht_start, stop=ht_stop)
+        ht_SR_fail_bin = hist.axis.Regular(label=f"{channel} Signal Fail H_{{T}} [GeV]", name="ht_SR_fail", bins=ht_bins, start=ht_start, stop=ht_stop)
         hists["ht_vs_mjjj_SR_fail"] = Hist(j3_SR_fail_bin, ht_SR_fail_bin, storage="weight")
         hists["ht_vs_mjjj_SR_fail"].fill(ht_SR_fail=ht_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
 
-        eta_SR_fail_bin = hist.axis.Regular(label=f"{label} Signal Fail Fat Jet #eta", name="eta_SR_fail", bins=eta_bins, start=eta_start, stop=eta_stop)
+        eta_SR_fail_bin = hist.axis.Regular(label=f"{channel} Signal Fail Fat Jet #eta", name="eta_SR_fail", bins=eta_bins, start=eta_start, stop=eta_stop)
         hists["eta_SR_fail"] = Hist(eta_SR_fail_bin, storage="weight")
         hists["eta_SR_fail"].fill(eta_SR_fail=eta1_SR_fail)
         hists["eta_SR_fail"].fill(eta_SR_fail=eta2_SR_fail)
         hists["eta_SR_fail"].fill(eta_SR_fail=eta3_SR_fail)
         #-----
-        ht_SR_pass_bin = hist.axis.Regular(label=f"{label} Signal Pass H_{{T}} [GeV]", name="ht_SR_pass", bins=ht_bins, start=ht_start, stop=ht_stop)
+        ht_SR_pass_bin = hist.axis.Regular(label=f"{channel} Signal Pass H_{{T}} [GeV]", name="ht_SR_pass", bins=ht_bins, start=ht_start, stop=ht_stop)
         hists["ht_vs_mjjj_SR_pass"] = Hist(j3_SR_pass_bin, ht_SR_pass_bin, storage="weight")
         hists["ht_vs_mjjj_SR_pass"].fill(ht_SR_pass=ht_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
 
-        eta_SR_pass_bin = hist.axis.Regular(label=f"{label} Signal Pass Fat Jet #eta", name="eta_SR_pass", bins=eta_bins, start=eta_start, stop=eta_stop)
+        eta_SR_pass_bin = hist.axis.Regular(label=f"{channel} Signal Pass Fat Jet #eta", name="eta_SR_pass", bins=eta_bins, start=eta_start, stop=eta_stop)
         hists["eta_SR_pass"] = Hist(eta_SR_pass_bin, storage="weight")
         hists["eta_SR_pass"].fill(eta_SR_pass=eta1_SR_pass)
         hists["eta_SR_pass"].fill(eta_SR_pass=eta2_SR_pass)
         hists["eta_SR_pass"].fill(eta_SR_pass=eta3_SR_pass)
         #-----
-        ht_VR_fail_bin = hist.axis.Regular(label=f"{label} Validation Fail H_{{T}} [GeV]", name="ht_VR_fail", bins=ht_bins, start=ht_start, stop=ht_stop)
+        ht_VR_fail_bin = hist.axis.Regular(label=f"{channel} Validation Fail H_{{T}} [GeV]", name="ht_VR_fail", bins=ht_bins, start=ht_start, stop=ht_stop)
         hists["ht_vs_mjjj_VR_fail"] = Hist(j3_VR_fail_bin, ht_VR_fail_bin, storage="weight")
         hists["ht_vs_mjjj_VR_fail"].fill(ht_VR_fail=ht_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
 
-        eta_VR_fail_bin = hist.axis.Regular(label=f"{label} Validation Fail Fat Jet #eta", name="eta_VR_fail", bins=eta_bins, start=eta_start, stop=eta_stop)
+        eta_VR_fail_bin = hist.axis.Regular(label=f"{channel} Validation Fail Fat Jet #eta", name="eta_VR_fail", bins=eta_bins, start=eta_start, stop=eta_stop)
         hists["eta_VR_fail"] = Hist(eta_VR_fail_bin, storage="weight")
         hists["eta_VR_fail"].fill(eta_VR_fail=eta1_VR_fail)
         hists["eta_VR_fail"].fill(eta_VR_fail=eta2_VR_fail)
         hists["eta_VR_fail"].fill(eta_VR_fail=eta3_VR_fail)
         #-----
-        ht_VR_pass_bin = hist.axis.Regular(label=f"{label} Validation Pass H_{{T}} [GeV]", name="ht_VR_pass", bins=ht_bins, start=ht_start, stop=ht_stop)
+        ht_VR_pass_bin = hist.axis.Regular(label=f"{channel} Validation Pass H_{{T}} [GeV]", name="ht_VR_pass", bins=ht_bins, start=ht_start, stop=ht_stop)
         hists["ht_vs_mjjj_VR_pass"] = Hist(j3_VR_pass_bin, ht_VR_pass_bin, storage="weight")
         hists["ht_vs_mjjj_VR_pass"].fill(ht_VR_pass=ht_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
 
-        eta_VR_pass_bin = hist.axis.Regular(label=f"{label} Validation Pass Fat Jet #eta", name="eta_VR_pass", bins=eta_bins, start=eta_start, stop=eta_stop)
+        eta_VR_pass_bin = hist.axis.Regular(label=f"{channel} Validation Pass Fat Jet #eta", name="eta_VR_pass", bins=eta_bins, start=eta_start, stop=eta_stop)
         hists["eta_VR_pass"] = Hist(eta_VR_pass_bin, storage="weight")
         hists["eta_VR_pass"].fill(eta_VR_pass=eta1_VR_pass)
         hists["eta_VR_pass"].fill(eta_VR_pass=eta2_VR_pass)
@@ -252,25 +292,25 @@ def fillHistos(label, event_yield, extraHistos, SR_fail_fj, SR_pass_fj, VR_fail_
         dijet2_mass_VR_pass = (VR_pass_fj[:,0]+VR_pass_j[:,0]['i0']+VR_pass_j[:,0]['i1']).mass
         dijet3_mass_VR_pass = (VR_pass_fj[:,1]+VR_pass_j[:,0]['i0']+VR_pass_j[:,0]['i1']).mass
 
-    j2_SR_fail_bin = hist.axis.Regular(label=f"{label} Signal Fail Dijet Mass [GeV]", name="dijet_mass_SR_fail", bins=j2_bins, start=j2_start, stop=j2_stop)
+    j2_SR_fail_bin = hist.axis.Regular(label=f"{channel} Signal Fail Dijet Mass [GeV]", name="dijet_mass_SR_fail", bins=j2_bins, start=j2_start, stop=j2_stop)
     hists["mjj_vs_mjjj_SR_fail"] = Hist(j3_SR_fail_bin, j2_SR_fail_bin, storage="weight")
     hists["mjj_vs_mjjj_SR_fail"].fill(dijet_mass_SR_fail=dijet1_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
     hists["mjj_vs_mjjj_SR_fail"].fill(dijet_mass_SR_fail=dijet2_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
     hists["mjj_vs_mjjj_SR_fail"].fill(dijet_mass_SR_fail=dijet3_mass_SR_fail,trijet_mass_SR_fail=trijet_mass_SR_fail)
 
-    j2_SR_pass_bin = hist.axis.Regular(label=f"{label} Signal Pass Dijet Mass [GeV]", name="dijet_mass_SR_pass", bins=j2_bins, start=j2_start, stop=j2_stop)
+    j2_SR_pass_bin = hist.axis.Regular(label=f"{channel} Signal Pass Dijet Mass [GeV]", name="dijet_mass_SR_pass", bins=j2_bins, start=j2_start, stop=j2_stop)
     hists["mjj_vs_mjjj_SR_pass"] = Hist(j3_SR_pass_bin, j2_SR_pass_bin, storage="weight")
     hists["mjj_vs_mjjj_SR_pass"].fill(dijet_mass_SR_pass=dijet1_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
     hists["mjj_vs_mjjj_SR_pass"].fill(dijet_mass_SR_pass=dijet2_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
     hists["mjj_vs_mjjj_SR_pass"].fill(dijet_mass_SR_pass=dijet3_mass_SR_pass,trijet_mass_SR_pass=trijet_mass_SR_pass)
 
-    j2_VR_fail_bin = hist.axis.Regular(label=f"{label} Validation Fail Dijet Mass [GeV]", name="dijet_mass_VR_fail", bins=j2_bins, start=j2_start, stop=j2_stop)
+    j2_VR_fail_bin = hist.axis.Regular(label=f"{channel} Validation Fail Dijet Mass [GeV]", name="dijet_mass_VR_fail", bins=j2_bins, start=j2_start, stop=j2_stop)
     hists["mjj_vs_mjjj_VR_fail"] = Hist(j3_VR_fail_bin, j2_VR_fail_bin, storage="weight")
     hists["mjj_vs_mjjj_VR_fail"].fill(dijet_mass_VR_fail=dijet1_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
     hists["mjj_vs_mjjj_VR_fail"].fill(dijet_mass_VR_fail=dijet2_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
     hists["mjj_vs_mjjj_VR_fail"].fill(dijet_mass_VR_fail=dijet3_mass_VR_fail,trijet_mass_VR_fail=trijet_mass_VR_fail)
 
-    j2_VR_pass_bin = hist.axis.Regular(label=f"{label} Validation Pass Dijet Mass [GeV]", name="dijet_mass_VR_pass", bins=j2_bins, start=j2_start, stop=j2_stop)
+    j2_VR_pass_bin = hist.axis.Regular(label=f"{channel} Validation Pass Dijet Mass [GeV]", name="dijet_mass_VR_pass", bins=j2_bins, start=j2_start, stop=j2_stop)
     hists["mjj_vs_mjjj_VR_pass"] = Hist(j3_VR_pass_bin, j2_VR_pass_bin, storage="weight")
     hists["mjj_vs_mjjj_VR_pass"].fill(dijet_mass_VR_pass=dijet1_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
     hists["mjj_vs_mjjj_VR_pass"].fill(dijet_mass_VR_pass=dijet2_mass_VR_pass,trijet_mass_VR_pass=trijet_mass_VR_pass)
@@ -279,13 +319,12 @@ def fillHistos(label, event_yield, extraHistos, SR_fail_fj, SR_pass_fj, VR_fail_
     return hists
 
 
-def fillAllHistos(outHists, variation, event_yield, extraHistos, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j, SR_b_fail_e=None, SR_b_pass_e=None, VR_b_fail_e=None, VR_b_pass_e=None, SR_sb_fail_e=None, SR_sb_pass_e=None, VR_sb_fail_e=None, VR_sb_pass_e=None, refTrigList=None, trigList=None):
+def fillAllHistos(outHists, suffix, events, selection, event_yield, extraHistos, refTrigList=None, trigList=None):
 
     hists = {}
-    hists["boosted"] = fillHistos("Boosted", event_yield, extraHistos, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, None, None, None, None, SR_b_fail_e, SR_b_pass_e, VR_b_fail_e, VR_b_pass_e, refTrigList, trigList)
-    hists["semiboosted"] = fillHistos("Semiboosted", event_yield, extraHistos, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j, SR_sb_fail_e, SR_sb_pass_e, VR_sb_fail_e, VR_sb_pass_e, refTrigList, trigList)
+    hists["boosted"]     = fillHistos("Boosted", suffix, events, selection, event_yield, extraHistos, refTrigList, trigList)
+    hists["semiboosted"] = fillHistos("Semiboosted", suffix, events, selection, event_yield, extraHistos, refTrigList, trigList)
 
-    suffix = ("" if variation=="fromFile" else f"_{variation}")
     if refTrigList != None:
         suffix += "_"
         if trigList == None:
@@ -361,68 +400,89 @@ if __name__ == "__main__":
     if len(acceptedVariations)>0 and len(variations)==0:
         print("No appropriate JEC variation(s) for data specified. Defaulting to 'nominal'.")
         variations.append("nominal")
-    numberOfGenEvents = 0.
-    # flag defining whether the dataset being processed is MC or not
-    isMC = ("JetHT" not in process)
-    # if MC sample
-    if isMC:
-        numberOfGenEvents = getNumberOfGenEvents(input)
-        variations        = acceptedVariations
-    numberOfGenEventsAxis = hist.axis.Integer(0, 1, label="Number of generated events", underflow=False, overflow=False)
-    numberOfGenEventsHisto = Hist(numberOfGenEventsAxis)
-    numberOfGenEventsHisto[0] = numberOfGenEvents
 
-    event_yield = {}
-    first_bin = ("Total" if isMC else "Dataset_and_skim")
-    
-    regions = ["SR_boosted", "VR_boosted", "SR_semiboosted", "VR_semiboosted"]
-    for r in regions:
-        event_yield[r] = {}
-        event_yield[r][first_bin] = (numberOfGenEvents if isMC else getNumberOfEvents(input))
-
+    # output histograms
     outHists = {}
     cutFlowHistos = {}
-    saveOnceDone = False
-    saveOnceMCDone = False
 
-    for variation in variations:
+    # flag defining whether the dataset being processed is MC or not
+    isMC = ("JetHT" not in process)
+    # total number of events
+    numberOfEvents = 0.
+    # if MC sample
+    if isMC:
+        numberOfEvents = getNumberOfGenEvents(input)
+        variations     = acceptedVariations
+
+        numberOfGenEventsAxis = hist.axis.Integer(0, 1, label="Number of generated events", underflow=False, overflow=False)
+        numberOfGenEventsHisto = Hist(numberOfGenEventsAxis)
+        numberOfGenEventsHisto[0] = numberOfEvents
         # save the total number of generated events for MC samples
-        if not saveOnceMCDone and isMC and variation in ["nominal","fromFile"]:
-            saveOnceMCDone = True
-            outHists["numberOfGenEventsHisto"] = numberOfGenEventsHisto
+        outHists["numberOfGenEventsHisto"] = numberOfGenEventsHisto
+    else:
+        numberOfEvents = getNumberOfEvents(input)
 
-        SR_b_fail_e, SR_b_pass_e, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_e, VR_b_pass_e, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_e, SR_sb_pass_e, SR_sb_fail_fj, SR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_e, VR_sb_pass_e, VR_sb_fail_fj, VR_sb_pass_fj, VR_sb_fail_j, VR_sb_pass_j = Event_selection(input,process,isMC,event_yield,variation=variation,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
+    first_bin = ("Total" if isMC else "Dataset_and_skim")
+
+    # loop over all variations
+    for variation in variations:
+        suffix = ("" if variation=="fromFile" else f"_{variation}")
+
+        # event yield dictionary
+        event_yield = {}
+
+        # apply event selection
+        events, selection = Event_selection(input,process,isMC,variation=variation,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
+
+        for r in regions:
+            key = f"{r}{suffix}"
+            event_yield[key] = {}
+            event_yield[key][first_bin] = numberOfEvents
+            # storing skimming step for MC only
+            if isMC:
+                event_yield[key]["Skim"] = ak.sum(selection.all("Skim"), axis=0)
+            # if trigger applied and not doing trigger efficiency studies using reference triggers
+            if args.triggerList != None and args.refTriggerList == None:
+                event_yield[key]["Trigger"] = ak.sum(selection.all("Trigger"), axis=0)
+            # preselection
+            if 'semiboosted' not in r:
+                event_yield[key]["Preselection"] = ak.sum(selection.require(**preselection_boosted), axis=0)
+            else:
+                event_yield[key]["Preselection_fatjets"] = ak.sum(selection.require(**preselection_semiboosted), axis=0)
+
+        #---------------------------------------------
+        event_yield[f"SR_boosted{suffix}"]["Mass_cut"] = ak.sum(selection.require(**{k:v for k, v in list(cuts["SR_boosted"].items())[0:3]}), axis=0)
+        #---------------------------------------------
+        event_yield[f"VR_boosted{suffix}"]["Mass_cut"] = ak.sum(selection.require(**{k:v for k, v in list(cuts["VR_boosted"].items())[0:3]}), axis=0)
+        #---------------------------------------------
+        event_yield[f"SR_semiboosted{suffix}"]["Mass_cut_fatjets"]  = ak.sum(selection.require(**{k:v for k, v in list(cuts["SR_semiboosted"].items())[0:3]}), axis=0)
+        event_yield[f"SR_semiboosted{suffix}"]["Preselection_jets"] = ak.sum(selection.require(**{k:v for k, v in list(cuts["SR_semiboosted"].items())[0:4]}), axis=0)
+        event_yield[f"SR_semiboosted{suffix}"]["Away_jets"]         = ak.sum(selection.require(**{k:v for k, v in list(cuts["SR_semiboosted"].items())[0:5]}), axis=0)
+        event_yield[f"SR_semiboosted{suffix}"]["Good_dijet"]        = ak.sum(selection.require(**{k:v for k, v in list(cuts["SR_semiboosted"].items())[0:6]}), axis=0)
+        #---------------------------------------------
+        event_yield[f"VR_semiboosted{suffix}"]["Mass_cut_fatjets"]  = ak.sum(selection.require(**{k:v for k, v in list(cuts["VR_semiboosted"].items())[0:3]}), axis=0)
+        event_yield[f"VR_semiboosted{suffix}"]["Preselection_jets"] = ak.sum(selection.require(**{k:v for k, v in list(cuts["VR_semiboosted"].items())[0:4]}), axis=0)
+        event_yield[f"VR_semiboosted{suffix}"]["Away_jets"]         = ak.sum(selection.require(**{k:v for k, v in list(cuts["VR_semiboosted"].items())[0:5]}), axis=0)
+        event_yield[f"VR_semiboosted{suffix}"]["Good_dijet"]        = ak.sum(selection.require(**{k:v for k, v in list(cuts["VR_semiboosted"].items())[0:6]}), axis=0)
+        #---------------------------------------------
 
         # fill all histograms
-        fillAllHistos(outHists, variation, event_yield, args.extra_histos, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j)
+        fillAllHistos(outHists, suffix, events, selection, event_yield, args.extra_histos)
 
-        if not saveOnceDone and variation in ["nominal","fromFile"]:
-            # give priority to 'nominal' if running both 'nominal' and 'fromFile'
-            if variation=="nominal":
-                saveOnceDone = True
+        # if doing trigger efficiency studies
+        if args.refTriggerList != None:
+            fillAllHistos(outHists, suffix, events, selection, event_yield, args.extra_histos, args.refTriggerList)
+            # if the analysis trigger(s) are applied as well
+            if args.triggerList != None:
+                fillAllHistos(outHists, suffix, events, selection, event_yield, args.extra_histos, args.refTriggerList, args.triggerList)
 
-            event_yield["SR_boosted"]["Fail"] = len(SR_b_fail_fj)
-            event_yield["SR_boosted"]["Pass"] = len(SR_b_pass_fj)
-            event_yield["VR_boosted"]["Fail"] = len(VR_b_fail_fj)
-            event_yield["VR_boosted"]["Pass"] = len(VR_b_pass_fj)
-            event_yield["SR_semiboosted"]["Fail"] = len(SR_sb_fail_fj)
-            event_yield["SR_semiboosted"]["Pass"] = len(SR_sb_pass_fj)
-            event_yield["VR_semiboosted"]["Fail"] = len(VR_sb_fail_fj)
-            event_yield["VR_semiboosted"]["Pass"] = len(VR_sb_pass_fj)
-
-            # if doing trigger efficiency studies
-            if args.refTriggerList != None:
-                fillAllHistos(outHists, variation, event_yield, args.extra_histos, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j, SR_b_fail_e, SR_b_pass_e, VR_b_fail_e, VR_b_pass_e, SR_sb_fail_e, SR_sb_pass_e, VR_sb_fail_e, VR_sb_pass_e, args.refTriggerList)
-                # if the analysis trigger(s) are applied as well
-                if args.triggerList != None:
-                    fillAllHistos(outHists, variation, event_yield, args.extra_histos, SR_b_fail_fj, SR_b_pass_fj, VR_b_fail_fj, VR_b_pass_fj, SR_sb_fail_fj, SR_sb_pass_fj, VR_sb_fail_fj, VR_sb_pass_fj, SR_sb_fail_j, SR_sb_pass_j, VR_sb_fail_j, VR_sb_pass_j, SR_b_fail_e, SR_b_pass_e, VR_b_fail_e, VR_b_pass_e, SR_sb_fail_e, SR_sb_pass_e, VR_sb_fail_e, VR_sb_pass_e, args.refTriggerList, args.triggerList)
-
-            # create and fill the cut flow histograms
-            for r in regions:
-                cutFlowHistos[r] = ROOT.TH1D(f"cutFlowHisto_{r}", f"{r};Cut flow;Number of events", len(event_yield[r].keys()), 0., float(len(event_yield[r].keys())))
-                for i, key in enumerate(event_yield[r].keys()):
-                    cutFlowHistos[r].SetBinContent(i+1, event_yield[r][key])
-                    cutFlowHistos[r].GetXaxis().SetBinLabel(i+1, key)
+        # create and fill the cut flow histograms
+        for r in regions:
+            key = f"{r}{suffix}"
+            cutFlowHistos[key] = ROOT.TH1D(f"cutFlowHisto_{r}{suffix}", f"{r}{suffix};Cut flow;Number of events", len(event_yield[key].keys()), 0., float(len(event_yield[key].keys())))
+            for i, k in enumerate(event_yield[key].keys()):
+                cutFlowHistos[key].SetBinContent(i+1, event_yield[key][k])
+                cutFlowHistos[key].GetXaxis().SetBinLabel(i+1, k)
 
     # save histograms to a ROOT file
     with uproot.recreate(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile))) as fout:
@@ -435,13 +495,13 @@ if __name__ == "__main__":
         # save all other histograms
         for histName in keys:
             fout[histName] = outHists[histName]
-        #for r in regions:
-            #fout[f"cutFlowHisto_{r}"] = cutFlowHistos[r] # this does not work properly (see [*])
+        #for k in cutFlowHistos.keys():
+            #fout[f"cutFlowHisto_{k}"] = cutFlowHistos[k] # this does not work properly (see [*])
 
     # re-open the ROOT file for some updates and storing additional histograms
     fout = ROOT.TFile.Open(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile)), 'UPDATE')
     # [*] uproot has some issues with storing histograms with labelled bins (apparently only the first bin is stored) so resorting to plain ROOT here
-    for r in regions:
-        cutFlowHistos[r].Write()
+    for k in cutFlowHistos.keys():
+        cutFlowHistos[k].Write()
     fout.Close()
     print("--- %s seconds ---" % (time.time() - start_time))
