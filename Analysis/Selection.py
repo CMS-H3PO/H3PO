@@ -244,5 +244,11 @@ def Event_selection(fname,process,isMC,event_yield,variation="nominal",refTrigLi
     VR_sb_Pass_evtMask = selection.all("Trigger","Preselection_ge2fj","Mass_cut_VR_semiboosted","Preselection_jets","Away_jets_VR_semiboosted","Good_dijet_VR_semiboosted","VR_semiboosted_Pass")
     VR_sb_Fail_evtMask = selection.require(Trigger=True,Preselection_ge2fj=True,Mass_cut_VR_semiboosted=True,Preselection_jets=True,Away_jets_VR_semiboosted=True,Good_dijet_VR_semiboosted=True,VR_semiboosted_Pass=False)
     #---------------------------------------------
+    # embed the (di)jet arrays inside the events array
+    events["fatjets_SR"] = fatjets_SR
+    events["fatjets"] = fatjets
+    events["good_dijets_SR_sb"] = good_dijets_SR_sb
+    events["good_dijets_VR_sb"] = good_dijets_VR_sb
 
-    return events[SR_b_Fail_evtMask], events[SR_b_Pass_evtMask], fatjets_SR[SR_b_Fail_evtMask], fatjets_SR[SR_b_Pass_evtMask], events[VR_b_Fail_evtMask], events[VR_b_Pass_evtMask], fatjets[VR_b_Fail_evtMask], fatjets[VR_b_Pass_evtMask], events[SR_sb_Fail_evtMask], events[SR_sb_Pass_evtMask], fatjets_SR[SR_sb_Fail_evtMask], fatjets_SR[SR_sb_Pass_evtMask], good_dijets_SR_sb[SR_sb_Fail_evtMask], good_dijets_SR_sb[SR_sb_Pass_evtMask], events[VR_sb_Fail_evtMask], events[VR_sb_Pass_evtMask], fatjets[VR_sb_Fail_evtMask], fatjets[VR_sb_Pass_evtMask], good_dijets_VR_sb[VR_sb_Fail_evtMask], good_dijets_VR_sb[VR_sb_Pass_evtMask]
+
+    return events[SR_b_Fail_evtMask], events[SR_b_Pass_evtMask], events.fatjets_SR[SR_b_Fail_evtMask], events.fatjets_SR[SR_b_Pass_evtMask], events[VR_b_Fail_evtMask], events[VR_b_Pass_evtMask], events.fatjets[VR_b_Fail_evtMask], events.fatjets[VR_b_Pass_evtMask], events[SR_sb_Fail_evtMask], events[SR_sb_Pass_evtMask], events.fatjets_SR[SR_sb_Fail_evtMask], events.fatjets_SR[SR_sb_Pass_evtMask], events.good_dijets_SR_sb[SR_sb_Fail_evtMask], events.good_dijets_SR_sb[SR_sb_Pass_evtMask], events[VR_sb_Fail_evtMask], events[VR_sb_Pass_evtMask], events.fatjets[VR_sb_Fail_evtMask], events.fatjets[VR_sb_Pass_evtMask], events.good_dijets_VR_sb[VR_sb_Fail_evtMask], events.good_dijets_VR_sb[VR_sb_Pass_evtMask]
