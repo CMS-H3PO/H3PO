@@ -1,10 +1,14 @@
 import awkward as ak
 from coffea.nanoevents import NanoEventsFactory, NanoAODSchema
+from coffea.analysis_tools import PackedSelection
 import numpy as np
-import json
 import gzip
 import cloudpickle
 from condor.paths import H3_DIR
+from tools.jerc import *
+
+NanoAODSchema.warn_missing_crossrefs = False
+jerc = JERC()
 
 #---------------------------------------------
 # Selection cuts
@@ -20,34 +24,13 @@ etacut = 2.5
 mass_cut = [100.,150.]
 pNet_cut = 0.9105
 
-# Resolved jet cuts
+# Resolved Higgs candidate jet cuts
 res_ptcut = 30.
 res_etacut = 2.5
 res_mass_cut = [90.,150.]
 # loose cut = 0.0532, med_cut = 0.3040, tight_cut = 0.7476 (https://btv-wiki.docs.cern.ch/ScaleFactors/)
 res_deepJetcut = 0.0532
 #---------------------------------------------
-def addJECVariables(jets, event_rho,isData):
-    jets["pt_raw"] = (1 - jets.rawFactor)*jets.pt
-    jets["mass_raw"] = (1 - jets.rawFactor)*jets.mass
-    jets["event_rho"] = ak.broadcast_arrays(event_rho, jets.pt)[0]
-    if not isData:
-        jets["pt_gen"] = ak.values_astype(ak.fill_none(jets.matched_gen.pt, 0), np.float32)
-    return jets
-
-def yearFromInputFile(inputFile):
-    if("2016APV" in inputFile):
-        return "2016APV"
-    #Because 2016 repeats, ordering is important
-    elif("2016" in inputFile):
-        return "2016"
-    elif("2017" in inputFile):
-        return "2017"
-    elif("2018" in inputFile):
-        return "2018" 
-    else:       
-        raise ValueError('Could not determine year from input file: {0}'.format(inputFile))
-
 
 def closest(masses):
     delta = abs(higgs_mass - masses)
@@ -69,18 +52,12 @@ def precut(fatjets):
     return (fatjets.pt>ptcut) & (np.absolute(fatjets.eta)<etacut) & (fatjets.msoftdrop>min_jet_mass) & (fatjets.msoftdrop<max_jet_mass)
 
 
-def FailPassCategories(events, fatjets, jets=None):
+def PassCategory(fatjets):
     # sort the fat jets in the descending pNet HbbvsQCD score
     sorted_fatjets = fatjets[ak.argsort(-HbbvsQCD(fatjets),axis=-1)]
 
-    # fail region: 0 fat jets passing the pNet cut
-    # pass region: at least 1 fat jets passing the pNet cut
-    fail_mask = (HbbvsQCD(sorted_fatjets[:,0])<=pNet_cut)
-    pass_mask = (HbbvsQCD(sorted_fatjets[:,0])>pNet_cut)
-    if jets is not None:
-        return events[fail_mask], events[pass_mask], fatjets[fail_mask], fatjets[pass_mask], jets[fail_mask], jets[pass_mask]
-    else:
-        return events[fail_mask], events[pass_mask], fatjets[fail_mask], fatjets[pass_mask]
+    # pass category: at least 1 fat jets passing the pNet cut
+    return (HbbvsQCD(sorted_fatjets[:,0])>pNet_cut)
 
 # this is a jet mask
 def HiggsMassCut(fatjets):
@@ -91,40 +68,26 @@ def HiggsMassVeto(fatjets):
     return ((FatJetMass(fatjets)<mass_cut[0]) | (FatJetMass(fatjets)>mass_cut[1])) & (FatJetMass(fatjets)>min_jet_mass) & (FatJetMass(fatjets)<max_jet_mass)
 
 # this is an event mask
-def VR_b_JetMass_evtMask(fatjets):
+def VR_b_JetMassCuts(fatjets):
+    has_three_fatjets = (ak.num(fatjets, axis=1)>2)
+    fatjets_padded = ak.pad_none(fatjets, 3)
     # jet mass window inverted for the 2 leading jets, applied to the 3rd one
-    return (((FatJetMass(fatjets[:,0])<mass_cut[0]) | (FatJetMass(fatjets[:,0])>mass_cut[1])) & (FatJetMass(fatjets[:,0])>min_jet_mass) & (FatJetMass(fatjets[:,0])<max_jet_mass)
-          & ((FatJetMass(fatjets[:,1])<mass_cut[0]) | (FatJetMass(fatjets[:,1])>mass_cut[1])) & (FatJetMass(fatjets[:,1])>min_jet_mass) & (FatJetMass(fatjets[:,1])<max_jet_mass)
-          & (FatJetMass(fatjets[:,2])>=mass_cut[0]) & (FatJetMass(fatjets[:,2])<=mass_cut[1]))
+    return ak.where(has_three_fatjets, ((FatJetMass(fatjets_padded[:,0])<mass_cut[0]) | (FatJetMass(fatjets_padded[:,0])>mass_cut[1])) & (FatJetMass(fatjets_padded[:,0])>min_jet_mass) & (FatJetMass(fatjets_padded[:,0])<max_jet_mass)
+           & ((FatJetMass(fatjets_padded[:,1])<mass_cut[0]) | (FatJetMass(fatjets_padded[:,1])>mass_cut[1])) & (FatJetMass(fatjets_padded[:,1])>min_jet_mass) & (FatJetMass(fatjets_padded[:,1])<max_jet_mass)
+           & (FatJetMass(fatjets_padded[:,2])>=mass_cut[0]) & (FatJetMass(fatjets_padded[:,2])<=mass_cut[1]), False)
 
 
-def get_dijets(fatjets, jets, events, event_counts, addCounts=False):
-    # apply preselection to the resolved jets
-    jets = jets[(jets.pt > res_ptcut) & (np.absolute(jets.eta) < res_etacut) & (jets.btagDeepFlavB>res_deepJetcut)]
-
-    # require that there are at least 2 good jets present in the event
-    fatjets = fatjets[ak.num(jets, axis=1)>1]
-    events  =  events[ak.num(jets, axis=1)>1]
-    jets    =    jets[ak.num(jets, axis=1)>1]
-
-    if addCounts:
-        event_counts["Preselection_jets"] += len(fatjets)
-    else:
-        event_counts["Preselection_jets"] = len(fatjets)
+def get_dijets(fatjets, jets, selection, event_counts, region):
 
     # require jets to be away from fat jets
     away_jets_mask = jets.nearest(fatjets).delta_r(jets)>delta_r_cut
     jets = jets[away_jets_mask]
 
     # require that there are at least 2 good away jets present in the event
-    fatjets = fatjets[ak.num(jets, axis=1)>1]
-    events  =  events[ak.num(jets, axis=1)>1]
-    jets    =    jets[ak.num(jets, axis=1)>1]
+    cut_name = "Away_jets_" + region
+    selection.add(cut_name, ak.num(jets, axis=1)>1)
 
-    if addCounts:
-        event_counts["Away_jets"] += len(fatjets)
-    else:
-        event_counts["Away_jets"] = len(fatjets)
+    event_counts[region]["Away_jets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_" + region,"Preselection_jets",cut_name), axis=0)
 
     # calculate mass of all possible jet pairs and select the pair which has the mass closest to the Higgs boson mass
     dijets = ak.combinations(jets, 2, fields=['i0', 'i1'])
@@ -133,229 +96,153 @@ def get_dijets(fatjets, jets, events, event_counts, addCounts=False):
     closest_dijets = dijets[is_closest]
     # apply the jet mass cut to the closest dijets
     good_dijets = closest_dijets[((closest_dijets['i0'] + closest_dijets['i1']).mass>=res_mass_cut[0]) & ((closest_dijets['i0'] + closest_dijets['i1']).mass<=res_mass_cut[1])]
-    
-    # select events with at least 1 good dijet (by construction there can be at most 1 per event)
-    fatjets     =     fatjets[ak.num(good_dijets, axis=1)>0]
-    events      =      events[ak.num(good_dijets, axis=1)>0]
-    good_dijets = good_dijets[ak.num(good_dijets, axis=1)>0]
-    
-    if addCounts:
-        event_counts["Good_dijet"] += len(fatjets)
-    else:
-        event_counts["Good_dijet"] = len(fatjets)
-    
-    return fatjets, good_dijets, events
+
+    return good_dijets
 
 
-def getCalibratedAK4(events,variation,jetFactory,jecTag):
-    AK4jecCache         = {}
-    if("mc" in jecTag):
-        isData = False
-    else:
-        isData = True
-    jetsCalib           = jetFactory[jecTag].build(addJECVariables(events.Jet, events.fixedGridRhoFastjetAll,isData), AK4jecCache)
-        
-    if(variation=="nominal"):
-        jets         = jetsCalib
-    elif(variation=="jesUp"):
-        jets         = jetsCalib.JES_jes.up
-    elif(variation=="jesDown"):
-        jets         = jetsCalib.JES_jes.down
-    elif(variation=="jerUp"):
-        jets         = jetsCalib.JER.up
-    elif(variation=="jerDown"):
-        jets         = jetsCalib.JER.down
-    else:       
-        raise ValueError('Invalid variation: ', variation)
-
-    return jets
-
-
-def getCalibratedAK8(events,variation,fatjetFactory,jecTag):
-    AK8jecCache         = {}
-    if("mc" in jecTag):
-        isData = False
-    else:
-        isData = True
-    fatjetsCalib        = fatjetFactory[jecTag].build(addJECVariables(events.FatJet, events.fixedGridRhoFastjetAll,isData), AK8jecCache)
-
-    if(variation=="nominal"):
-        fatjets         = fatjetsCalib
-    elif(variation=="jesUp"):
-        fatjets         = fatjetsCalib.JES_jes.up
-    elif(variation=="jesDown"):
-        fatjets         = fatjetsCalib.JES_jes.down
-    elif(variation=="jerUp"):
-        fatjets         = fatjetsCalib.JER.up
-    elif(variation=="jerDown"):
-        fatjets         = fatjetsCalib.JER.down
-    else:       
-        raise ValueError('Invalid variation: ', variation)
-
-    return fatjets
-
-def jecTagFromFileName(fname):
-    year    = yearFromInputFile(fname)
-    #MC
-    if not "JetHT" in fname:
-        jecTag  = year+"mc"
-        return jecTag
-    
-    #Data
-    era = fname.split("JetHT"+year)[1][0]#E.g.targetting "B" in JetHT2018B: first character in a string AFTER the JetHT$year
-    if year=="2016APV":
-        if era in "BCD":
-            return "2016APVRunBCD"
-        else:
-            return "2016APVRunEF"
-
-    elif year=="2016":
-        return "2016RunFGH"
-
-    elif year=="2017":
-        jecTag = year+"Run"+era
-        return jecTag
-
-    elif year=="2018":
-        jecTag = year+"Run"+era
-        return jecTag
-
-def Event_selection(fname,process,event_counts,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
+def Event_selection(fname,process,isMC,event_counts,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
 
-    if "JetHT" not in process:
-        for r in event_counts.keys():
-            event_counts[r]["Skim"] = len(events)
 
-    if trigList != None and refTrigList == None:
-        triggerBits = np.array([events.HLT[t] for t in trigList if t in events.HLT.fields])
-        triggerMask = np.logical_or.reduce(triggerBits, axis=0)
-        events = events[triggerMask]
+    selection = PackedSelection()
+
+    # accept all events in the input file to add the skimming step in the cut flow
+    selection.add("Skim", ak.Array([True] * len(events)))
+
+    if isMC:
+        for r in event_counts.keys():
+            event_counts[r]["Skim"] = ak.sum(selection.all("Skim"), axis=0)
+
+    # trigger selection
+    if trigList != None and refTrigList == None:        
+        trigger = ak.values_astype(ak.zeros_like(events.run), bool)
+        for t in trigList:
+            if t in events.HLT.fields:
+                trigger = trigger | events.HLT[t]
+        selection.add("Trigger", trigger)
+        del trigger
 
         for r in event_counts.keys():
-            event_counts[r]["Trigger"] = len(events)
+            event_counts[r]["Trigger"] = ak.sum(selection.all("Trigger"), axis=0)
+    else:
+        selection.add("Trigger", ak.Array([True] * len(events)))
 
     # if JEC re-application is turned off
     if variation == "fromFile":
         print("JEC re-application turned off")
         fatjets = events.FatJet
     else:
-        with gzip.open(H3_DIR+"/../data/jec/jme_UL_pickled.pkl") as fin:
-            jmeDB           = cloudpickle.load(fin)
-            fatjetFactory   = jmeDB["fatjet_factory"]
-            jetFactory      = jmeDB["jet_factory"]
-
-        jecTag              = jecTagFromFileName(fname)
+        jecTag = jecTagFromFileName(fname)
         print("JEC tag: ", jecTag)
-        fatjets             = getCalibratedAK8(events,variation,fatjetFactory,jecTag) if len(events)>0 else events.FatJet
+        fatjets = getCalibratedJets(events.FatJet,events.fixedGridRhoFastjetAll,variation,jerc.fatjetFactory,jecTag) if len(events)>0 else events.FatJet
 
     # fat jet preselection
     fatjets = fatjets[precut(fatjets)]
 
-    # select events with exactly 2 preselected fat jets
-    events_eq2  =  events[ak.num(fatjets, axis=1)==2]
-    fatjets_eq2 = fatjets[ak.num(fatjets, axis=1)==2]
+    # select events with at least 2 preselected fat jets (relevant for the semiboosted channel)
+    selection.add("Preselection_ge2fj", ak.num(fatjets, axis=1)>=2)
 
     # select events with at least 3 preselected fat jets
-    events  =  events[ak.num(fatjets, axis=1)>2]
-    fatjets = fatjets[ak.num(fatjets, axis=1)>2]
+    selection.add("Preselection_ge3fj", ak.num(fatjets, axis=1)>2)
 
     for r in event_counts.keys():
         if 'semiboosted' in r:
-            event_counts[r]["Preselection_fatjets"] = (len(fatjets) + len(fatjets_eq2))
+            event_counts[r]["Preselection_fatjets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj"), axis=0)
         else:
-            event_counts[r]["Preselection"] = len(fatjets)
-    
+            event_counts[r]["Preselection"] = ak.sum(selection.all("Trigger","Preselection_ge3fj"), axis=0)
+
     # apply the jet mass cut to preselected fat jets
     # for SR (boosted and semiboosted)
     fatjets_SR = fatjets[HiggsMassCut(fatjets)]
-
+    #---------------------------------------------
     # SR boosted
-    # select events with at least 3 good fat jets. Pass on only the 3 leading fat jets (to avoid events passing or failing due to the 4th or higher leading fat jet)
-    fatjets_SR_b_evtMask = (ak.num(fatjets_SR, axis=1)>2)
-    events_SR_b  =     events[fatjets_SR_b_evtMask]
-    fatjets_SR_b = fatjets_SR[fatjets_SR_b_evtMask][:,0:3]
+    # select events with at least 3 good fat jets
+    SR_b_evtMask = (ak.num(fatjets_SR, axis=1)>2)
+    selection.add("Mass_cut_SR_boosted", SR_b_evtMask)
 
+    event_counts["SR_boosted"]["Mass_cut"] = ak.sum(selection.all("Trigger","Preselection_ge3fj","Mass_cut_SR_boosted"), axis=0)
+
+    # select events in the Pass category of the SR boosted. Pass on only the 3 leading fat jets (to avoid events passing or failing due to the 4th or higher leading fat jet)
+    selection.add("SR_boosted_Pass", ak.where(SR_b_evtMask, PassCategory(ak.pad_none(fatjets_SR, 3)[:,0:3]), False))
+
+    # define Pass and Fail category event masks
+    SR_b_Pass_evtMask = selection.all("Trigger","Preselection_ge3fj","Mass_cut_SR_boosted","SR_boosted_Pass")
+    SR_b_Fail_evtMask = selection.require(Trigger=True,Preselection_ge3fj=True,Mass_cut_SR_boosted=True,SR_boosted_Pass=False)
+    #---------------------------------------------
     # VR boosted
-    # apply the VR jet mass cuts to the 3 leading (in pT) fat jets and reject overlap with the SR.
-    # Pass on only the 3 leading fat jets (to avoid events passing or failing due to the pNet score of the 4th or higher leading fat jet)
-    fatjets_VR_b_evtMask = VR_b_JetMass_evtMask(fatjets)
-    events_VR_b  =  events[fatjets_VR_b_evtMask & ~fatjets_SR_b_evtMask]
-    fatjets_VR_b = fatjets[fatjets_VR_b_evtMask & ~fatjets_SR_b_evtMask][:,0:3]
+    # apply the VR jet mass cuts to the 3 leading (in pT) fat jets and reject overlap with the SR
+    VR_b_evtMask = (VR_b_JetMassCuts(fatjets) & ~SR_b_evtMask)
+    selection.add("Mass_cut_VR_boosted", VR_b_evtMask)
 
-    event_counts["SR_boosted"]["Mass_cut"] = len(fatjets_SR_b)
-    event_counts["VR_boosted"]["Mass_cut"] = len(fatjets_VR_b)
+    event_counts["VR_boosted"]["Mass_cut"] = ak.sum(selection.all("Trigger","Preselection_ge3fj","Mass_cut_VR_boosted"), axis=0)
 
+    # select events in the Pass category of the VR boosted. Pass on only the 3 leading fat jets (to avoid events passing or failing due to the pNet score of the 4th or higher leading fat jet)
+    selection.add("VR_boosted_Pass", ak.where(VR_b_evtMask, PassCategory(ak.pad_none(fatjets, 3)[:,0:3]), False))
+
+    # define Pass and Fail category event masks
+    VR_b_Pass_evtMask = selection.all("Trigger","Preselection_ge3fj","Mass_cut_VR_boosted","VR_boosted_Pass")
+    VR_b_Fail_evtMask = selection.require(Trigger=True,Preselection_ge3fj=True,Mass_cut_VR_boosted=True,VR_boosted_Pass=False)
+    #---------------------------------------------
+    # get standard jets
+    # if JEC re-application is turned off
+    if variation == "fromFile":
+        jets = events.Jet
+    else:
+        jets = getCalibratedJets(events.Jet,events.fixedGridRhoFastjetAll,variation,jerc.jetFactory,jecTag) if len(events)>0 else events.Jet
+
+    # apply preselection to the standard jets
+    jets = jets[(jets.pt > res_ptcut) & (np.absolute(jets.eta) < res_etacut) & (jets.btagDeepFlavB>res_deepJetcut)]
+
+    # require that there are at least 2 good jets present in the event
+    selection.add("Preselection_jets", ak.num(jets, axis=1)>1)
+    #---------------------------------------------
     # SR semiboosted
     # select events with exactly 2 good fat jets and reject overlap with the VR boosted (by construction orthogonal to the SR boosted)
-    fatjets_SR_sb_evtMask = (ak.num(fatjets_SR, axis=1)==2)
-    events_SR_sb  =     events[fatjets_SR_sb_evtMask & ~(fatjets_VR_b_evtMask)]
-    fatjets_SR_sb = fatjets_SR[fatjets_SR_sb_evtMask & ~(fatjets_VR_b_evtMask)]
-    # get resolved jets from selected events
-    # if JEC re-application is turned off
-    if variation == "fromFile":
-        jets_SR_sb = events_SR_sb.Jet
-    else:
-        jets_SR_sb = getCalibratedAK4(events_SR_sb,variation,jetFactory,jecTag) if len(events_SR_sb)>0 else events_SR_sb.Jet
+    SR_sb_evtMask = ((ak.num(fatjets_SR, axis=1)==2) & ~VR_b_evtMask)
+    selection.add("Mass_cut_SR_semiboosted", SR_sb_evtMask)
 
-    event_counts["SR_semiboosted"]["Mass_cut_fatjets"] = len(fatjets_SR_sb)
+    event_counts["SR_semiboosted"]["Mass_cut_fatjets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_SR_semiboosted"), axis=0)
+
+    event_counts["SR_semiboosted"]["Preselection_jets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_SR_semiboosted","Preselection_jets"), axis=0)
 
     # get good dijets
-    fatjets_SR_sb, good_dijets_SR_sb, events_SR_sb = get_dijets(fatjets_SR_sb, jets_SR_sb, events_SR_sb, event_counts["SR_semiboosted"])
+    good_dijets_SR_sb = get_dijets(fatjets_SR, jets, selection, event_counts, "SR_semiboosted")
 
+    # select events with at least 1 good dijet (by construction there can be at most 1 per event)
+    selection.add("Good_dijet_SR_semiboosted", ak.num(good_dijets_SR_sb, axis=1)>0)
+
+    event_counts["SR_semiboosted"]["Good_dijet"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_SR_semiboosted","Preselection_jets","Away_jets_SR_semiboosted","Good_dijet_SR_semiboosted"), axis=0)
+
+    # select events in the Pass category of the SR semiboosted
+    selection.add("SR_semiboosted_Pass", ak.where(SR_sb_evtMask, PassCategory(ak.pad_none(fatjets_SR, 1)), False))
+
+    # define Pass and Fail category event masks
+    SR_sb_Pass_evtMask = selection.all("Trigger","Preselection_ge2fj","Mass_cut_SR_semiboosted","Preselection_jets","Away_jets_SR_semiboosted","Good_dijet_SR_semiboosted","SR_semiboosted_Pass")
+    SR_sb_Fail_evtMask = selection.require(Trigger=True,Preselection_ge2fj=True,Mass_cut_SR_semiboosted=True,Preselection_jets=True,Away_jets_SR_semiboosted=True,Good_dijet_SR_semiboosted=True,SR_semiboosted_Pass=False)
+    #---------------------------------------------
     # VR semiboosted
-    # select events with exactly 2 good fat jets and reject overlap with both SR and the VR boosted
-    fatjets_VR_sb = fatjets[:,0:2]
-    fatjets_VR_sb = fatjets_VR_sb[HiggsMassVeto(fatjets_VR_sb)]
-    fatjets_VR_sb_evtMask = (ak.num(fatjets_VR_sb, axis=1)==2)
-    events_VR_sb  =        events[fatjets_VR_sb_evtMask & ~(fatjets_SR_b_evtMask | fatjets_SR_sb_evtMask | fatjets_VR_b_evtMask)]
-    fatjets_VR_sb = fatjets_VR_sb[fatjets_VR_sb_evtMask & ~(fatjets_SR_b_evtMask | fatjets_SR_sb_evtMask | fatjets_VR_b_evtMask)]
-    # get resolved jets from selected events
-    # if JEC re-application is turned off
-    if variation == "fromFile":
-        jets_VR_sb = events_VR_sb.Jet
-    else:
-        jets_VR_sb = getCalibratedAK4(events_VR_sb,variation,jetFactory,jecTag) if len(events_VR_sb)>0 else events_VR_sb.Jet
+    # select events with 2 good leading fat jets and reject overlap with both SRs and the VR boosted
+    VR_sb_evtMask = (ak.num(fatjets[HiggsMassVeto(fatjets[:,0:2])], axis=1)==2) & ~(SR_b_evtMask | SR_sb_evtMask | VR_b_evtMask)
+    selection.add("Mass_cut_VR_semiboosted", VR_sb_evtMask)
 
-    event_counts["VR_semiboosted"]["Mass_cut_fatjets"] = len(fatjets_VR_sb)
-    
-    # get good dijets
-    fatjets_VR_sb, good_dijets_VR_sb, events_VR_sb = get_dijets(fatjets_VR_sb, jets_VR_sb, events_VR_sb, event_counts["VR_semiboosted"])
-    
-    # SR semiboosted (==2 fatjets)
-    # apply the jet mass cut to preselected fat jets
-    fatjets_SR_sb_eq2 = fatjets_eq2[HiggsMassCut(fatjets_eq2)]
-    # select events with exactly 2 good fat jets
-    events_SR_sb_eq2  =        events_eq2[ak.num(fatjets_SR_sb_eq2, axis=1)==2]
-    fatjets_SR_sb_eq2 = fatjets_SR_sb_eq2[ak.num(fatjets_SR_sb_eq2, axis=1)==2]
-    # get resolved jets from selected events
-    # if JEC re-application is turned off
-    if variation == "fromFile":
-        jets_SR_sb_eq2 = events_SR_sb_eq2.Jet    
-    else:
-        jets_SR_sb_eq2 = getCalibratedAK4(events_SR_sb_eq2,variation,jetFactory,jecTag) if len(events_SR_sb_eq2)>0 else events_SR_sb_eq2.Jet
+    event_counts["VR_semiboosted"]["Mass_cut_fatjets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_VR_semiboosted"), axis=0)
 
-    event_counts["SR_semiboosted"]["Mass_cut_fatjets"] += len(fatjets_SR_sb_eq2)
+    event_counts["VR_semiboosted"]["Preselection_jets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_VR_semiboosted","Preselection_jets"), axis=0)
 
     # get good dijets
-    fatjets_SR_sb_eq2, good_dijets_SR_sb_eq2, events_SR_sb_eq2 = get_dijets(fatjets_SR_sb_eq2, jets_SR_sb_eq2, events_SR_sb_eq2, event_counts["SR_semiboosted"], True)
+    good_dijets_VR_sb = get_dijets(fatjets[:,0:2], jets, selection, event_counts, "VR_semiboosted")
 
-    # VR semiboosted (==2 fatjets)
-    # apply the jet mass cut to preselected fat jets
-    fatjets_VR_sb_eq2 = fatjets_eq2[HiggsMassVeto(fatjets_eq2)]
-    # select events with exactly 2 good fat jets
-    events_VR_sb_eq2  =        events_eq2[ak.num(fatjets_VR_sb_eq2, axis=1)==2]
-    fatjets_VR_sb_eq2 = fatjets_VR_sb_eq2[ak.num(fatjets_VR_sb_eq2, axis=1)==2]
-    # get resolved jets from selected events
-    # if JEC re-application is turned off
-    if variation == "fromFile":
-        jets_VR_sb_eq2 = events_VR_sb_eq2.Jet
-    else:
-        jets_VR_sb_eq2 = getCalibratedAK4(events_VR_sb_eq2,variation,jetFactory,jecTag) if len(events_VR_sb_eq2)>0 else events_VR_sb_eq2.Jet
+    # select events with at least 1 good dijet (by construction there can be at most 1 per event)
+    selection.add("Good_dijet_VR_semiboosted", ak.num(good_dijets_VR_sb, axis=1)>0)
 
-    event_counts["VR_semiboosted"]["Mass_cut_fatjets"] += len(fatjets_VR_sb_eq2)
+    event_counts["VR_semiboosted"]["Good_dijet"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_VR_semiboosted","Preselection_jets","Away_jets_VR_semiboosted","Good_dijet_VR_semiboosted"), axis=0)
 
-    # get good dijets
-    fatjets_VR_sb_eq2, good_dijets_VR_sb_eq2, events_VR_sb_eq2 = get_dijets(fatjets_VR_sb_eq2, jets_VR_sb_eq2, events_VR_sb_eq2, event_counts["VR_semiboosted"], True)
+    # select events in the Pass category of the SR semiboosted
+    selection.add("VR_semiboosted_Pass", ak.where(VR_sb_evtMask, PassCategory(ak.pad_none(fatjets[:,0:2], 1)), False))
 
-    return *FailPassCategories(events_SR_b, fatjets_SR_b), *FailPassCategories(events_VR_b, fatjets_VR_b), *FailPassCategories(events_SR_sb, fatjets_SR_sb, good_dijets_SR_sb), *FailPassCategories(events_VR_sb, fatjets_VR_sb, good_dijets_VR_sb), *FailPassCategories(events_SR_sb_eq2, fatjets_SR_sb_eq2, good_dijets_SR_sb_eq2), *FailPassCategories(events_VR_sb_eq2, fatjets_VR_sb_eq2, good_dijets_VR_sb_eq2)
+    # define Pass and Fail category event masks
+    VR_sb_Pass_evtMask = selection.all("Trigger","Preselection_ge2fj","Mass_cut_VR_semiboosted","Preselection_jets","Away_jets_VR_semiboosted","Good_dijet_VR_semiboosted","VR_semiboosted_Pass")
+    VR_sb_Fail_evtMask = selection.require(Trigger=True,Preselection_ge2fj=True,Mass_cut_VR_semiboosted=True,Preselection_jets=True,Away_jets_VR_semiboosted=True,Good_dijet_VR_semiboosted=True,VR_semiboosted_Pass=False)
+    #---------------------------------------------
+
+    return events[SR_b_Fail_evtMask], events[SR_b_Pass_evtMask], fatjets_SR[SR_b_Fail_evtMask], fatjets_SR[SR_b_Pass_evtMask], events[VR_b_Fail_evtMask], events[VR_b_Pass_evtMask], fatjets[VR_b_Fail_evtMask], fatjets[VR_b_Pass_evtMask], events[SR_sb_Fail_evtMask], events[SR_sb_Pass_evtMask], fatjets_SR[SR_sb_Fail_evtMask], fatjets_SR[SR_sb_Pass_evtMask], good_dijets_SR_sb[SR_sb_Fail_evtMask], good_dijets_SR_sb[SR_sb_Pass_evtMask], events[VR_sb_Fail_evtMask], events[VR_sb_Pass_evtMask], fatjets[VR_sb_Fail_evtMask], fatjets[VR_sb_Pass_evtMask], good_dijets_VR_sb[VR_sb_Fail_evtMask], good_dijets_VR_sb[VR_sb_Pass_evtMask]
