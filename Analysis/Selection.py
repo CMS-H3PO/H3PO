@@ -77,7 +77,7 @@ def VR_b_JetMassCuts(fatjets):
            & (FatJetMass(fatjets_padded[:,2])>=mass_cut[0]) & (FatJetMass(fatjets_padded[:,2])<=mass_cut[1]), False)
 
 
-def get_dijets(fatjets, jets, selection, event_counts, region):
+def get_dijets(fatjets, jets, selection, event_yield, region):
 
     # require jets to be away from fat jets
     away_jets_mask = jets.nearest(fatjets).delta_r(jets)>delta_r_cut
@@ -87,7 +87,7 @@ def get_dijets(fatjets, jets, selection, event_counts, region):
     cut_name = "Away_jets_" + region
     selection.add(cut_name, ak.num(jets, axis=1)>1)
 
-    event_counts[region]["Away_jets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_" + region,"Preselection_jets",cut_name), axis=0)
+    event_yield[region]["Away_jets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_" + region,"Preselection_jets",cut_name), axis=0)
 
     # calculate mass of all possible jet pairs and select the pair which has the mass closest to the Higgs boson mass
     dijets = ak.combinations(jets, 2, fields=['i0', 'i1'])
@@ -100,7 +100,7 @@ def get_dijets(fatjets, jets, selection, event_counts, region):
     return good_dijets
 
 
-def Event_selection(fname,process,isMC,event_counts,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
+def Event_selection(fname,process,isMC,event_yield,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
 
 
@@ -110,8 +110,8 @@ def Event_selection(fname,process,isMC,event_counts,variation="nominal",refTrigL
     selection.add("Skim", ak.Array([True] * len(events)))
 
     if isMC:
-        for r in event_counts.keys():
-            event_counts[r]["Skim"] = ak.sum(selection.all("Skim"), axis=0)
+        for r in event_yield.keys():
+            event_yield[r]["Skim"] = ak.sum(selection.all("Skim"), axis=0)
 
     # trigger selection
     if trigList != None and refTrigList == None:        
@@ -122,8 +122,8 @@ def Event_selection(fname,process,isMC,event_counts,variation="nominal",refTrigL
         selection.add("Trigger", trigger)
         del trigger
 
-        for r in event_counts.keys():
-            event_counts[r]["Trigger"] = ak.sum(selection.all("Trigger"), axis=0)
+        for r in event_yield.keys():
+            event_yield[r]["Trigger"] = ak.sum(selection.all("Trigger"), axis=0)
     else:
         selection.add("Trigger", ak.Array([True] * len(events)))
 
@@ -145,11 +145,11 @@ def Event_selection(fname,process,isMC,event_counts,variation="nominal",refTrigL
     # select events with at least 3 preselected fat jets
     selection.add("Preselection_ge3fj", ak.num(fatjets, axis=1)>2)
 
-    for r in event_counts.keys():
+    for r in event_yield.keys():
         if 'semiboosted' in r:
-            event_counts[r]["Preselection_fatjets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj"), axis=0)
+            event_yield[r]["Preselection_fatjets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj"), axis=0)
         else:
-            event_counts[r]["Preselection"] = ak.sum(selection.all("Trigger","Preselection_ge3fj"), axis=0)
+            event_yield[r]["Preselection"] = ak.sum(selection.all("Trigger","Preselection_ge3fj"), axis=0)
 
     # apply the jet mass cut to preselected fat jets
     # for SR (boosted and semiboosted)
@@ -160,7 +160,7 @@ def Event_selection(fname,process,isMC,event_counts,variation="nominal",refTrigL
     SR_b_evtMask = (ak.num(fatjets_SR, axis=1)>2)
     selection.add("Mass_cut_SR_boosted", SR_b_evtMask)
 
-    event_counts["SR_boosted"]["Mass_cut"] = ak.sum(selection.all("Trigger","Preselection_ge3fj","Mass_cut_SR_boosted"), axis=0)
+    event_yield["SR_boosted"]["Mass_cut"] = ak.sum(selection.all("Trigger","Preselection_ge3fj","Mass_cut_SR_boosted"), axis=0)
 
     # select events in the Pass category of the SR boosted. Pass on only the 3 leading fat jets (to avoid events passing or failing due to the 4th or higher leading fat jet)
     selection.add("SR_boosted_Pass", ak.where(SR_b_evtMask, PassCategory(ak.pad_none(fatjets_SR, 3)[:,0:3]), False))
@@ -174,7 +174,7 @@ def Event_selection(fname,process,isMC,event_counts,variation="nominal",refTrigL
     VR_b_evtMask = (VR_b_JetMassCuts(fatjets) & ~SR_b_evtMask)
     selection.add("Mass_cut_VR_boosted", VR_b_evtMask)
 
-    event_counts["VR_boosted"]["Mass_cut"] = ak.sum(selection.all("Trigger","Preselection_ge3fj","Mass_cut_VR_boosted"), axis=0)
+    event_yield["VR_boosted"]["Mass_cut"] = ak.sum(selection.all("Trigger","Preselection_ge3fj","Mass_cut_VR_boosted"), axis=0)
 
     # select events in the Pass category of the VR boosted. Pass on only the 3 leading fat jets (to avoid events passing or failing due to the pNet score of the 4th or higher leading fat jet)
     selection.add("VR_boosted_Pass", ak.where(VR_b_evtMask, PassCategory(ak.pad_none(fatjets, 3)[:,0:3]), False))
@@ -201,17 +201,17 @@ def Event_selection(fname,process,isMC,event_counts,variation="nominal",refTrigL
     SR_sb_evtMask = ((ak.num(fatjets_SR, axis=1)==2) & ~VR_b_evtMask)
     selection.add("Mass_cut_SR_semiboosted", SR_sb_evtMask)
 
-    event_counts["SR_semiboosted"]["Mass_cut_fatjets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_SR_semiboosted"), axis=0)
+    event_yield["SR_semiboosted"]["Mass_cut_fatjets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_SR_semiboosted"), axis=0)
 
-    event_counts["SR_semiboosted"]["Preselection_jets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_SR_semiboosted","Preselection_jets"), axis=0)
+    event_yield["SR_semiboosted"]["Preselection_jets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_SR_semiboosted","Preselection_jets"), axis=0)
 
     # get good dijets
-    good_dijets_SR_sb = get_dijets(fatjets_SR, jets, selection, event_counts, "SR_semiboosted")
+    good_dijets_SR_sb = get_dijets(fatjets_SR, jets, selection, event_yield, "SR_semiboosted")
 
     # select events with at least 1 good dijet (by construction there can be at most 1 per event)
     selection.add("Good_dijet_SR_semiboosted", ak.num(good_dijets_SR_sb, axis=1)>0)
 
-    event_counts["SR_semiboosted"]["Good_dijet"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_SR_semiboosted","Preselection_jets","Away_jets_SR_semiboosted","Good_dijet_SR_semiboosted"), axis=0)
+    event_yield["SR_semiboosted"]["Good_dijet"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_SR_semiboosted","Preselection_jets","Away_jets_SR_semiboosted","Good_dijet_SR_semiboosted"), axis=0)
 
     # select events in the Pass category of the SR semiboosted
     selection.add("SR_semiboosted_Pass", ak.where(SR_sb_evtMask, PassCategory(ak.pad_none(fatjets_SR, 1)), False))
@@ -225,17 +225,17 @@ def Event_selection(fname,process,isMC,event_counts,variation="nominal",refTrigL
     VR_sb_evtMask = (ak.num(fatjets[HiggsMassVeto(fatjets[:,0:2])], axis=1)==2) & ~(SR_b_evtMask | SR_sb_evtMask | VR_b_evtMask)
     selection.add("Mass_cut_VR_semiboosted", VR_sb_evtMask)
 
-    event_counts["VR_semiboosted"]["Mass_cut_fatjets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_VR_semiboosted"), axis=0)
+    event_yield["VR_semiboosted"]["Mass_cut_fatjets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_VR_semiboosted"), axis=0)
 
-    event_counts["VR_semiboosted"]["Preselection_jets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_VR_semiboosted","Preselection_jets"), axis=0)
+    event_yield["VR_semiboosted"]["Preselection_jets"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_VR_semiboosted","Preselection_jets"), axis=0)
 
     # get good dijets
-    good_dijets_VR_sb = get_dijets(fatjets[:,0:2], jets, selection, event_counts, "VR_semiboosted")
+    good_dijets_VR_sb = get_dijets(fatjets[:,0:2], jets, selection, event_yield, "VR_semiboosted")
 
     # select events with at least 1 good dijet (by construction there can be at most 1 per event)
     selection.add("Good_dijet_VR_semiboosted", ak.num(good_dijets_VR_sb, axis=1)>0)
 
-    event_counts["VR_semiboosted"]["Good_dijet"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_VR_semiboosted","Preselection_jets","Away_jets_VR_semiboosted","Good_dijet_VR_semiboosted"), axis=0)
+    event_yield["VR_semiboosted"]["Good_dijet"] = ak.sum(selection.all("Trigger","Preselection_ge2fj","Mass_cut_VR_semiboosted","Preselection_jets","Away_jets_VR_semiboosted","Good_dijet_VR_semiboosted"), axis=0)
 
     # select events in the Pass category of the SR semiboosted
     selection.add("VR_semiboosted_Pass", ak.where(VR_sb_evtMask, PassCategory(ak.pad_none(fatjets[:,0:2], 1)), False))
