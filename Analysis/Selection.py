@@ -1,6 +1,7 @@
 import awkward as ak
 from coffea.nanoevents import NanoEventsFactory, NanoAODSchema
 from coffea.analysis_tools import PackedSelection
+from coffea.analysis_tools import Weights
 import numpy as np
 from utils.jerc import *
 
@@ -101,6 +102,9 @@ def Event_selection(fname,process,isMC,variation="nominal",refTrigList=None,trig
 
     # event selection
     selection = PackedSelection()
+
+    # event weights container
+    weights = Weights(len(events), storeIndividual=True)
 
     # accept all events in the input file to add the skimming step in the cut flow
     selection.add("Skim", ak.Array([True] * len(events)))
@@ -206,4 +210,4 @@ def Event_selection(fname,process,isMC,variation="nominal",refTrigList=None,trig
     events["good_dijets_VR"] = good_dijets_VR
 
 
-    return events, selection
+    return events, selection, weights
