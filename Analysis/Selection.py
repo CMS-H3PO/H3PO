@@ -107,9 +107,6 @@ def Event_selection(fname,process,isMC,variation="nominal",refTrigList=None,trig
     # event weights container
     weights = Weights(len(events), storeIndividual=True)
 
-    # accept all events in the input file to add the skimming step in the cut flow
-    selection.add("Skim", ak.Array([True] * len(events)))
-
     # trigger selection
     if trigList != None and refTrigList == None:
         selection.add("Trigger", getTriggerDecision(events, trigList))

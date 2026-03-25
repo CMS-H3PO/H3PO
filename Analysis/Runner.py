@@ -370,7 +370,7 @@ if __name__ == "__main__":
             event_yield[key][first_bin] = numberOfEvents
             # storing skimming step for MC only
             if isMC:
-                event_yield[key]["Skim"] = ak.sum(weights.weight()[selection.all("Skim")])
+                event_yield[key]["Skim"] = ak.sum(weights.weight())
             # if trigger applied and not doing trigger efficiency studies using reference triggers
             if args.triggerList != None and args.refTriggerList == None:
                 event_yield[key]["Trigger"] = ak.sum(weights.weight()[selection.all("Trigger")])
