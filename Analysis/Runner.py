@@ -295,6 +295,9 @@ if __name__ == "__main__":
                         dest="refTriggerList",
                         default = None
                         )
+    parser.add_argument("--disable_corr", dest="disable_corr", action='store_true',
+                        help="Disable corrections (default: %(default)s)",
+                        default=False)
     parser.add_argument("--extra_histos", dest="extra_histos", action='store_true',
                         help="Switch for producing additional histograms (default: %(default)s)",
                         default=False)
@@ -362,7 +365,7 @@ if __name__ == "__main__":
         event_yield = {}
 
         # apply event selection
-        events, selection, weights = Event_selection(input,process,isMC,variation=variation,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
+        events, selection, weights = Event_selection(input,process,isMC,apply_corrections=(not args.disable_corr),variation=variation,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
 
         for r in regions:
             key = f"{r}{suffix}"
