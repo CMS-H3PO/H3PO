@@ -139,6 +139,7 @@ def Event_selection(fname,process,isMC,variation="nominal",refTrigList=None,trig
     fatjets_SR = fatjets[HiggsMassCut(fatjets)]
     #---------------------------------------------
     # SR boosted
+    #---------------------------------------------
     # select events with at least 3 good fat jets
     SR_b_evtMask = (ak.num(fatjets_SR, axis=1)>2)
     selection.add("Mass_cut_SR_boosted", SR_b_evtMask)
@@ -147,6 +148,7 @@ def Event_selection(fname,process,isMC,variation="nominal",refTrigList=None,trig
     selection.add("SR_boosted_Pass", ak.where(SR_b_evtMask, PassCategory(ak.pad_none(fatjets_SR, 3)[:,0:3]), False))
     #---------------------------------------------
     # VR boosted
+    #---------------------------------------------
     # apply the VR jet mass cuts to the 3 leading (in pT) fat jets and reject overlap with the SR
     VR_b_evtMask = (VR_b_JetMassCuts(fatjets) & ~SR_b_evtMask)
     selection.add("Mass_cut_VR_boosted", VR_b_evtMask)
@@ -168,6 +170,7 @@ def Event_selection(fname,process,isMC,variation="nominal",refTrigList=None,trig
     selection.add("Preselection_jets", ak.num(jets, axis=1)>1)
     #---------------------------------------------
     # SR semiboosted
+    #---------------------------------------------
     # select events with exactly 2 good fat jets and reject overlap with the VR boosted (by construction orthogonal to the SR boosted)
     SR_sb_evtMask = ((ak.num(fatjets_SR, axis=1)==2) & ~VR_b_evtMask)
     selection.add("Mass_cut_SR_semiboosted", SR_sb_evtMask)
@@ -182,6 +185,7 @@ def Event_selection(fname,process,isMC,variation="nominal",refTrigList=None,trig
     selection.add("SR_semiboosted_Pass", ak.where(SR_sb_evtMask, PassCategory(ak.pad_none(fatjets_SR, 1)), False))
     #---------------------------------------------
     # VR semiboosted
+    #---------------------------------------------
     # select events with 2 good leading fat jets and reject overlap with both SRs and the VR boosted
     VR_sb_evtMask = (ak.num(fatjets[HiggsMassVeto(fatjets[:,0:2])], axis=1)==2) & ~(SR_b_evtMask | SR_sb_evtMask | VR_b_evtMask)
     selection.add("Mass_cut_VR_semiboosted", VR_sb_evtMask)
