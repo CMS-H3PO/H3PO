@@ -1,39 +1,39 @@
 # Files:
 
-skimming.py - perform a loose selection on the files and store "skimmed" files. Execution time of the selection script is significantly reduced if skims are used as input\
-Selection.py - implements all the selection
+`skimming.py` - perform a loose selection on the files and store "skimmed" files. Execution time of the selection script is significantly reduced if skims are used as input\
+`Selection.py` - implements all the selection
 
-HHH_samples_2016.txt - Official sample list of 2016 NanoAOD XToYHTo6B signal samples\
-HHH_samples_2016APV.txt - Official sample list of 2016APV NanoAOD XToYHTo6B signal samples\
-HHH_samples_2017.txt - Official sample list of 2017 NanoAOD XToYHTo6B samples\
-HHH_samples_2018.txt - Official sample list of 2018 NanoAOD XToYHTo6B samples
+`../data/HHH_samples_2016.txt` - Official sample list of 2016 NanoAOD XToYHTo6B signal samples\
+`../data/HHH_samples_2016APV.txt` - Official sample list of 2016APV NanoAOD XToYHTo6B signal samples\
+`../data/HHH_samples_2017.txt` - Official sample list of 2017 NanoAOD XToYHTo6B samples\
+`../data/HHH_samples_2018.txt` - Official sample list of 2018 NanoAOD XToYHTo6B samples
 
 The above sample lists were obtained using the following commands (requires initialized GRID proxy [*])
 ```
-echo '# dasgoclient -query "dataset dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v1/NANOAODSIM" | sort -V' > HHH_samples_2016.txt
-dasgoclient -query "dataset dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v1/NANOAODSIM" | sort -V >> HHH_samples_2016.txt
-echo '# dasgoclient -query "dataset dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM" | sort -V' > HHH_samples_2016APV.txt
-dasgoclient -query "dataset dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM" | sort -V >> HHH_samples_2016APV.txt
-echo '# dasgoclient -query "dataset dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM" | sort -V' > HHH_samples_2017.txt
-dasgoclient -query "dataset dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM" | sort -V >> HHH_samples_2017.txt
-echo '# dasgoclient -query "dataset dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM" | sort -V' > HHH_samples_2018.txt
-dasgoclient -query "dataset dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM" | sort -V >> HHH_samples_2018.txt
+echo '# dasgoclient -query "dataset dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v*/NANOAODSIM" | sort -V' > ../data/HHH_samples_2016.txt
+dasgoclient -query "dataset dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v*/NANOAODSIM" | sort -V >> ../data/HHH_samples_2016.txt
+echo '# dasgoclient -query "dataset dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v*/NANOAODSIM" | sort -V' > ../data/HHH_samples_2016APV.txt
+dasgoclient -query "dataset dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v*/NANOAODSIM" | sort -V >> ../data/HHH_samples_2016APV.txt
+echo '# dasgoclient -query "dataset dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v*/NANOAODSIM" | sort -V' > ../data/HHH_samples_2017.txt
+dasgoclient -query "dataset dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v*/NANOAODSIM" | sort -V >> ../data/HHH_samples_2017.txt
+echo '# dasgoclient -query "dataset dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v*/NANOAODSIM" | sort -V' > ../data/HHH_samples_2018.txt
+dasgoclient -query "dataset dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV_madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v*/NANOAODSIM" | sort -V >> ../data/HHH_samples_2018.txt
 ```
 
 The sample lists were then used to generate lists of all signal files (requires initialized GRID proxy [*])
 ```
-python ../tools/makeFileList.py HHH_samples_2016.txt HHH_files_2016.txt
-python ../tools/makeFileList.py HHH_samples_2016APV.txt HHH_files_2016APV.txt
-python ../tools/makeFileList.py HHH_samples_2017.txt HHH_files_2017.txt
-python ../tools/makeFileList.py HHH_samples_2018.txt HHH_files_2018.txt
+python ../tools/makeFileList.py ../data/HHH_samples_2016.txt ../data/HHH_files_2016.txt
+python ../tools/makeFileList.py ../data/HHH_samples_2016APV.txt ../data/HHH_files_2016APV.txt
+python ../tools/makeFileList.py ../data/HHH_samples_2017.txt ../data/HHH_files_2017.txt
+python ../tools/makeFileList.py ../data/HHH_samples_2018.txt ../data/HHH_files_2018.txt
 ```
 
 The above file lists were used to transfer signal files to the local cluster (requires initialized GRID proxy [*])
 ```
-python ../tools/transfer_XRootD2RBI_HHH.py HHH_files_2016.txt 2016
-python ../tools/transfer_XRootD2RBI_HHH.py HHH_files_2016APV.txt 2016APV
-python ../tools/transfer_XRootD2RBI_HHH.py HHH_files_2017.txt 2017
-python ../tools/transfer_XRootD2RBI_HHH.py HHH_files_2018.txt 2018
+python ../tools/transfer_XRootD2RBI_HHH.py ../data/HHH_files_2016.txt 2016
+python ../tools/transfer_XRootD2RBI_HHH.py ../data/HHH_files_2016APV.txt 2016APV
+python ../tools/transfer_XRootD2RBI_HHH.py ../data/HHH_files_2017.txt 2017
+python ../tools/transfer_XRootD2RBI_HHH.py ../data/HHH_files_2018.txt 2018
 ```
 
 A single file can be skimmed as in the following example (requires initialized GRID proxy [*])

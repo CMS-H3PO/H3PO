@@ -9,7 +9,7 @@ import copy
 
 
 def get_dataset_scaling_factor(dataset,year,sumGen):
-    json_file = open(H3_DIR + "/xsecs.json")
+    json_file = open(H3_DIR + "/config/xsecs.json")
     config = json.load(json_file)
     luminosity  = config[year]["lumi"]
     try:

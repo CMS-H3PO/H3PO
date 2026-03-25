@@ -5,8 +5,8 @@ import awkward as ak
 import hist
 from hist import Hist
 from Selection import *
-from tools.utils import *
-from tools.cutflow import *
+from utils.utils import *
+from config.cutflow import *
 
 
 # histogram bins

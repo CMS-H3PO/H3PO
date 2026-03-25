@@ -3,7 +3,7 @@ import numpy as np
 import gzip
 import cloudpickle
 from condor.paths import H3_DIR
-from tools.utils import *
+from utils.utils import *
 
 
 class JERC:

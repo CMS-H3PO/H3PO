@@ -2,7 +2,7 @@ import awkward as ak
 from coffea.nanoevents import NanoEventsFactory, NanoAODSchema
 from coffea.analysis_tools import PackedSelection
 import numpy as np
-from tools.jerc import *
+from utils.jerc import *
 
 NanoAODSchema.warn_missing_crossrefs = False
 jerc = JERC()
