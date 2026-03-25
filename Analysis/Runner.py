@@ -30,31 +30,43 @@ def getTriggerEvtMask(events, trigList):
     return np.logical_or.reduce(refTriggerBits, axis=0)
 
 
-def fillHistos(channel, suffix, events, selection, weights, event_yield, extraHistos, refTrigList=None, trigList=None):
+def fillHistos(channel, suffix, trigSuffix, events, selection, weights, event_yield, extraHistos, refTrigList=None, trigList=None):
 
     isBoosted = ("semiboosted" not in channel.lower())
 
+    _cuts_Pass = cuts_Pass
+    _cuts_Fail = cuts_Fail
+
+    if refTrigList != None:
+        selection.add("RefTrigger", getTriggerEvtMask(events, refTrigList))
+        _cuts_Pass = cuts_Pass_refTrig
+        _cuts_Fail = cuts_Fail_refTrig
+        if trigList != None:
+            selection.add("AnTrigger", getTriggerEvtMask(events, trigList))
+            _cuts_Pass = cuts_Pass_refAndAnTrig
+            _cuts_Fail = cuts_Fail_refAndAnTrig
+
     # define Pass and Fail category event masks
     if isBoosted:
-        SR_pass_evtMask = selection.require(**cuts_Pass["SR_boosted"])
-        SR_fail_evtMask = selection.require(**cuts_Fail["SR_boosted"])
-        VR_pass_evtMask = selection.require(**cuts_Pass["VR_boosted"])
-        VR_fail_evtMask = selection.require(**cuts_Fail["VR_boosted"])
+        SR_pass_evtMask = selection.require(**_cuts_Pass["SR_boosted"])
+        SR_fail_evtMask = selection.require(**_cuts_Fail["SR_boosted"])
+        VR_pass_evtMask = selection.require(**_cuts_Pass["VR_boosted"])
+        VR_fail_evtMask = selection.require(**_cuts_Fail["VR_boosted"])
 
-        event_yield[f"SR_boosted{suffix}"]["Fail"] = ak.sum(weights.weight()[SR_fail_evtMask])
-        event_yield[f"SR_boosted{suffix}"]["Pass"] = ak.sum(weights.weight()[SR_pass_evtMask])
-        event_yield[f"VR_boosted{suffix}"]["Fail"] = ak.sum(weights.weight()[VR_fail_evtMask])
-        event_yield[f"VR_boosted{suffix}"]["Pass"] = ak.sum(weights.weight()[VR_pass_evtMask])
+        event_yield[f"SR_boosted{suffix}"][f"Fail{trigSuffix}"] = ak.sum(weights.weight()[SR_fail_evtMask])
+        event_yield[f"SR_boosted{suffix}"][f"Pass{trigSuffix}"] = ak.sum(weights.weight()[SR_pass_evtMask])
+        event_yield[f"VR_boosted{suffix}"][f"Fail{trigSuffix}"] = ak.sum(weights.weight()[VR_fail_evtMask])
+        event_yield[f"VR_boosted{suffix}"][f"Pass{trigSuffix}"] = ak.sum(weights.weight()[VR_pass_evtMask])
     else:
-        SR_pass_evtMask = selection.require(**cuts_Pass["SR_semiboosted"])
-        SR_fail_evtMask = selection.require(**cuts_Fail["SR_semiboosted"])
-        VR_pass_evtMask = selection.require(**cuts_Pass["VR_semiboosted"])
-        VR_fail_evtMask = selection.require(**cuts_Fail["VR_semiboosted"])
+        SR_pass_evtMask = selection.require(**_cuts_Pass["SR_semiboosted"])
+        SR_fail_evtMask = selection.require(**_cuts_Fail["SR_semiboosted"])
+        VR_pass_evtMask = selection.require(**_cuts_Pass["VR_semiboosted"])
+        VR_fail_evtMask = selection.require(**_cuts_Fail["VR_semiboosted"])
 
-        event_yield[f"SR_semiboosted{suffix}"]["Fail"] = ak.sum(weights.weight()[SR_fail_evtMask])
-        event_yield[f"SR_semiboosted{suffix}"]["Pass"] = ak.sum(weights.weight()[SR_pass_evtMask])
-        event_yield[f"VR_semiboosted{suffix}"]["Fail"] = ak.sum(weights.weight()[VR_fail_evtMask])
-        event_yield[f"VR_semiboosted{suffix}"]["Pass"] = ak.sum(weights.weight()[VR_pass_evtMask])
+        event_yield[f"SR_semiboosted{suffix}"][f"Fail{trigSuffix}"] = ak.sum(weights.weight()[SR_fail_evtMask])
+        event_yield[f"SR_semiboosted{suffix}"][f"Pass{trigSuffix}"] = ak.sum(weights.weight()[SR_pass_evtMask])
+        event_yield[f"VR_semiboosted{suffix}"][f"Fail{trigSuffix}"] = ak.sum(weights.weight()[VR_fail_evtMask])
+        event_yield[f"VR_semiboosted{suffix}"][f"Pass{trigSuffix}"] = ak.sum(weights.weight()[VR_pass_evtMask])
 
     # select events
     SR_pass_e = events[SR_pass_evtMask]
@@ -73,82 +85,7 @@ def fillHistos(channel, suffix, events, selection, weights, event_yield, extraHi
         VR_pass_j = VR_pass_e.good_dijets_VR
         VR_fail_j = VR_fail_e.good_dijets_VR
 
-    if refTrigList != None:
-        # SR fail
-        trigEvtMask = getTriggerEvtMask(SR_fail_e, refTrigList)
-        SR_fail_e  =  SR_fail_e[trigEvtMask]
-        SR_fail_fj = SR_fail_fj[trigEvtMask]
-        if not isBoosted:
-            SR_fail_j = SR_fail_j[trigEvtMask]
-        # SR pass
-        trigEvtMask = getTriggerEvtMask(SR_pass_e, refTrigList)
-        SR_pass_e  =  SR_pass_e[trigEvtMask]
-        SR_pass_fj = SR_pass_fj[trigEvtMask]
-        if not isBoosted:
-            SR_pass_j = SR_pass_j[trigEvtMask]
-        # VR fail
-        trigEvtMask = getTriggerEvtMask(VR_fail_e, refTrigList)
-        VR_fail_e  =  VR_fail_e[trigEvtMask]
-        VR_fail_fj = VR_fail_fj[trigEvtMask]
-        if not isBoosted:
-            VR_fail_j = VR_fail_j[trigEvtMask]
-        # VR pass
-        trigEvtMask = getTriggerEvtMask(VR_pass_e, refTrigList)
-        VR_pass_e  =  VR_pass_e[trigEvtMask]
-        VR_pass_fj = VR_pass_fj[trigEvtMask]
-        if not isBoosted:
-            VR_pass_j = VR_pass_j[trigEvtMask]
-
-        # add reference trigger selection to the cut flow event counts
-        if isBoosted:
-            event_yield[f"SR_boosted{suffix}"]["Fail_refTrigger"] = len(SR_fail_fj)
-            event_yield[f"SR_boosted{suffix}"]["Pass_refTrigger"] = len(SR_pass_fj)
-            event_yield[f"VR_boosted{suffix}"]["Fail_refTrigger"] = len(VR_fail_fj)
-            event_yield[f"VR_boosted{suffix}"]["Pass_refTrigger"] = len(VR_pass_fj)
-        else:
-            event_yield[f"SR_semiboosted{suffix}"]["Fail_refTrigger"] = len(SR_fail_fj)
-            event_yield[f"SR_semiboosted{suffix}"]["Pass_refTrigger"] = len(SR_pass_fj)
-            event_yield[f"VR_semiboosted{suffix}"]["Fail_refTrigger"] = len(VR_fail_fj)
-            event_yield[f"VR_semiboosted{suffix}"]["Pass_refTrigger"] = len(VR_pass_fj)
-
-    if trigList != None:
-        # SR fail
-        trigEvtMask = getTriggerEvtMask(SR_fail_e, trigList)
-        #SR_fail_e  =  SR_fail_e[trigEvtMask]
-        SR_fail_fj = SR_fail_fj[trigEvtMask]
-        if not isBoosted:
-            SR_fail_j = SR_fail_j[trigEvtMask]
-        # SR pass
-        trigEvtMask = getTriggerEvtMask(SR_pass_e, trigList)
-        #SR_pass_e  =  SR_pass_e[trigEvtMask]
-        SR_pass_fj = SR_pass_fj[trigEvtMask]
-        if not isBoosted:
-            SR_pass_j = SR_pass_j[trigEvtMask]
-        # VR fail
-        trigEvtMask = getTriggerEvtMask(VR_fail_e, trigList)
-        #VR_fail_e  =  VR_fail_e[trigEvtMask]
-        VR_fail_fj = VR_fail_fj[trigEvtMask]
-        if not isBoosted:
-            VR_fail_j = VR_fail_j[trigEvtMask]
-        # VR pass
-        trigEvtMask = getTriggerEvtMask(VR_pass_e, trigList)
-        #VR_pass_e  =  VR_pass_e[trigEvtMask]
-        VR_pass_fj = VR_pass_fj[trigEvtMask]
-        if not isBoosted:
-            VR_pass_j = VR_pass_j[trigEvtMask]
-
-        # add analysis trigger selection to the cut flow event counts
-        if isBoosted:
-            event_yield[f"SR_boosted{suffix}"]["Fail_trigger"] = len(SR_fail_fj)
-            event_yield[f"SR_boosted{suffix}"]["Pass_trigger"] = len(SR_pass_fj)
-            event_yield[f"VR_boosted{suffix}"]["Fail_trigger"] = len(VR_fail_fj)
-            event_yield[f"VR_boosted{suffix}"]["Pass_trigger"] = len(VR_pass_fj)
-        else:
-            event_yield[f"SR_semiboosted{suffix}"]["Fail_trigger"] = len(SR_fail_fj)
-            event_yield[f"SR_semiboosted{suffix}"]["Pass_trigger"] = len(SR_pass_fj)
-            event_yield[f"VR_semiboosted{suffix}"]["Fail_trigger"] = len(VR_fail_fj)
-            event_yield[f"VR_semiboosted{suffix}"]["Pass_trigger"] = len(VR_pass_fj)
-
+    # histograms dictionary
     hists = {}
 
     if isBoosted:
@@ -321,22 +258,21 @@ def fillHistos(channel, suffix, events, selection, weights, event_yield, extraHi
 
 def fillAllHistos(outHists, suffix, events, selection, weights, event_yield, extraHistos, refTrigList=None, trigList=None):
 
-    hists = {}
-    hists["boosted"]     = fillHistos("Boosted", suffix, events, selection, weights, event_yield, extraHistos, refTrigList, trigList)
-    hists["semiboosted"] = fillHistos("Semiboosted", suffix, events, selection, weights, event_yield, extraHistos, refTrigList, trigList)
-
+    trigSuffix = ""
     if refTrigList != None:
-        suffix += "_"
-        if trigList == None:
-            suffix += "ref"
-        else:
-            suffix += "refAndAn"
-        suffix += "Trig"
+        trigSuffix += "_ref"
+        if trigList != None:
+            trigSuffix += "AndAn"
+        trigSuffix += "Trig"
+
+    hists = {}
+    hists["boosted"]     = fillHistos("Boosted",     suffix, trigSuffix, events, selection, weights, event_yield, extraHistos, refTrigList, trigList)
+    hists["semiboosted"] = fillHistos("Semiboosted", suffix, trigSuffix, events, selection, weights, event_yield, extraHistos, refTrigList, trigList)
 
     channels = ["boosted", "semiboosted"]
     for ch in channels:
         for hist in hists[ch]:
-            outHists[f"{hist}_{ch}{suffix}"] = hists[ch][hist]
+            outHists[f"{hist}_{ch}{suffix}{trigSuffix}"] = hists[ch][hist]
 
     return
 

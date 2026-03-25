@@ -1,3 +1,4 @@
+import copy
 import ROOT
 
 def getNumberOfGenEvents(fname):
@@ -30,3 +31,11 @@ def yearFromInputFile(inputFile):
         return "2018" 
     else:       
         raise ValueError('Could not determine year from input file: {0}'.format(inputFile))
+
+
+def addCut(cuts, newCut, decision):
+    cuts_ = copy.deepcopy(cuts)
+    for k in cuts_.keys():
+        cuts_[k][newCut] = decision
+
+    return cuts_
