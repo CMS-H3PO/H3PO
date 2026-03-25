@@ -381,19 +381,19 @@ if __name__ == "__main__":
                 event_yield[key]["Preselection_fatjets"] = ak.sum(weights.weight()[selection.require(**preselection_semiboosted)])
 
         #---------------------------------------------
-        event_yield[f"SR_boosted{suffix}"]["Mass_cut"] = ak.sum(weights.weight()[selection.require(**{k:v for k, v in list(cuts["SR_boosted"].items())[0:3]})])
+        event_yield[f"SR_boosted{suffix}"]["Mass_cut"] = ak.sum(weights.weight()[selection.require(**mass_cut_SR_boosted)])
         #---------------------------------------------
-        event_yield[f"VR_boosted{suffix}"]["Mass_cut"] = ak.sum(weights.weight()[selection.require(**{k:v for k, v in list(cuts["VR_boosted"].items())[0:3]})])
+        event_yield[f"VR_boosted{suffix}"]["Mass_cut"] = ak.sum(weights.weight()[selection.require(**mass_cut_VR_boosted)])
         #---------------------------------------------
-        event_yield[f"SR_semiboosted{suffix}"]["Mass_cut_fatjets"]  = ak.sum(weights.weight()[selection.require(**{k:v for k, v in list(cuts["SR_semiboosted"].items())[0:3]})])
-        event_yield[f"SR_semiboosted{suffix}"]["Preselection_jets"] = ak.sum(weights.weight()[selection.require(**{k:v for k, v in list(cuts["SR_semiboosted"].items())[0:4]})])
-        event_yield[f"SR_semiboosted{suffix}"]["Away_jets"]         = ak.sum(weights.weight()[selection.require(**{k:v for k, v in list(cuts["SR_semiboosted"].items())[0:5]})])
-        event_yield[f"SR_semiboosted{suffix}"]["Good_dijet"]        = ak.sum(weights.weight()[selection.require(**{k:v for k, v in list(cuts["SR_semiboosted"].items())[0:6]})])
+        event_yield[f"SR_semiboosted{suffix}"]["Mass_cut_fatjets"]  = ak.sum(weights.weight()[selection.require(**mass_cut_fatjets_SR_semiboosted)])
+        event_yield[f"SR_semiboosted{suffix}"]["Preselection_jets"] = ak.sum(weights.weight()[selection.require(**preselection_jets_SR_semiboosted)])
+        event_yield[f"SR_semiboosted{suffix}"]["Away_jets"]         = ak.sum(weights.weight()[selection.require(**away_jets_SR_semiboosted )])
+        event_yield[f"SR_semiboosted{suffix}"]["Good_dijet"]        = ak.sum(weights.weight()[selection.require(**good_dijet_SR_semiboosted)])
         #---------------------------------------------
-        event_yield[f"VR_semiboosted{suffix}"]["Mass_cut_fatjets"]  = ak.sum(weights.weight()[selection.require(**{k:v for k, v in list(cuts["VR_semiboosted"].items())[0:3]})])
-        event_yield[f"VR_semiboosted{suffix}"]["Preselection_jets"] = ak.sum(weights.weight()[selection.require(**{k:v for k, v in list(cuts["VR_semiboosted"].items())[0:4]})])
-        event_yield[f"VR_semiboosted{suffix}"]["Away_jets"]         = ak.sum(weights.weight()[selection.require(**{k:v for k, v in list(cuts["VR_semiboosted"].items())[0:5]})])
-        event_yield[f"VR_semiboosted{suffix}"]["Good_dijet"]        = ak.sum(weights.weight()[selection.require(**{k:v for k, v in list(cuts["VR_semiboosted"].items())[0:6]})])
+        event_yield[f"VR_semiboosted{suffix}"]["Mass_cut_fatjets"]  = ak.sum(weights.weight()[selection.require(**mass_cut_fatjets_VR_semiboosted)])
+        event_yield[f"VR_semiboosted{suffix}"]["Preselection_jets"] = ak.sum(weights.weight()[selection.require(**preselection_jets_VR_semiboosted)])
+        event_yield[f"VR_semiboosted{suffix}"]["Away_jets"]         = ak.sum(weights.weight()[selection.require(**away_jets_VR_semiboosted)])
+        event_yield[f"VR_semiboosted{suffix}"]["Good_dijet"]        = ak.sum(weights.weight()[selection.require(**good_dijet_VR_semiboosted)])
         #---------------------------------------------
 
         # fill all histograms

@@ -27,6 +27,18 @@ cuts_Fail_refTrig = addCut(cuts_Fail, "RefTrigger", True)
 cuts_Pass_refAndAnTrig = addCut(cuts_Pass_refTrig, "AnTrigger", True)
 cuts_Fail_refAndAnTrig = addCut(cuts_Fail_refTrig, "AnTrigger", True)
 
-preselection_boosted = {k:v for k, v in list(cuts[regions[0]].items())[0:2]}
-
+# cut flow selection steps
+# boosted
+preselection_boosted     = {k:v for k, v in list(cuts[regions[0]].items())[0:2]}
+mass_cut_SR_boosted = {k:v for k, v in list(cuts["SR_boosted"].items())[0:3]}
+mass_cut_VR_boosted = {k:v for k, v in list(cuts["VR_boosted"].items())[0:3]}
+# semiboosted
 preselection_semiboosted = {k:v for k, v in list(cuts[regions[2]].items())[0:2]}
+mass_cut_fatjets_SR_semiboosted  = {k:v for k, v in list(cuts["SR_semiboosted"].items())[0:3]}
+mass_cut_fatjets_VR_semiboosted  = {k:v for k, v in list(cuts["VR_semiboosted"].items())[0:3]}
+preselection_jets_SR_semiboosted = {k:v for k, v in list(cuts["SR_semiboosted"].items())[0:4]}
+preselection_jets_VR_semiboosted = {k:v for k, v in list(cuts["VR_semiboosted"].items())[0:4]}
+away_jets_SR_semiboosted         = {k:v for k, v in list(cuts["SR_semiboosted"].items())[0:5]}
+away_jets_VR_semiboosted         = {k:v for k, v in list(cuts["VR_semiboosted"].items())[0:5]}
+good_dijet_SR_semiboosted        = {k:v for k, v in list(cuts["SR_semiboosted"].items())[0:6]}
+good_dijet_VR_semiboosted        = {k:v for k, v in list(cuts["VR_semiboosted"].items())[0:6]}
