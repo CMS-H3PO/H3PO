@@ -1,5 +1,5 @@
 import copy
-
+from utils.utils import *
 
 # analysis regions
 regions = ["SR_boosted", "VR_boosted", "SR_semiboosted", "VR_semiboosted"]
@@ -12,13 +12,33 @@ cuts =  {
     regions[3]: {"Trigger": True, "Preselection_ge2fj": True, "Mass_cut_VR_semiboosted": True, "Preselection_jets": True, "Away_jets_VR_semiboosted": True, "Good_dijet_VR_semiboosted": True, "VR_semiboosted_Pass": True},
 }
 
+# clone with more descriptive name
 cuts_Pass = cuts
 
+# invert the pass category cut
 cuts_Fail = copy.deepcopy(cuts_Pass)
 for r in ["SR", "VR"]:
     for ch in ["boosted", "semiboosted"]:
         cuts_Fail[f"{r}_{ch}"][f"{r}_{ch}_Pass"] = False
 
-preselection_boosted = {k:v for k, v in list(cuts[regions[0]].items())[0:2]}
+# cuts for trigger efficiency studies
+cuts_Pass_refTrig = addCut(cuts_Pass, "RefTrigger", True)
+cuts_Fail_refTrig = addCut(cuts_Fail, "RefTrigger", True)
+cuts_Pass_refAndAnTrig = addCut(cuts_Pass_refTrig, "AnTrigger", True)
+cuts_Fail_refAndAnTrig = addCut(cuts_Fail_refTrig, "AnTrigger", True)
 
+# cut flow selection steps
+# boosted
+preselection_boosted     = {k:v for k, v in list(cuts[regions[0]].items())[0:2]}
+mass_cut_SR_boosted = {k:v for k, v in list(cuts["SR_boosted"].items())[0:3]}
+mass_cut_VR_boosted = {k:v for k, v in list(cuts["VR_boosted"].items())[0:3]}
+# semiboosted
 preselection_semiboosted = {k:v for k, v in list(cuts[regions[2]].items())[0:2]}
+mass_cut_fatjets_SR_semiboosted  = {k:v for k, v in list(cuts["SR_semiboosted"].items())[0:3]}
+mass_cut_fatjets_VR_semiboosted  = {k:v for k, v in list(cuts["VR_semiboosted"].items())[0:3]}
+preselection_jets_SR_semiboosted = {k:v for k, v in list(cuts["SR_semiboosted"].items())[0:4]}
+preselection_jets_VR_semiboosted = {k:v for k, v in list(cuts["VR_semiboosted"].items())[0:4]}
+away_jets_SR_semiboosted         = {k:v for k, v in list(cuts["SR_semiboosted"].items())[0:5]}
+away_jets_VR_semiboosted         = {k:v for k, v in list(cuts["VR_semiboosted"].items())[0:5]}
+good_dijet_SR_semiboosted        = {k:v for k, v in list(cuts["SR_semiboosted"].items())[0:6]}
+good_dijet_VR_semiboosted        = {k:v for k, v in list(cuts["VR_semiboosted"].items())[0:6]}

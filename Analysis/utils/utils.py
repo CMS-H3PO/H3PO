@@ -1,3 +1,5 @@
+import copy
+import awkward as ak
 import ROOT
 
 def getNumberOfGenEvents(fname):
@@ -30,3 +32,20 @@ def yearFromInputFile(inputFile):
         return "2018" 
     else:       
         raise ValueError('Could not determine year from input file: {0}'.format(inputFile))
+
+
+def addCut(cuts, newCut, decision):
+    cuts_ = copy.deepcopy(cuts)
+    for k in cuts_.keys():
+        cuts_[k][newCut] = decision
+
+    return cuts_
+
+
+def getTriggerDecision(events, trigList):
+    trigger = ak.values_astype(ak.zeros_like(events.run), bool)
+    for t in trigList:
+        if t in events.HLT.fields:
+            trigger = trigger | events.HLT[t]
+
+    return trigger
