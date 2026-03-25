@@ -1,4 +1,5 @@
 import copy
+import awkward as ak
 import ROOT
 
 def getNumberOfGenEvents(fname):
@@ -39,3 +40,12 @@ def addCut(cuts, newCut, decision):
         cuts_[k][newCut] = decision
 
     return cuts_
+
+
+def getTriggerDecision(events, trigList):
+    trigger = ak.values_astype(ak.zeros_like(events.run), bool)
+    for t in trigList:
+        if t in events.HLT.fields:
+            trigger = trigger | events.HLT[t]
+
+    return trigger

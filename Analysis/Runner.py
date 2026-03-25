@@ -24,12 +24,6 @@ eta_start=-5
 eta_stop=5
 
 
-def getTriggerEvtMask(events, trigList):
-    refTriggerBits = np.array([events.HLT[t] for t in trigList if t in events.HLT.fields])
-
-    return np.logical_or.reduce(refTriggerBits, axis=0)
-
-
 def fillHistos(channel, suffix, trigSuffix, events, selection, weights, event_yield, extraHistos, refTrigList=None, trigList=None):
 
     isBoosted = ("semiboosted" not in channel.lower())
@@ -38,11 +32,11 @@ def fillHistos(channel, suffix, trigSuffix, events, selection, weights, event_yi
     _cuts_Fail = cuts_Fail
 
     if refTrigList != None:
-        selection.add("RefTrigger", getTriggerEvtMask(events, refTrigList))
+        selection.add("RefTrigger", getTriggerDecision(events, refTrigList))
         _cuts_Pass = cuts_Pass_refTrig
         _cuts_Fail = cuts_Fail_refTrig
         if trigList != None:
-            selection.add("AnTrigger", getTriggerEvtMask(events, trigList))
+            selection.add("AnTrigger", getTriggerDecision(events, trigList))
             _cuts_Pass = cuts_Pass_refAndAnTrig
             _cuts_Fail = cuts_Fail_refAndAnTrig
 

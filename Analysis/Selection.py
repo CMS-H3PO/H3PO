@@ -4,6 +4,7 @@ from coffea.analysis_tools import PackedSelection
 from coffea.analysis_tools import Weights
 import numpy as np
 from utils.jerc import *
+from utils.utils import *
 
 NanoAODSchema.warn_missing_crossrefs = False
 jerc = JERC()
@@ -111,12 +112,7 @@ def Event_selection(fname,process,isMC,variation="nominal",refTrigList=None,trig
 
     # trigger selection
     if trigList != None and refTrigList == None:
-        trigger = ak.values_astype(ak.zeros_like(events.run), bool)
-        for t in trigList:
-            if t in events.HLT.fields:
-                trigger = trigger | events.HLT[t]
-        selection.add("Trigger", trigger)
-        del trigger
+        selection.add("Trigger", getTriggerDecision(events, trigList))
     else:
         selection.add("Trigger", ak.Array([True] * len(events)))
 
