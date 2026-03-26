@@ -49,3 +49,10 @@ def getTriggerDecision(events, trigList):
             trigger = trigger | events.HLT[t]
 
     return trigger
+
+
+def ak_clip(arr: ak.Array, min_value: float, max_value: float):
+    """
+    Clip the values of an awkward array using where
+    """
+    return ak.where(arr < min_value, min_value, ak.where(arr > max_value, max_value, arr))
