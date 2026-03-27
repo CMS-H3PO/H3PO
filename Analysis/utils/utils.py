@@ -2,12 +2,12 @@ import copy
 import awkward as ak
 import ROOT
 
-def getNumberOfGenEvents(fname):
+def getNumberOfGenEvents(fname, apply_corrections=False):
     froot = ROOT.TFile.Open(fname, 'READ')
     myTree = froot.Runs
-    total_events = 0
+    total_events = 0.
     for entry in myTree:
-        total_events += entry.genEventCount
+        total_events += (entry.genEventSumw if apply_corrections else entry.genEventCount)
     froot.Close()
     return total_events
 

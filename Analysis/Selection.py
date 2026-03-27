@@ -111,6 +111,9 @@ def Event_selection(fname,process,isMC,apply_corrections,variation="nominal",ref
     year = yearFromInputFile(fname)
 
     if isMC and apply_corrections:
+        # apply genWeights
+        weights.add("genweight", events.genWeight)
+        # apply pileup reweighting
         add_pileup_weight(events, weights, year)
 
     # trigger selection

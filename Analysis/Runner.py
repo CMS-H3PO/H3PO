@@ -353,7 +353,7 @@ if __name__ == "__main__":
     # total number of events
     numberOfEvents = 0.
     if isMC:
-        numberOfEvents = getNumberOfGenEvents(input)
+        numberOfEvents = getNumberOfGenEvents(input, (not args.disable_corr))
 
         numberOfGenEventsAxis = hist.axis.Integer(0, 1, label="Number of generated events", underflow=False, overflow=False)
         numberOfGenEventsHisto = Hist(numberOfGenEventsAxis)
