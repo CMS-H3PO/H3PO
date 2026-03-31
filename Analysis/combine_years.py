@@ -29,13 +29,23 @@ if __name__ == '__main__':
                         default=["2016","2016APV","2017","2018"],
                         metavar="YEARS")
 
+    parser.add_argument("-p", "--processes", dest="processes",
+                        help="Space-separated list of processes (default: %(default)s)",
+                        nargs='*',
+                        default=["TTbar","JetHT","XToYHTo6B"],
+                        metavar="PROCESSES")
+
     parser.add_argument("-s", "--suffix", dest="suffix",
                         help="Output directory name suffix (default: %(default)s)",
                         default="",
                         metavar="SUFFIX")
 
     parser.add_argument("--no_timestamp", dest="no_timestamp", action="store_true",
-                        help="Don't append the time stamp to the output directory name (default: %(default)s)",
+                        help="Don't prepend the time stamp to the output directory name (default: %(default)s)",
+                        default=False)
+
+    parser.add_argument("--use_existing", dest="use_existing", action="store_true",
+                        help="Use existing output directory (default: %(default)s)",
                         default=False)
 
     parser.add_argument("--no_symlink", dest="no_symlink", action="store_true",
@@ -45,26 +55,33 @@ if __name__ == '__main__':
     (options, args) = parser.parse_known_args()
 
     sorted_years = sorted(options.years)
+    process_list = options.processes
     files_dict = {}
     files_set = set()
     out_dir_name = ''
-    if not options.no_timestamp:
+    if not options.use_existing and not options.no_timestamp:
         out_dir_name += datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # fill the file dictionary and the file set
     for year in sorted_years:
-        files = fnmatch.filter(os.listdir( os.path.join(options.input, year, "latest") ), "*_Histograms.root")
-        files_set.update(files)
-        files_dict[year] = files
-        out_dir_name += ("_"+year if out_dir_name else year)
+        ls_dir = os.listdir( os.path.join(options.input, year, "latest") )
+        files_year_set = set()
+        for process in process_list:
+            files = fnmatch.filter(ls_dir, f"{process}*_Histograms.root")
+            files_year_set.update(files)
+            files_set.update(files)
+        files_dict[year] = list(files_year_set)
+        if not options.use_existing:
+            out_dir_name += ("_"+year if out_dir_name else year)
 
-    if options.suffix:
+    if not options.use_existing and options.suffix:
         out_dir_name += ("_"+options.suffix)
 
     out_dir_path = os.path.join(options.output, out_dir_name)
-    os.system("mkdir -pv {0}".format(out_dir_path))
-    if not options.no_symlink:
-        os.system("ln -sfnv {0} {1}".format(out_dir_name, os.path.join(options.output, "latest")))
+    if not options.use_existing:
+        os.system("mkdir -pv {0}".format(out_dir_path))
+        if not options.no_symlink:
+            os.system("ln -sfnv {0} {1}".format(out_dir_name, os.path.join(options.output, "latest")))
     
     os.chdir(out_dir_path)
 
