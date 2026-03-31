@@ -6,6 +6,7 @@ import ROOT
 import json
 import re 
 import copy
+import fnmatch
 
 
 def get_dataset_scaling_factor(dataset,year,sumGen):
@@ -164,7 +165,7 @@ if __name__ == '__main__':
     signal_base = options.signal_base
     process_list = copy.deepcopy(options.processes)
     # can't have individual and merged signal samples at the same time
-    if signal_base in process_list and process_list.count(signal_base + "_")>0:
+    if signal_base in process_list and len(fnmatch.filter(process_list, signal_base + "_*"))>0:
         print("WARNING: Not possible to produce histograms for individual and merged signal samples at the same time. Dropping merged histograms.\n")
         process_list.remove(signal_base)
 
