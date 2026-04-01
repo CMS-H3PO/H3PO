@@ -1,0 +1,48 @@
+{
+  "schema_version": 2,
+  "corrections": [
+    {
+      "name": "top_pt_weight",
+      "description": "CMS Top pT reweighting (Run 2 legacy style)",
+      "version": 1,
+      "inputs": [
+        {"name": "pt", "type": "real"},
+        {"name": "variation", "type": "string"}
+      ],
+      "output": {"name": "weight", "type": "real"},
+      "data": {
+        "nodetype": "category",
+        "input": "variation",
+        "content": [
+          {
+            "key": "nominal",
+            "value": {
+              "nodetype": "formula",
+              "expression": "0.103 * exp(-0.0118 * x) - 0.000134 * x + 0.973",
+              "parser": "TFormula",
+              "variables": ["pt"]
+            }
+          },
+          {
+            "key": "up",
+            "value": {
+              "nodetype": "formula",
+              "expression": "(0.103 * exp(-0.0118 * x) - 0.000134 * x + 0.973) * 1.1",
+              "parser": "TFormula",
+              "variables": ["pt"]
+            }
+          },
+          {
+            "key": "down",
+            "value": {
+              "nodetype": "formula",
+              "expression": "(0.103 * exp(-0.0118 * x) - 0.000134 * x + 0.973) * 0.9",
+              "parser": "TFormula",
+              "variables": ["pt"]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} 
