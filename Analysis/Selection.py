@@ -5,6 +5,7 @@ from coffea.analysis_tools import Weights
 import numpy as np
 from utils.jerc import *
 from utils.pileup import *
+from utils.toppt import *
 from utils.utils import *
 
 NanoAODSchema.warn_missing_crossrefs = False
@@ -115,6 +116,10 @@ def Event_selection(fname,process,isMC,apply_corrections,variation="nominal",ref
         weights.add("genweight", events.genWeight)
         # apply pileup reweighting
         add_pileup_weight(events, weights, year)
+        # if ttbar, apply top pt reweighting
+        if "ttbar" in process.lower():
+            print("Applying top pt reweighting")
+            add_top_pT_reweighting(events, weights)
 
     # trigger selection
     if trigList != None and refTrigList == None:
