@@ -303,7 +303,7 @@ if __name__ == "__main__":
                         nargs='*',
                         default=["genweight", "pileup", "top_pt"],
                         metavar="CORRS")
-    parser.add_argument("--disable_corrs", dest="disable_corr", action='store_true',
+    parser.add_argument("--disable_corrs", dest="disable_corrs", action='store_true',
                         help="Disable corrections (default: %(default)s)",
                         default=False)
     parser.add_argument("--extra_histos", dest="extra_histos", action='store_true',
@@ -315,7 +315,7 @@ if __name__ == "__main__":
     dataset=args.dataset
     input=args.input
     output=args.output
-    apply_corrections=(not args.disable_corr)
+    apply_corrections=(not args.disable_corrs)
     corrections=args.corrections
     ofile = os.path.basename(input)
     print(dataset)

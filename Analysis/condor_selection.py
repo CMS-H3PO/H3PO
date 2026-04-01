@@ -25,58 +25,59 @@ if __name__ == '__main__':
                       help="Output directory name (default: %(default)s)",
                       default="condor_jobs",
                       metavar="OUTPUT_DIR")
-
     parser.add_argument("-y", "--year", dest="year",
                         help="Data taking year (default: %(default)s)",
                         default="2017",
                         metavar="YEAR")
-
     parser.add_argument("-d", "--datasets", dest="datasets",
                         help="Space-separated list of datasets (default: %(default)s)",
                         nargs='*',
                         default=["TTbar","JetHT","XToYHTo6B_MX-2500_MY-800"],
                         metavar="DATASETS")
-
     parser.add_argument("--signal_base", dest="signal_base",
                         help="Signal process base name (default: %(default)s)",
                         default="XToYHTo6B",
                         metavar="SIGNAL_BASE")
-
     parser.add_argument("--dry_run", dest="dry_run", action="store_true",
                         help="Dry run without submitting Condor jobs (default: %(default)s)",
                         default=False)
-
     parser.add_argument("--no_timestamp", dest="no_timestamp", action="store_true",
                         help="Don't append the time stamp to the output directory name (default: %(default)s)",
                         default=False)
-
-    parser.add_argument("-j", "--jecVariations", dest="jecVariations",
-                        help="Space-separated list of JEC variations (default: %(default)s)",
+    parser.add_argument("-j", "--jec", dest="jec",
+                        help="Default JEC (default: %(default)s). Use 'fromFile' to turn off the JEC re-application and run faster.",
+                        default=None,
+                        metavar="JEC")
+    parser.add_argument("-s", "--sysVars", dest="sysVars",
+                        help="Space-separated list of systematics variations (default: %(default)s). Use 'all' to run all systematics variations.",
                         nargs='*',
                         default=None,
-                        metavar="JECVARS")
-
+                        metavar="SYSVARS")
     parser.add_argument("-t", "--triggerList", help="Space-separated list of triggers (default: %(default)s)",
                         nargs="*",
                         dest="triggerList",
                         default = None
                         )
-    
     parser.add_argument("-r", "--refTriggerList", help="Space-separated list of reference triggers (default: %(default)s)",
                         nargs="*",
                         dest="refTriggerList",
                         default = None
                         )
-
+    parser.add_argument("-c", "--corrs", dest="corrections",
+                        help="Space-separated list of applied corrections (default: %(default)s). Use 'all' to run all systematics variations.",
+                        nargs='*',
+                        default=None,
+                        metavar="CORRS")
+    parser.add_argument("--disable_corrs", dest="disable_corrs", action='store_true',
+                        help="Disable corrections (default: %(default)s)",
+                        default=False)
     parser.add_argument("--extra_histos", dest="extra_histos", action='store_true',
                         help="Switch for producing additional histograms (default: %(default)s)",
                         default=False)
-
     parser.add_argument("-m", "--memory", dest="memory",
                         help="Requested memory in MB for Condor jobs (default: %(default)s)",
                         default="2000",
                         metavar="MEMORY")
-
     parser.add_argument("--requirements", dest="requirements",
                         help="Additional job requirements",
                         metavar="REQUIREMENTS")
@@ -113,13 +114,19 @@ if __name__ == '__main__':
             file_path = join(dataset_path, file)
             if not isfile(file_path):
                 continue
-            args = '-s={0} -i={1} -o={2}'.format(dataset, file_path, condor_dir)
-            if options.jecVariations != None:
-                args += ' -j ' + (' ').join(options.jecVariations)
+            args = '-d={0} -i={1} -o={2}'.format(dataset, file_path, condor_dir)
+            if options.jec != None:
+                args += ' -j {}'.format(options.jec)
+            if options.sysVars != None:
+                args += ' -s ' + (' ').join(options.sysVars)
             if options.triggerList != None:
                 args += ' -t ' + (' ').join(options.triggerList)
             if options.refTriggerList != None:
                 args += ' -r ' + (' ').join(options.refTriggerList)
+            if options.corrections != None:
+                args += ' -c ' + (' ').join(options.corrections)
+            if options.disable_corrs:
+                args += ' --disable_corrs'
             if options.extra_histos:
                 args += ' --extra_histos'
 
