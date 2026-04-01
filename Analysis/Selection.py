@@ -99,7 +99,7 @@ def get_dijets(fatjets, jets, selection, region):
     return good_dijets
 
 
-def Event_selection(fname,dataset,isMC,apply_corrections,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
+def Event_selection(fname,dataset,isMC,apply_corrections,corrections,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
     # get events array
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":dataset},entry_stop=eventsToRead).events()
 
@@ -113,11 +113,13 @@ def Event_selection(fname,dataset,isMC,apply_corrections,variation="nominal",ref
 
     if isMC and apply_corrections:
         # apply genWeights
-        weights.add("genweight", events.genWeight)
+        if "genweight" in corrections:
+            weights.add("genweight", events.genWeight)
         # apply pileup reweighting
-        add_pileup_weight(events, weights, year)
-        # if ttbar, apply top pt reweighting
-        if "ttbar" in dataset.lower():
+        if "pileup" in corrections:
+            add_pileup_weight(events, weights, year)
+        # apply top pt reweighting to ttbar events
+        if "top_pt" in corrections and "ttbar" in dataset.lower():
             add_top_pT_reweighting(events, weights)
 
     # trigger selection

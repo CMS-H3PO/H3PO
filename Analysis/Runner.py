@@ -298,7 +298,12 @@ if __name__ == "__main__":
                         nargs="*",
                         dest="refTriggerList",
                         default = None)
-    parser.add_argument("--disable_corr", dest="disable_corr", action='store_true',
+    parser.add_argument("-c", "--corrs", dest="corrections",
+                        help="Space-separated list of applied corrections (default: %(default)s). Use 'all' to run all systematics variations.",
+                        nargs='*',
+                        default=["genweight", "pileup", "top_pt"],
+                        metavar="CORRS")
+    parser.add_argument("--disable_corrs", dest="disable_corr", action='store_true',
                         help="Disable corrections (default: %(default)s)",
                         default=False)
     parser.add_argument("--extra_histos", dest="extra_histos", action='store_true',
@@ -310,6 +315,8 @@ if __name__ == "__main__":
     dataset=args.dataset
     input=args.input
     output=args.output
+    apply_corrections=(not args.disable_corr)
+    corrections=args.corrections
     ofile = os.path.basename(input)
     print(dataset)
     yearFromInputFile(input)
@@ -353,7 +360,7 @@ if __name__ == "__main__":
     # total number of events
     numberOfEvents = 0.
     if isMC:
-        numberOfEvents = getNumberOfGenEvents(input, (not args.disable_corr))
+        numberOfEvents = getNumberOfGenEvents(input, (apply_corrections and "genweight" in corrections))
 
         numberOfGenEventsAxis = hist.axis.Integer(0, 1, label="Number of generated events", underflow=False, overflow=False)
         numberOfGenEventsHisto = Hist(numberOfGenEventsAxis)
@@ -368,7 +375,7 @@ if __name__ == "__main__":
     # loop over object-level variations
     for objVar in variations.keys():
         # apply event selection
-        events, selection, weights = Event_selection(input,dataset,isMC,apply_corrections=(not args.disable_corr),variation=objVar,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
+        events, selection, weights = Event_selection(input,dataset,isMC,apply_corrections,corrections,variation=objVar,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
 
         # establish event-level variations
         acceptedEventVariations = []
@@ -387,7 +394,7 @@ if __name__ == "__main__":
             print("Unknown systematics variation(s) specified: '{}'. Will be ignored.".format("', '".join(unknownVariations)))
 
         # define a complete set of variations
-        completeVariations = ([objVar] + acceptedEventVariations)
+        completeVariations = ([objVar] + sorted(acceptedEventVariations))
 
         # loop over the complete set of variations
         for variation in completeVariations:
