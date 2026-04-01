@@ -118,7 +118,6 @@ def Event_selection(fname,dataset,isMC,apply_corrections,variation="nominal",ref
         add_pileup_weight(events, weights, year)
         # if ttbar, apply top pt reweighting
         if "ttbar" in dataset.lower():
-            print("Applying top pt reweighting")
             add_top_pT_reweighting(events, weights)
 
     # trigger selection

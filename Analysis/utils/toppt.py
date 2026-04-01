@@ -38,7 +38,6 @@ def add_top_pT_reweighting(events, weights):
         w_antitop = corr.evaluate(antitop_pt, var_names[var])
 
         w_dict[var] = np.sqrt(w_top * w_antitop)
-        print(np.mean(w_dict[var]))
 
     # add weights        
     weights.add("top_pt", **w_dict)
