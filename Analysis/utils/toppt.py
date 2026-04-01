@@ -26,9 +26,9 @@ def add_top_pT_reweighting(events, weights):
     antitop_pt = ak.fill_none(ak.pad_none(antitop.pt, 1), 0.)[:, 0]
 
     var_names = {
-        "weight":      "nominal"
-        #,"weightUp":   "up",  # flat +10%
-        #,"weightDown": "down" # flat -10%
+        "weight":     "nominal",
+        #"weightUp":   "up",  # flat +10%
+        #"weightDown": "down" # flat -10%
     }
     w_dict = {}
     
