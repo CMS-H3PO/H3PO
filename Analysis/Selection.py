@@ -99,9 +99,9 @@ def get_dijets(fatjets, jets, selection, region):
     return good_dijets
 
 
-def Event_selection(fname,process,isMC,apply_corrections,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
+def Event_selection(fname,dataset,isMC,apply_corrections,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
     # get events array
-    events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":process},entry_stop=eventsToRead).events()
+    events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":dataset},entry_stop=eventsToRead).events()
 
     # event selection
     selection = PackedSelection()
@@ -117,7 +117,7 @@ def Event_selection(fname,process,isMC,apply_corrections,variation="nominal",ref
         # apply pileup reweighting
         add_pileup_weight(events, weights, year)
         # if ttbar, apply top pt reweighting
-        if "ttbar" in process.lower():
+        if "ttbar" in dataset.lower():
             print("Applying top pt reweighting")
             add_top_pT_reweighting(events, weights)
 

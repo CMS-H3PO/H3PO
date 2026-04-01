@@ -278,14 +278,14 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
     
     parser = ArgumentParser(description="Do -h to see usage")
-    parser.add_argument('-s', '--sample', help='Sample name', default="XToYHTo6B_MX-2500_MY-800")
+    parser.add_argument('-d', '--dataset', help='Dataset name', default="XToYHTo6B_MX-2500_MY-800")
     parser.add_argument('-i', '--input', help='Input file')
     parser.add_argument('-o', '--output', help='Output directory')
     parser.add_argument("-j", "--jec", dest="jec",
                         help="Default JEC (default: %(default)s). Use 'fromFile' to turn off the JEC re-application and run faster.",
                         default="nominal",
                         metavar="JEC")
-    parser.add_argument("--sysVars", dest="sysVars",
+    parser.add_argument("-s", "--sysVars", dest="sysVars",
                         help="Space-separated list of systematics variations (default: %(default)s). Use 'all' to run all systematics variations.",
                         nargs='*',
                         default=[],
@@ -307,15 +307,15 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     
-    process=args.sample
+    dataset=args.dataset
     input=args.input
     output=args.output
     ofile = os.path.basename(input)
-    print(process)
+    print(dataset)
     yearFromInputFile(input)
 
     # is the dataset being processed MC?
-    isMC = ("JetHT" not in process)
+    isMC = ("JetHT" not in dataset)
 
     # supported object-level systematics variations
     knownObjectVariations = ["jesUp","jesDown","jerUp","jerDown"]
@@ -368,7 +368,7 @@ if __name__ == "__main__":
     # loop over object-level variations
     for objVar in variations.keys():
         # apply event selection
-        events, selection, weights = Event_selection(input,process,isMC,apply_corrections=(not args.disable_corr),variation=objVar,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
+        events, selection, weights = Event_selection(input,dataset,isMC,apply_corrections=(not args.disable_corr),variation=objVar,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
 
         # establish event-level variations
         acceptedEventVariations = []
@@ -454,7 +454,7 @@ if __name__ == "__main__":
                     cutFlowHistos[key].GetXaxis().SetBinLabel(i+1, k)
 
     # save histograms to a ROOT file
-    with uproot.recreate(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile))) as fout:
+    with uproot.recreate(os.path.join(output, "Histograms_{0}-{1}".format(dataset, ofile))) as fout:
         keys = sorted(outHists.keys())
         # if present, save numberOfGenEventsHisto first
         histName = "numberOfGenEventsHisto"
@@ -468,7 +468,7 @@ if __name__ == "__main__":
             #fout[f"cutFlowHisto_{k}"] = cutFlowHistos[k] # this does not work properly (see [*])
 
     # re-open the ROOT file for some updates and storing additional histograms
-    fout = ROOT.TFile.Open(os.path.join(output, "Histograms_{0}-{1}".format(process, ofile)), 'UPDATE')
+    fout = ROOT.TFile.Open(os.path.join(output, "Histograms_{0}-{1}".format(dataset, ofile)), 'UPDATE')
     # [*] uproot has some issues with storing histograms with labelled bins (apparently only the first bin is stored) so resorting to plain ROOT here
     for k in cutFlowHistos.keys():
         cutFlowHistos[k].Write()
