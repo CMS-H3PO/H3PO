@@ -301,7 +301,7 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--corrs", dest="corrections",
                         help="Space-separated list of applied corrections (default: %(default)s). Use 'all' to run all systematics variations.",
                         nargs='*',
-                        default=["genweight", "pileup", "top_pt"],
+                        default=["genweight", "pileup"],
                         metavar="CORRS")
     parser.add_argument("--disable_corrs", dest="disable_corrs", action='store_true',
                         help="Disable corrections (default: %(default)s)",
