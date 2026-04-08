@@ -8,6 +8,7 @@ from utils.jerc import *
 from utils.pileup import *
 from utils.toppt import *
 from utils.psweight import *
+from utils.scalevar import *
 
 NanoAODSchema.warn_missing_crossrefs = False
 jerc = JERC()
@@ -125,6 +126,8 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,variation="
                 add_top_pT_reweighting(events, weights)
         # add parton shower weights (ISR and FSR)
         add_ps_weights(events, weights)
+        # add renormalization and factorization scale weights
+        add_scalevar_7pt(events, weights)
 
     # trigger selection
     if trigList != None and refTrigList == None:
