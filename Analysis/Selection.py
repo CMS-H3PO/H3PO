@@ -3,10 +3,11 @@ from coffea.nanoevents import NanoEventsFactory, NanoAODSchema
 from coffea.analysis_tools import PackedSelection
 from coffea.analysis_tools import Weights
 import numpy as np
+from utils.utils import *
 from utils.jerc import *
 from utils.pileup import *
 from utils.toppt import *
-from utils.utils import *
+from utils.psweight import *
 
 NanoAODSchema.warn_missing_crossrefs = False
 jerc = JERC()
@@ -111,16 +112,19 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,variation="
 
     year = yearFromInputFile(fname)
 
-    if isMC and apply_corrections:
-        # apply genWeights
-        if "genweight" in corrections:
-            weights.add("genweight", events.genWeight)
-        # apply pileup reweighting
-        if "pileup" in corrections:
-            add_pileup_weight(events, weights, year)
-        # apply top pt reweighting to ttbar events
-        if "top_pt" in corrections and "ttbar" in dataset.lower():
-            add_top_pT_reweighting(events, weights)
+    if isMC:
+        if apply_corrections:
+            # apply genWeights
+            if "genweight" in corrections:
+                weights.add("genweight", events.genWeight)
+            # apply pileup reweighting
+            if "pileup" in corrections:
+                add_pileup_weight(events, weights, year)
+            # apply top pt reweighting to ttbar events
+            if "top_pt" in corrections and "ttbar" in dataset.lower():
+                add_top_pT_reweighting(events, weights)
+        # add parton shower weights (ISR and FSR)
+        add_ps_weights(events, weights)
 
     # trigger selection
     if trigList != None and refTrigList == None:
