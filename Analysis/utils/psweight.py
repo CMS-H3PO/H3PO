@@ -1,5 +1,4 @@
 import awkward as ak
-import numpy as np
 
 
 def add_ps_weights(events, weights):
