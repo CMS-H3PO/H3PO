@@ -9,6 +9,7 @@ from utils.pileup import *
 from utils.toppt import *
 from utils.psweight import *
 from utils.scalevar import *
+from utils.pdfweight import *
 
 NanoAODSchema.warn_missing_crossrefs = False
 jerc = JERC()
@@ -128,6 +129,8 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,variation="
         add_ps_weights(events, weights)
         # add renormalization and factorization scale weights
         add_scalevar_7pt(events, weights)
+        # add PDF variation weights
+        add_pdf_weights(events, weights)
 
     # trigger selection
     if trigList != None and refTrigList == None:
