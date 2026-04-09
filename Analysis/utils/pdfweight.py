@@ -29,7 +29,7 @@ def add_pdf_weights(events, weights):
             if len(pdf_weights[0])==101:
                 # PDF weights
                 pdf_unc = get_pdf_unc(pdf_weights)
-                weights.add('PDF_weight', nom, nom + pdf_unc)
+                weights.add('PDF_weight', nom, nom + pdf_unc, nom - pdf_unc)
 
                 # alpha_S weights (NOT AVAILABLE)
                 weights.add('aS_weight', nom)
@@ -42,17 +42,17 @@ def add_pdf_weights(events, weights):
             else:
                 # PDF weights
                 pdf_unc = get_pdf_unc(pdf_weights)
-                weights.add('PDF_weight', nom, nom + pdf_unc)
+                weights.add('PDF_weight', nom, nom + pdf_unc, nom - pdf_unc)
 
                 # alpha_S weights
                 # Eq. 27 in https://arxiv.org/pdf/1510.03865v2.pdf
                 as_unc = 0.5*(pdf_weights[:,102] - pdf_weights[:,101])
-                weights.add('aS_weight', nom, nom + as_unc)
+                weights.add('aS_weight', nom, nom + as_unc, nom - as_unc)
 
                 # PDF + alpha_S weights
                 # Eq. 28 in https://arxiv.org/pdf/1510.03865v2.pdf
                 pdfas_unc = np.sqrt(np.square(pdf_unc) + np.square(as_unc))
-                weights.add('PDFaS_weight', nom, nom + pdfas_unc)
+                weights.add('PDFaS_weight', nom, nom + pdfas_unc, nom - pdfas_unc)
 
         except Exception as e:
             print("PDF variation structure unexpected:", e)
