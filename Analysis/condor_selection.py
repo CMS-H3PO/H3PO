@@ -44,10 +44,10 @@ if __name__ == '__main__':
     parser.add_argument("--no_timestamp", dest="no_timestamp", action="store_true",
                         help="Don't append the time stamp to the output directory name (default: %(default)s)",
                         default=False)
-    parser.add_argument("-j", "--jec", dest="jec",
-                        help="Default JEC (default: %(default)s). Use 'fromFile' to turn off the JEC re-application and run faster.",
+    parser.add_argument("-j", "--jc", dest="jc",
+                        help="Default jet correction (JC) (default: %(default)s). Use 'fromFile' to turn off the JC application and run faster.",
                         default=None,
-                        metavar="JEC")
+                        metavar="JC")
     parser.add_argument("-s", "--sysVars", dest="sysVars",
                         help="Space-separated list of systematics variations (default: %(default)s). Use 'all' to run all systematics variations.",
                         nargs='*',
@@ -115,8 +115,8 @@ if __name__ == '__main__':
             if not isfile(file_path):
                 continue
             args = '-d={0} -i={1} -o={2}'.format(dataset, file_path, condor_dir)
-            if options.jec != None:
-                args += ' -j {}'.format(options.jec)
+            if options.jc != None:
+                args += ' -j {}'.format(options.jc)
             if options.sysVars != None:
                 args += ' -s ' + (' ').join(options.sysVars)
             if options.triggerList != None:

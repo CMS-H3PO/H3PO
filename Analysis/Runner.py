@@ -281,10 +281,10 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--dataset', help='Dataset name', default="XToYHTo6B_MX-2500_MY-800")
     parser.add_argument('-i', '--input', help='Input file')
     parser.add_argument('-o', '--output', help='Output directory')
-    parser.add_argument("-j", "--jec", dest="jec",
-                        help="Default JEC (default: %(default)s). Use 'fromFile' to turn off the JEC re-application and run faster.",
+    parser.add_argument("-j", "--jc", dest="jc",
+                        help="Default jet correction (JC) (default: %(default)s). Use 'fromFile' to turn off the JC application and run faster.",
                         default="nominal",
-                        metavar="JEC")
+                        metavar="JC")
     parser.add_argument("-s", "--sysVars", dest="sysVars",
                         help="Space-separated list of systematics variations (default: %(default)s). Use 'all' to run all systematics variations.",
                         nargs='*',
@@ -326,16 +326,16 @@ if __name__ == "__main__":
 
     # supported object-level systematics variations
     knownObjectVariations = ["jesUp","jesDown","jerUp","jerDown"]
-    # supported JECs
-    knownJECs = ["nominal", "fromFile"]
-    jec = args.jec
-    if jec not in knownJECs:
-        print("Unknown JEC specified: '{}'. Defaulting to 'nominal'.".format(jec))
-        jec = knownJECs[0]
+    # supported JCs
+    knownJCs = ["nominal", "fromFile"]
+    jc = args.jc
+    if jc not in knownJCs:
+        print("Unknown JC specified: '{}'. Defaulting to 'nominal'.".format(jc))
+        jc = knownJCs[0]
 
     # build matrix of systematics variations
     # real data and MC baseline (no systematics variations, just nominal)
-    variations = {jec: []}
+    variations = {jc: []}
     # for MC
     acceptedObjectVariations = []
     eventVariations = []
@@ -349,7 +349,7 @@ if __name__ == "__main__":
                     acceptedObjectVariations.append(v)
                 else:
                     eventVariations.append(v)
-        variations[jec] = eventVariations
+        variations[jc] = eventVariations
         for v in acceptedObjectVariations:
             variations[v] = []
 
