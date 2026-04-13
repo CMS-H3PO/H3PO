@@ -1,6 +1,7 @@
 import correctionlib
 import awkward as ak
 import numpy as np
+from config.config import *
 
 
 def add_top_pT_reweighting(events, weights):
@@ -10,8 +11,9 @@ def add_top_pT_reweighting(events, weights):
     - https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting
     - https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting#TOP_PAG_corrections_based_on_the
     """
-    cset = correctionlib.CorrectionSet.from_file("config/toppt.json")
-    corr = cset["top_pt_weight"]
+    json = get_local_json("top_pt")
+    cset = correctionlib.CorrectionSet.from_file(json[0])
+    corr = cset[json[1]]
     
     # get top quarks (the last copy)
     tops = events.GenPart[

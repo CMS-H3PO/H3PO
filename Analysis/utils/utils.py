@@ -2,6 +2,7 @@ import copy
 import awkward as ak
 import ROOT
 
+
 def getNumberOfGenEvents(fname, use_weights=False):
     froot = ROOT.TFile.Open(fname, 'READ')
     myTree = froot.Runs
@@ -56,3 +57,8 @@ def ak_clip(arr: ak.Array, min_value: float, max_value: float):
     Clip the values of an awkward array using where
     """
     return ak.where(arr < min_value, min_value, ak.where(arr > max_value, max_value, arr))
+
+
+def get_json(jsons, obj, year):
+
+    return jsons[obj][year]
