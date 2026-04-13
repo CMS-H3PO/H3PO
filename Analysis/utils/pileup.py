@@ -8,9 +8,11 @@ from utils.utils import *
 def add_pileup_weight(events, weights, year):
     nPU = ak.to_numpy(events.Pileup.nTrueInt)
 
-    cset = correctionlib.CorrectionSet.from_file(get_pog_json("pileup", year))
+    pog_json = get_pog_json("pileup", year)
 
-    pu_corr = cset[pog_jsons["pileup"][year][1]]
+    cset = correctionlib.CorrectionSet.from_file(pog_json[0])
+
+    pu_corr = cset[pog_json[1]]
 
     # evaluate and clip up to 4 to avoid large weights
     w_nom = ak_clip(pu_corr.evaluate(nPU, "nominal"), 0, 4)

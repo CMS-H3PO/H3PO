@@ -20,4 +20,4 @@ def get_pog_json(obj, year):
     except:
         print(f"No JSON for {obj}")
 
-    return os.path.join(pog_correction_path, pog_json[year][0])
+    return [os.path.join(pog_correction_path, pog_json[year][0]), pog_json[year][1]]
