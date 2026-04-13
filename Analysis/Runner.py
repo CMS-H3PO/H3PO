@@ -301,7 +301,7 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--corrs", dest="corrections",
                         help="Space-separated list of applied corrections (default: %(default)s). Use 'all' to run all systematics variations.",
                         nargs='*',
-                        default=["genweight", "pileup", "top_pt"],
+                        default=["genweight", "pileup", "top_pt", "jmsr"],
                         metavar="CORRS")
     parser.add_argument("--disable_corrs", dest="disable_corrs", action='store_true',
                         help="Disable corrections (default: %(default)s)",
@@ -325,7 +325,7 @@ if __name__ == "__main__":
     isMC = ("JetHT" not in dataset)
 
     # supported object-level systematics variations
-    knownObjectVariations = ["jesUp","jesDown","jerUp","jerDown"]
+    knownObjectVariations = ["jesUp","jesDown","jerUp","jerDown","jmsUp","jmsDown","jmrUp","jmrDown"]
     # supported JCs
     knownJCs = ["nominal", "fromFile"]
     jc = args.jc
@@ -375,7 +375,7 @@ if __name__ == "__main__":
     # loop over object-level variations
     for objVar in variations.keys():
         # apply event selection
-        events, selection, weights = Event_selection(input,dataset,isMC,apply_corrections,corrections,variation=objVar,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
+        events, selection, weights = Event_selection(input,dataset,isMC,apply_corrections,corrections,jc,variation=objVar,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
 
         # establish event-level variations
         acceptedEventVariations = []

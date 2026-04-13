@@ -57,17 +57,15 @@ def getCalibratedJets(jets,event_rho,variation,jetFactory,jecTag):
         isData = True
     jetsCalib = jetFactory[jecTag].build(addJECVariables(jets,event_rho,isData), jecCache)
         
-    if(variation=="nominal"):
-        jets         = jetsCalib
-    elif(variation=="jesUp"):
-        jets         = jetsCalib.JES_jes.up
+    if(variation=="jesUp"):
+        jets = jetsCalib.JES_jes.up
     elif(variation=="jesDown"):
-        jets         = jetsCalib.JES_jes.down
+        jets = jetsCalib.JES_jes.down
     elif(variation=="jerUp"):
-        jets         = jetsCalib.JER.up
+        jets = jetsCalib.JER.up
     elif(variation=="jerDown"):
-        jets         = jetsCalib.JER.down
+        jets = jetsCalib.JER.down
     else:       
-        raise ValueError('Invalid variation: ', variation)
+        jets = jetsCalib
 
     return jets

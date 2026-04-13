@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "corrections": [
+    {
+      "name": "jms",
+      "description": "JMS corrections for AK8 jets in 2016. Values taken from B2G-22-003 (AN-2020/231 v8)",
+      "version": 1,
+      "inputs": [
+        {"name": "variation", "type": "string"}
+      ],
+      "output": {"name": "scale", "type": "real"},
+      "data": {
+        "nodetype": "category",
+        "input": "variation",
+        "content": [
+          {"key": "nominal", "value": 1.000},
+          {"key": "up",      "value": 1.002},
+          {"key": "down",    "value": 0.998}
+        ]
+      }
+    },
+    {
+      "name": "jmr",
+      "description": "JMR corrections for AK8 jets in 2016. Values taken from B2G-22-003 (AN-2020/231 v8)",
+      "version": 1,
+      "inputs": [
+        {"name": "variation", "type": "string"}
+      ],
+      "output": {"name": "resolution", "type": "real"},
+      "data": {
+        "nodetype": "category",
+        "input": "variation",
+        "content": [
+          {"key": "nominal", "value": 1.028},
+          {"key": "up",      "value": 1.063},
+          {"key": "down",    "value": 1.007}
+        ]
+      }
+    }
+  ]
+} 
