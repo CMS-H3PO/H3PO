@@ -27,6 +27,13 @@ local_jsons = {
     "top_pt": {
         # year      JSON                  CorrectionSet
         "Default": ["config/toppt.json",  "top_pt_weight"]
+    },
+    "jmsr": {
+        # year      JSON                          CorrectionSets
+        "2016APV": ["config/jmsr_AK8_2016.json",  ["jms","jmr"]],
+        "2016":    ["config/jmsr_AK8_2016.json",  ["jms","jmr"]],
+        "2017":    ["config/jmsr_AK8_2017.json",  ["jms","jmr"]],
+        "2018":    ["config/jmsr_AK8_2018.json",  ["jms","jmr"]]
     }
 }
 
@@ -34,3 +41,8 @@ local_jsons = {
 def get_local_json(obj, year="Default"):
 
     return get_json(local_jsons, obj, year)
+
+
+################# Fatjet mass #####################
+def FatJetMass(fatjets):
+    return fatjets.particleNet_mass

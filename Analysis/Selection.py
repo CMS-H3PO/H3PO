@@ -10,6 +10,7 @@ from utils.toppt import *
 from utils.psweight import *
 from utils.scalevar import *
 from utils.pdfweight import *
+from utils.jmsr import *
 
 NanoAODSchema.warn_missing_crossrefs = False
 jerc = JERC()
@@ -43,10 +44,6 @@ def closest(masses):
     return is_closest
 
 
-def FatJetMass(fatjet):
-    return fatjet.particleNet_mass
-
-
 def HbbvsQCD(fatjet):
     score = (fatjet.particleNetMD_Xbb/(fatjet.particleNetMD_Xbb+fatjet.particleNetMD_QCD))
     return score
@@ -69,16 +66,16 @@ def HiggsMassCut(fatjets):
 
 # this is a jet mask
 def HiggsMassVeto(fatjets):
-    return ((FatJetMass(fatjets)<mass_cut[0]) | (FatJetMass(fatjets)>mass_cut[1])) & (FatJetMass(fatjets)>min_jet_mass) & (FatJetMass(fatjets)<max_jet_mass)
+    return ((fatjets.M<mass_cut[0]) | (fatjets.M>mass_cut[1])) & (fatjets.M>min_jet_mass) & (fatjets.M<max_jet_mass)
 
 # this is an event mask
 def VR_b_JetMassCuts(fatjets):
     has_three_fatjets = (ak.num(fatjets, axis=1)>2)
     fatjets_padded = ak.pad_none(fatjets, 3)
     # jet mass window inverted for the 2 leading jets, applied to the 3rd one
-    return ak.where(has_three_fatjets, ((FatJetMass(fatjets_padded[:,0])<mass_cut[0]) | (FatJetMass(fatjets_padded[:,0])>mass_cut[1])) & (FatJetMass(fatjets_padded[:,0])>min_jet_mass) & (FatJetMass(fatjets_padded[:,0])<max_jet_mass)
-           & ((FatJetMass(fatjets_padded[:,1])<mass_cut[0]) | (FatJetMass(fatjets_padded[:,1])>mass_cut[1])) & (FatJetMass(fatjets_padded[:,1])>min_jet_mass) & (FatJetMass(fatjets_padded[:,1])<max_jet_mass)
-           & (FatJetMass(fatjets_padded[:,2])>=mass_cut[0]) & (FatJetMass(fatjets_padded[:,2])<=mass_cut[1]), False)
+    return ak.where(has_three_fatjets, ((fatjets_padded[:,0].M<mass_cut[0]) | (fatjets_padded[:,0].M>mass_cut[1])) & (fatjets_padded[:,0].M>min_jet_mass) & (fatjets_padded[:,0].M<max_jet_mass)
+           & ((fatjets_padded[:,1].M<mass_cut[0]) | (fatjets_padded[:,1].M>mass_cut[1])) & (fatjets_padded[:,1].M>min_jet_mass) & (fatjets_padded[:,1].M<max_jet_mass)
+           & (fatjets_padded[:,2].M>=mass_cut[0]) & (fatjets_padded[:,2].M<=mass_cut[1]), False)
 
 
 def get_dijets(fatjets, jets, selection, region):
@@ -102,7 +99,7 @@ def get_dijets(fatjets, jets, selection, region):
     return good_dijets
 
 
-def Event_selection(fname,dataset,isMC,apply_corrections,corrections,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
+def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
     # get events array
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":dataset},entry_stop=eventsToRead).events()
 
@@ -138,14 +135,25 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,variation="
     else:
         selection.add("Trigger", ak.Array([True] * len(events)))
 
-    # if JEC re-application is turned off
-    if variation == "fromFile":
-        print("JEC re-application turned off")
+    # if JEC application is turned off
+    if jc == "fromFile" and (variation == jc or "jms" in variation or "jmr" in variation):
+        print("JEC tag:", jc)
         fatjets = events.FatJet
     else:
         jecTag = jecTagFromFileName(fname)
-        print("JEC tag: ", jecTag)
+        print("JEC tag:", jecTag)
         fatjets = getCalibratedJets(events.FatJet,events.fixedGridRhoFastjetAll,variation,jerc.fatjetFactory,jecTag) if len(events)>0 else events.FatJet
+
+    # JMS and JMR corrections
+    if jc == "fromFile" and (variation == jc or "jes" in variation or "jer" in variation):
+        print("Fat jet mass:", jc)
+        fatjets["M"] = FatJetMass(fatjets)
+    else:
+        if isMC and "jmsr" in corrections:
+            fatjets["M"] = getCalibratedJetMass(fatjets,variation,year) if len(events)>0 else FatJetMass(fatjets)
+        else:
+            print("Fat jet mass: fromFile")
+            fatjets["M"] = FatJetMass(fatjets)
 
     # fat jet preselection
     fatjets = fatjets[precut(fatjets)]
@@ -180,7 +188,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,variation="
     #---------------------------------------------
     # get standard jets
     # if JEC re-application is turned off
-    if variation == "fromFile":
+    if jc == "fromFile" and (variation == jc or "jms" in variation or "jmr" in variation):
         jets = events.Jet
     else:
         jets = getCalibratedJets(events.Jet,events.fixedGridRhoFastjetAll,variation,jerc.jetFactory,jecTag) if len(events)>0 else events.Jet
