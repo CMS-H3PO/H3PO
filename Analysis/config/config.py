@@ -39,10 +39,9 @@ local_jsons = {
 
 
 def get_local_json(obj, year="Default"):
-
     return get_json(local_jsons, obj, year)
 
 
-################# Fatjet mass #####################
+################# Fat jet mass definition #####################
 def FatJetMass(fatjets):
     return fatjets.particleNet_mass
