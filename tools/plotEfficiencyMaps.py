@@ -7,10 +7,10 @@ mass_points = [
   (1200, 300), (1200, 600), (1200, 800), (1200, 1000),
   (1600, 300), (1600, 600), (1600, 800), (1600, 1000), (1600, 1200), (1600, 1400),
   (2000, 300), (2000, 600), (2000, 800), (2000, 1000), (2000, 1200), (2000, 1600), (2000, 1800),
-  (2500, 300), (2500, 600), (2500, 800), (2500, 1000), (2500, 1200), (2500, 1600), (2500, 2000), (2500, 2200),
+  (2500, 300), (2500, 600), (2500, 800), (2500, 1000), (2500, 1200), (2500, 1600), (2500, 2000), (2500, 2200), (2500, 2300),
   (3000, 300), (3000, 600), (3000, 800), (3000, 1000), (3000, 1200), (3000, 1600), (3000, 2000), (3000, 2500), (3000, 2800),
-  (3500, 300), (3500, 600), (3500, 800), (3500, 1000), (3500, 1200), (3500, 1600), (3500, 2000), (3500, 2500), (3500, 2800),
-  (4000, 300), (4000, 600), (4000, 800), (4000, 1000), (4000, 1200), (4000, 1600), (4000, 2000), (4000, 2500), (4000, 2800)
+  (3500, 300), (3500, 600), (3500, 800), (3500, 1000), (3500, 1200), (3500, 1600), (3500, 2000), (3500, 2500), (3500, 2800), (3500, 3000), (3500, 3300),
+  (4000, 300), (4000, 600), (4000, 800), (4000, 1000), (4000, 1200), (4000, 1600), (4000, 2000), (4000, 2500), (4000, 2800), (4000, 3000), (4000, 3500), (4000, 3800)
 ]
 
 
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     ROOT.gStyle.SetStatFont(42)
     ROOT.gROOT.ForceStyle()
     
-    makePlot('/STORE/HHH/Histograms/2017/latest/', 'cutFlowHisto_SR_boosted', 'Pass', 0.50)
-    makePlot('/STORE/HHH/Histograms/2017/latest/', 'cutFlowHisto_SR_semiboosted', 'Pass', 0.50)
-    makePlot('/STORE/HHH/Histograms/2017/latest/', 'cutFlowHisto_SR_boosted', 'Fail', 0.01)
-    makePlot('/STORE/HHH/Histograms/2017/latest/', 'cutFlowHisto_SR_semiboosted', 'Fail', 0.01)
+    makePlot('/STORE/HHH/Histograms/2017/latest/', 'cutFlowHisto_SR_boosted_nominal', 'Pass', 0.30)
+    makePlot('/STORE/HHH/Histograms/2017/latest/', 'cutFlowHisto_SR_semiboosted_nominal', 'Pass', 0.30)
+    makePlot('/STORE/HHH/Histograms/2017/latest/', 'cutFlowHisto_SR_boosted_nominal', 'Fail', 0.005)
+    makePlot('/STORE/HHH/Histograms/2017/latest/', 'cutFlowHisto_SR_semiboosted_nominal', 'Fail', 0.005)
