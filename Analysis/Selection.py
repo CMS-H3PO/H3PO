@@ -11,6 +11,7 @@ from utils.psweight import *
 from utils.scalevar import *
 from utils.pdfweight import *
 from utils.jmsr import *
+from utils.l1prefiring import *
 
 NanoAODSchema.warn_missing_crossrefs = False
 jerc = JERC()
@@ -119,6 +120,9 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
             # apply pileup reweighting
             if "pileup" in corrections:
                 add_pileup_weight(events, weights, year)
+            # apply L1 pre-firing weights
+            if "l1prefiring" in corrections:
+                add_l1prefiring_weight(events, weights)
             # apply top pt reweighting to ttbar events
             if "top_pt" in corrections and "ttbar" in dataset.lower():
                 add_top_pT_reweighting(events, weights)
