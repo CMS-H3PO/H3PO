@@ -299,7 +299,7 @@ if __name__ == "__main__":
                         dest="refTriggerList",
                         default = None)
     parser.add_argument("-c", "--corrs", dest="corrections",
-                        help="Space-separated list of applied corrections (default: %(default)s). Use 'all' to run all systematics variations.",
+                        help="Space-separated list of applied corrections (default: %(default)s). Use 'all' to apply all corrections.",
                         nargs='*',
                         default=["genweight", "pileup", "top_pt", "jmsr", "l1prefiring"],
                         metavar="CORRS")

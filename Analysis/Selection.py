@@ -115,16 +115,16 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
     if isMC:
         if apply_corrections:
             # apply genWeights
-            if "genweight" in corrections:
+            if any(c in corrections for c in ["genweight", "all"]):
                 weights.add("genweight", events.genWeight)
             # apply pileup reweighting
-            if "pileup" in corrections:
+            if any(c in corrections for c in ["pileup", "all"]):
                 add_pileup_weight(events, weights, year)
             # apply L1 pre-firing weights
-            if "l1prefiring" in corrections:
+            if any(c in corrections for c in ["l1prefiring", "all"]):
                 add_l1prefiring_weight(events, weights)
             # apply top pt reweighting to ttbar events
-            if "top_pt" in corrections and "ttbar" in dataset.lower():
+            if "ttbar" in dataset.lower() and any(c in corrections for c in ["top_pt", "all"]):
                 add_top_pT_reweighting(events, weights)
         # add parton shower weights (ISR and FSR)
         add_ps_weights(events, weights)
