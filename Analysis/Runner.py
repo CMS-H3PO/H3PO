@@ -1,5 +1,6 @@
 import os
 import copy
+import fnmatch
 import uproot
 import awkward as ak
 import hist
@@ -386,8 +387,9 @@ if __name__ == "__main__":
             acceptedEventVariations = knownEventVariations
         else:
             for v in eventVars:
-                if v in knownEventVariations:
-                    acceptedEventVariations.append(v)
+                matchingVariations = fnmatch.filter(knownEventVariations, v + "*")
+                if len(matchingVariations)>0:
+                    acceptedEventVariations.extend(matchingVariations)
                 else:
                     unknownVariations.append(v)
         if len(unknownVariations)>0:
