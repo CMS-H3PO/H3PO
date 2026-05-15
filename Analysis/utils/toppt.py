@@ -6,10 +6,10 @@ from config.config import *
 
 def add_top_pT_reweighting(events, weights):
     """
-    Apply this SF only to TTbar datasets! The lastest recommendation implemented in the JSON file loaded below.
+    Apply this SF only to TTbar datasets! The latest recommended data-NLO correction implemented in the JSON file loaded below.
     Documentation:
     - https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting
-    - https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting#TOP_PAG_corrections_based_on_the
+    - https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting#TOP_PAG_corrections_based_on_dat
     """
     json = get_local_json("top_pt")
     cset = correctionlib.CorrectionSet.from_file(json[0])
@@ -29,8 +29,8 @@ def add_top_pT_reweighting(events, weights):
 
     var_names = {
         "weight":     "nominal",
-        #"weightUp":   "up",  # flat +10%
-        #"weightDown": "down" # flat -10%
+        "weightUp":   "up",
+        "weightDown": "down"
     }
     w_dict = {}
     
