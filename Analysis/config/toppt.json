@@ -18,7 +18,7 @@
             "key": "nominal",
             "value": {
               "nodetype": "formula",
-              "expression": "0.103 * exp(-0.0118 * x) - 0.000134 * x + 0.973",
+              "expression": "exp(0.0615 - 0.0005 * x)",
               "parser": "TFormula",
               "variables": ["pt"]
             }
@@ -27,7 +27,7 @@
             "key": "up",
             "value": {
               "nodetype": "formula",
-              "expression": "(0.103 * exp(-0.0118 * x) - 0.000134 * x + 0.973) * 1.1",
+              "expression": "exp(0.0615 - 2.0 * 0.0005 * x)",
               "parser": "TFormula",
               "variables": ["pt"]
             }
@@ -36,7 +36,7 @@
             "key": "down",
             "value": {
               "nodetype": "formula",
-              "expression": "(0.103 * exp(-0.0118 * x) - 0.000134 * x + 0.973) * 0.9",
+              "expression": "1.0",
               "parser": "TFormula",
               "variables": ["pt"]
             }
