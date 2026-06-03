@@ -230,7 +230,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
     # select events with at least 1 good dijet (by construction there can be at most 1 per event)
     selection.add("Good_dijet_VR_semiboosted", ak.num(good_dijets_VR, axis=1)>0)
 
-    # select events in the Pass category of the SR semiboosted
+    # select events in the Pass category of the VR semiboosted
     selection.add("VR_semiboosted_Pass", ak.where(VR_sb_evtMask, PassCategory(ak.pad_none(fatjets[:,0:2], 1)), False))
     #---------------------------------------------
     # embed the (di)jet arrays inside the events array
