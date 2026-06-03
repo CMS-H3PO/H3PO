@@ -12,6 +12,7 @@ from utils.scalevar import *
 from utils.pdfweight import *
 from utils.jmsr import *
 from utils.l1prefiring import *
+from utils.btag import *
 
 NanoAODSchema.warn_missing_crossrefs = False
 jerc = JERC()
@@ -232,6 +233,13 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
 
     # select events in the Pass category of the VR semiboosted
     selection.add("VR_semiboosted_Pass", ak.where(VR_sb_evtMask, PassCategory(ak.pad_none(fatjets[:,0:2], 1)), False))
+    #---------------------------------------------
+    # apply b-tag scale factors
+    if isMC and apply_corrections:
+        # apply ak4 b-tag scale factors
+        if any(c in corrections for c in ["btag_deepJet", "all"]):
+            btag_sf_ak4 = BTagSFAK4(year)
+            add_ak4_btag_weights(events, weights, selection, btag_sf_ak4, good_dijets_SR, good_dijets_VR)
     #---------------------------------------------
     # embed the (di)jet arrays inside the events array
     events["fatjets_SR"] = fatjets_SR

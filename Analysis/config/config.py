@@ -12,6 +12,13 @@ pog_jsons = {
         "2016":    ["LUM/Run2-2016postVFP-UL-NanoAODv9/2021-09-10/puWeights.json.gz", "Collisions16_UltraLegacy_goldenJSON"],
         "2017":    ["LUM/Run2-2017-UL-NanoAODv9/2021-09-10/puWeights.json.gz",        "Collisions17_UltraLegacy_goldenJSON"],
         "2018":    ["LUM/Run2-2018-UL-NanoAODv9/2021-09-10/puWeights.json.gz",        "Collisions18_UltraLegacy_goldenJSON"]
+    },
+    "btag_deepJet": {
+        # year      JSON                                                             CorrectionSets
+        "2016APV": ["BTV/Run2-2016preVFP-UL-NanoAODv9/2025-08-19/btagging.json.gz",  ["deepJet_comb", "deepJet_incl"]],
+        "2016":    ["BTV/Run2-2016postVFP-UL-NanoAODv9/2025-08-19/btagging.json.gz", ["deepJet_comb", "deepJet_incl"]],
+        "2017":    ["BTV/Run2-2017-UL-NanoAODv9/2025-08-19/btagging.json.gz",        ["deepJet_comb", "deepJet_incl"]],
+        "2018":    ["BTV/Run2-2018-UL-NanoAODv9/2025-08-19/btagging.json.gz",        ["deepJet_comb", "deepJet_incl"]]
     }
 }
 
