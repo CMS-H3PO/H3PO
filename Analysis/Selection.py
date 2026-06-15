@@ -35,8 +35,7 @@ pNet_cut = 0.9105
 res_ptcut = 30.
 res_etacut = 2.5
 res_mass_cut = [90.,150.]
-# loose cut = 0.0532, med_cut = 0.3040, tight_cut = 0.7476 (https://btv-wiki.docs.cern.ch/ScaleFactors/)
-res_deepJetcut = 0.0532
+res_deepJet_wp = "L"
 #---------------------------------------------
 
 def closest(masses):
@@ -112,6 +111,11 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
     weights = Weights(len(events), storeIndividual=True)
 
     year = yearFromInputFile(fname)
+
+    # AK4 b-tag SFs
+    btag_sf_ak4 = BTagSFAK4(year)
+    # get a year-dependent WP cut value (https://btv-wiki.docs.cern.ch/ScaleFactors/)
+    res_deepJetcut = btag_sf_ak4.wp_value(res_deepJet_wp)
 
     if isMC:
         if apply_corrections:
@@ -238,7 +242,6 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
     if isMC and apply_corrections:
         # apply ak4 b-tag scale factors
         if any(c in corrections for c in ["btag_deepJet", "all"]):
-            btag_sf_ak4 = BTagSFAK4(year)
             add_ak4_btag_weights(events, weights, selection, btag_sf_ak4, good_dijets_SR, good_dijets_VR)
     #---------------------------------------------
     # embed the (di)jet arrays inside the events array

@@ -15,10 +15,10 @@ pog_jsons = {
     },
     "btag_deepJet": {
         # year      JSON                                                             CorrectionSets
-        "2016APV": ["BTV/Run2-2016preVFP-UL-NanoAODv9/2025-08-19/btagging.json.gz",  ["deepJet_comb", "deepJet_incl"]],
-        "2016":    ["BTV/Run2-2016postVFP-UL-NanoAODv9/2025-08-19/btagging.json.gz", ["deepJet_comb", "deepJet_incl"]],
-        "2017":    ["BTV/Run2-2017-UL-NanoAODv9/2025-08-19/btagging.json.gz",        ["deepJet_comb", "deepJet_incl"]],
-        "2018":    ["BTV/Run2-2018-UL-NanoAODv9/2025-08-19/btagging.json.gz",        ["deepJet_comb", "deepJet_incl"]]
+        "2016APV": ["BTV/Run2-2016preVFP-UL-NanoAODv9/2025-08-19/btagging.json.gz",  ["deepJet_comb", "deepJet_incl", "deepJet_wp_values"]],
+        "2016":    ["BTV/Run2-2016postVFP-UL-NanoAODv9/2025-08-19/btagging.json.gz", ["deepJet_comb", "deepJet_incl", "deepJet_wp_values"]],
+        "2017":    ["BTV/Run2-2017-UL-NanoAODv9/2025-08-19/btagging.json.gz",        ["deepJet_comb", "deepJet_incl", "deepJet_wp_values"]],
+        "2018":    ["BTV/Run2-2018-UL-NanoAODv9/2025-08-19/btagging.json.gz",        ["deepJet_comb", "deepJet_incl", "deepJet_wp_values"]]
     }
 }
 
