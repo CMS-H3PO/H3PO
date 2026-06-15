@@ -22,6 +22,15 @@ class BTagSFAK4:
 
         self.sf_bc    = cset[json[1][0]]
         self.sf_light = cset[json[1][1]]
+        self.wps      = cset[json[1][2]]
+
+
+    def wp_value(
+        self,
+        wp="L"
+    ):
+        return self.wps.evaluate(wp)
+
 
     def evaluate_wp(
         self,
