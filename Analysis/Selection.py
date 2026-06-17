@@ -12,6 +12,7 @@ from utils.scalevar import *
 from utils.pdfweight import *
 from utils.jmsr import *
 from utils.l1prefiring import *
+from utils.xbbtag import *
 from utils.btag import *
 
 NanoAODSchema.warn_missing_crossrefs = False
@@ -29,7 +30,7 @@ max_jet_mass = 250.
 ptcut = 250.
 etacut = 2.5
 mass_cut = [100.,150.]
-pNet_cut = 0.9105
+pNet_wp = "L"
 
 # Resolved Higgs candidate jet cuts
 res_ptcut = 30.
@@ -54,12 +55,12 @@ def precut(fatjets):
     return (fatjets.pt>ptcut) & (np.absolute(fatjets.eta)<etacut) & (fatjets.msoftdrop>min_jet_mass) & (fatjets.msoftdrop<max_jet_mass)
 
 
-def PassCategory(fatjets):
+def PassCategory(fatjets, cut):
     # sort the fat jets in the descending pNet HbbvsQCD score
     sorted_fatjets = fatjets[ak.argsort(-HbbvsQCD(fatjets),axis=-1)]
 
     # pass category: at least 1 fat jets passing the pNet cut
-    return (HbbvsQCD(sorted_fatjets[:,0])>pNet_cut)
+    return (HbbvsQCD(sorted_fatjets[:,0])>cut)
 
 # this is a jet mask
 def HiggsMassCut(fatjets):
@@ -112,9 +113,12 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
 
     year = yearFromInputFile(fname)
 
+    # AK8 xbb-tag SFs
+    xbbtag_sf_ak8 = XbbTagSFAK8(year)
     # AK4 b-tag SFs
     btag_sf_ak4 = BTagSFAK4(year)
     # get a year-dependent WP cut value (https://btv-wiki.docs.cern.ch/ScaleFactors/)
+    pNet_cut       = xbbtag_sf_ak8.wp_value(pNet_wp)
     res_deepJetcut = btag_sf_ak4.wp_value(res_deepJet_wp)
 
     if isMC:
@@ -184,7 +188,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
     selection.add("Mass_cut_SR_boosted", SR_b_evtMask)
 
     # select events in the Pass category of the SR boosted. Pass on only the 3 leading fat jets (to avoid events passing or failing due to the 4th or higher leading fat jet)
-    selection.add("SR_boosted_Pass", ak.where(SR_b_evtMask, PassCategory(ak.pad_none(fatjets_SR, 3)[:,0:3]), False))
+    selection.add("SR_boosted_Pass", ak.where(SR_b_evtMask, PassCategory(ak.pad_none(fatjets_SR, 3)[:,0:3], pNet_cut), False))
     #---------------------------------------------
     # VR boosted
     #---------------------------------------------
@@ -193,7 +197,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
     selection.add("Mass_cut_VR_boosted", VR_b_evtMask)
 
     # select events in the Pass category of the VR boosted. Pass on only the 3 leading fat jets (to avoid events passing or failing due to the pNet score of the 4th or higher leading fat jet)
-    selection.add("VR_boosted_Pass", ak.where(VR_b_evtMask, PassCategory(ak.pad_none(fatjets, 3)[:,0:3]), False))
+    selection.add("VR_boosted_Pass", ak.where(VR_b_evtMask, PassCategory(ak.pad_none(fatjets, 3)[:,0:3], pNet_cut), False))
     #---------------------------------------------
     # get standard jets
     # if JEC re-application is turned off
@@ -221,7 +225,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
     selection.add("Good_dijet_SR_semiboosted", ak.num(good_dijets_SR, axis=1)>0)
 
     # select events in the Pass category of the SR semiboosted
-    selection.add("SR_semiboosted_Pass", ak.where(SR_sb_evtMask, PassCategory(ak.pad_none(fatjets_SR, 1)), False))
+    selection.add("SR_semiboosted_Pass", ak.where(SR_sb_evtMask, PassCategory(ak.pad_none(fatjets_SR, 1), pNet_cut), False))
     #---------------------------------------------
     # VR semiboosted
     #---------------------------------------------
@@ -236,7 +240,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
     selection.add("Good_dijet_VR_semiboosted", ak.num(good_dijets_VR, axis=1)>0)
 
     # select events in the Pass category of the VR semiboosted
-    selection.add("VR_semiboosted_Pass", ak.where(VR_sb_evtMask, PassCategory(ak.pad_none(fatjets[:,0:2], 1)), False))
+    selection.add("VR_semiboosted_Pass", ak.where(VR_sb_evtMask, PassCategory(ak.pad_none(fatjets[:,0:2], 1), pNet_cut), False))
     #---------------------------------------------
     # apply b-tag scale factors
     if isMC and apply_corrections:
