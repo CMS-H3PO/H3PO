@@ -242,11 +242,14 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
     # select events in the Pass category of the VR semiboosted
     selection.add("VR_semiboosted_Pass", ak.where(VR_sb_evtMask, PassCategory(ak.pad_none(fatjets[:,0:2], 1), pNet_cut), False))
     #---------------------------------------------
-    # apply b-tag scale factors
+    # apply b-tag and Xbb-tag scale factors
     if isMC and apply_corrections:
         # apply ak4 b-tag scale factors
         if any(c in corrections for c in ["btag_deepJet", "all"]):
             add_ak4_btag_weights(weights, selection, btag_sf_ak4, good_dijets_SR, good_dijets_VR)
+        # apply ak8 Xbb-tag scale factors
+        if "XToYHTo6B" in dataset and any(c in corrections for c in ["xbbtag_particleNetMD", "all"]):
+            add_ak8_xbbtag_weights(weights, selection, xbbtag_sf_ak8, fatjets_SR, fatjets)
     #---------------------------------------------
     # embed the (di)jet arrays inside the events array
     events["fatjets_SR"] = fatjets_SR
