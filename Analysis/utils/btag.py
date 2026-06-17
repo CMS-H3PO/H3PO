@@ -118,7 +118,7 @@ def get_ak4_btag_weights(selection, btag_sf, dijets_SR, dijets_VR, systematic):
     return w*(SF1*SF2)
 
 
-def add_ak4_btag_weights(events, weights, selection, btag_sf, dijets_SR, dijets_VR):
+def add_ak4_btag_weights(weights, selection, btag_sf, dijets_SR, dijets_VR):
     # nominal weights    
     nominal    = get_ak4_btag_weights(selection, btag_sf, dijets_SR, dijets_VR, systematic="central")
     # bc up    

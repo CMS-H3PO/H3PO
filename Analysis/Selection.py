@@ -246,7 +246,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
     if isMC and apply_corrections:
         # apply ak4 b-tag scale factors
         if any(c in corrections for c in ["btag_deepJet", "all"]):
-            add_ak4_btag_weights(events, weights, selection, btag_sf_ak4, good_dijets_SR, good_dijets_VR)
+            add_ak4_btag_weights(weights, selection, btag_sf_ak4, good_dijets_SR, good_dijets_VR)
     #---------------------------------------------
     # embed the (di)jet arrays inside the events array
     events["fatjets_SR"] = fatjets_SR
