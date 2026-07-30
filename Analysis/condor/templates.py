@@ -7,7 +7,6 @@ error                 = OUTPUT/output_JOB.err
 log                   = OUTPUT/output_JOB.log
 RequestMemory = 20000
 Arguments = "ARGS"
-use_x509userproxy = true
 queue
 """
 
