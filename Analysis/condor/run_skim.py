@@ -24,6 +24,15 @@ def removeProcessedFiles(inputFiles,outputDir):
 
 
 def create_jobs(config,year="2016",jobs_dir="",out_dir=""):
+    # copy the grid proxy to the user's home folder
+    print("COPYING GRID PROXY")
+    result = subprocess.run("voms-proxy-info -path".split(), capture_output=True, text=True, check=True)
+    src = result.stdout.strip('\n')
+    dst = os.environ.get('HOME')
+    cmd = "cp -v {} {}".format(src, dst)
+    subprocess.run(cmd.split())
+    proxy = os.path.join(dst, os.path.basename(src))
+
     submissionCmds     = []
     for sample, sample_cfg in config.items():
         
@@ -68,7 +77,7 @@ def create_jobs(config,year="2016",jobs_dir="",out_dir=""):
             condor_script = re.sub('EXEC',os.path.join(sampleJobs_dir, 'input', 'run_{}.sh'.format(sample)), selection_condor)
             condor_script = re.sub('OUTPUT',os.path.join(sampleJobs_dir, 'output'), condor_script)
             condor_script = re.sub('JOB','{}'.format(i), condor_script)
-            condor_script = re.sub('ARGS',"-i {} -o {}".format(iFile,sampleOut_dir), condor_script)
+            condor_script = re.sub('ARGS',"-i {} -o {} -p {}".format(iFile,sampleOut_dir,proxy), condor_script)
             open(os.path.join(sampleJobs_dir, 'input', 'condor_{}_{}.jdl'.format(sample, i)), 'w').write(condor_script)
             #Submit command
             cmdFile.write("condor_submit {0}\n".format(os.path.join(sampleJobs_dir, 'input', 'condor_{}_{}.jdl'.format(sample, i))))

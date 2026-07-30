@@ -7,6 +7,7 @@ from argparse import ArgumentParser
 import os
 import sys
 import time
+import subprocess
 from condor.paths import H3_DIR
 from coffea.lumi_tools import LumiMask
 
@@ -116,10 +117,12 @@ def copyRunsTree(inputFile,outputFile):
 def localCopy(inputLFN):
     xrdcpCMD = "xrdcp -f root://cms-xrd-global.cern.ch//{0} .".format(inputLFN)
     print(xrdcpCMD)
-    result = os.system(xrdcpCMD)
-    if result:
+    # use system-installed xrdcp in a clean shell environment
+    result = subprocess.run(xrdcpCMD.split(), env={})
+    if result.returncode:
         print("File copying failed. Exiting")
         sys.exit(1)
+
 
 parser = ArgumentParser()
 parser.add_argument('-i', '--input', metavar='IFILE', action='store',
@@ -130,9 +133,20 @@ parser.add_argument('-o', '--odir', metavar='ODIR', action='store',
                 default   =   '',
                 dest      =   'outputDir',
                 help      =   'Output directory path.')
+parser.add_argument('-p', '--proxy', metavar='PROXY', action='store',
+                default   =   '',
+                dest      =   'proxy',
+                help      =   'Grid proxy path.')
 
 (options, args) = parser.parse_known_args()
 start_time      = time.time()
+
+# copy the grid proxy from the user's home folder to /tmp
+dst = os.path.join('/tmp', os.path.basename(options.proxy))
+if not os.path.exists(dst):
+    cmd = "cp -v {} {}".format(options.proxy, dst)
+    subprocess.run(cmd.split())
+
 
 if(".txt" in options.input):
     inputFiles  = open(options.input, 'r')
