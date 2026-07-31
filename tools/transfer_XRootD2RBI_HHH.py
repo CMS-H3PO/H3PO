@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 from datetime import datetime
 
 # this script works with Python 3
@@ -15,7 +16,7 @@ r_txt.close()
 
 year = sys.argv[2]
 
-t_txt = open('transferred_files.txt', 'a+')
+t_txt = open(f'transferred_files_{year}.txt', 'a+')
 t_txt.seek(0)
 transferred_files = t_txt.read().splitlines()
 
@@ -38,16 +39,21 @@ for r in remote_files:
     
     dest = f'/STORE/HHH/skims/{year}/XToYHTo6B_{mx}_{my}'
     
-    cmd = f"mkdir -p {dest}"
-    print('\n' + cmd)
-    os.system(cmd)
+    if not os.path.exists(dest):
+        cmd = f"mkdir -p {dest}"
+        print('\n' + cmd)
+        os.system(cmd)
 
-    cmd = f'xrdcp -f "root://xrootd-cms.infn.it//{r}" "{dest}"'
-    # use system-installed xrdcp in a clean shell
-    cmd = "/bin/bash -c 'env -i {}'".format(cmd)
+    dest_file = os.path.join(dest, os.path.basename(r))
+    if os.path.exists(dest_file):
+        print(f"{dest_file} already exists, skipping")
+        continue
+
+    cmd = f'xrdcp -f root://cms-xrd-global.cern.ch//{r} {dest}'
     print(cmd + '\n')
-    exit_code = os.system(cmd)
-    if exit_code == 0:
+    # use system-installed xrdcp in a clean shell environment
+    result = subprocess.run(cmd.split(), env={})
+    if result.returncode == 0:
         t_txt.write(f'{r}\n')
     print(datetime.now())
 
