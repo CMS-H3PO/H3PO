@@ -1,0 +1,20 @@
+{
+  "SingleMuon2016APVver1B": {
+    "dataset":"/SingleMuon/Run2016B-ver1_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD"
+  },
+  "SingleMuon2016APVver2B": {
+    "dataset":"/SingleMuon/Run2016B-ver2_HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD"
+  },
+  "SingleMuon2016APVC": {
+    "dataset":"/SingleMuon/Run2016C-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD"
+  },
+  "SingleMuon2016APVD": {
+    "dataset":"/SingleMuon/Run2016D-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD"
+  },
+  "SingleMuon2016APVE": {
+    "dataset":"/SingleMuon/Run2016E-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD"
+  },
+  "SingleMuon2016APVF": {
+    "dataset":"/SingleMuon/Run2016F-HIPM_UL2016_MiniAODv2_NanoAODv9-v2/NANOAOD"
+  }
+}

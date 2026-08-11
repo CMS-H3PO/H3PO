@@ -1,0 +1,11 @@
+{
+  "SingleMuon2016F": {
+    "dataset":"/SingleMuon/Run2016F-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  },
+  "SingleMuon2016G": {
+    "dataset":"/SingleMuon/Run2016G-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  },
+  "SingleMuon2016H": {
+    "dataset":"/SingleMuon/Run2016H-UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD"
+  }
+} 

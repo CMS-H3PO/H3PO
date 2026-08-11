@@ -55,6 +55,19 @@ python run_skim.py -c skim_configs/2018/data.json -y 2018
 ```
 Each of the above commands prints out `source` commands to be executed in order to submit skimming Condor jobs.
 
+
+Additional skimming of QCD samples and SingleMuon primary datasets was done using the following commands:
+```
+python run_skim.py -c skim_configs/2016APV/qcd.json -y 2016APV
+python run_skim.py -c skim_configs/2016APV/muon.json -y 2016APV
+python run_skim.py -c skim_configs/2016/qcd.json -y 2016
+python run_skim.py -c skim_configs/2016/muon.json -y 2016
+python run_skim.py -c skim_configs/2017/qcd.json -y 2017
+python run_skim.py -c skim_configs/2017/muon.json -y 2017
+python run_skim.py -c skim_configs/2018/qcd.json -y 2018
+python run_skim.py -c skim_configs/2018/muon.json -y 2018
+```
+
 # Make histograms with signal, backgrounds and data for SR (Signal Region) and VR (Validation Region):
 
 To run over all 2017 samples:
