@@ -3,6 +3,7 @@ from coffea.nanoevents import NanoEventsFactory, NanoAODSchema
 from coffea.analysis_tools import PackedSelection
 from coffea.analysis_tools import Weights
 import numpy as np
+from config.cuts import *
 from utils.utils import *
 from utils.jerc import *
 from utils.pileup import *
@@ -18,26 +19,6 @@ from utils.btag import *
 NanoAODSchema.warn_missing_crossrefs = False
 jerc = JERC()
 
-#---------------------------------------------
-# Selection cuts
-#---------------------------------------------
-higgs_mass = 125.
-delta_r_cut = 0.8
-min_jet_mass = 60.
-max_jet_mass = 250.
-
-# FatJet cuts
-ptcut = 250.
-etacut = 2.5
-mass_cut = [100.,150.]
-pNet_wp = "L"
-
-# Resolved Higgs candidate jet cuts
-res_ptcut = 30.
-res_etacut = 2.5
-res_mass_cut = [90.,150.]
-res_deepJet_wp = "L"
-#---------------------------------------------
 
 def closest(masses):
     delta = abs(higgs_mass - masses)
