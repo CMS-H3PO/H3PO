@@ -113,6 +113,7 @@ if __name__ == '__main__':
             continue
         dataset_path = join(datasets[options.year][dataset], options.year, dataset)
         num_of_jobs[dataset] = 0
+        print(f'Preparing jobs for {dataset}')
         for i, file in enumerate(listdir(dataset_path)):
             file_path = join(dataset_path, file)
             if not isfile(file_path):
