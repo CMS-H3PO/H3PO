@@ -96,6 +96,8 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
 
     # AK8 xbb-tag SFs
     xbbtag_sf_ak8 = XbbTagSFAK8(year)
+    # AK8 xbb-tag efficiency
+    xbbtag_eff_ak8 = XbbTagEffAK8(year)
     # AK4 b-tag SFs
     btag_sf_ak4 = BTagSFAK4(year)
     # get a year-dependent WP cut value (https://btv-wiki.docs.cern.ch/ScaleFactors/)
@@ -230,7 +232,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
             add_ak4_btag_weights(weights, selection, btag_sf_ak4, good_dijets_SR, good_dijets_VR)
         # apply ak8 Xbb-tag scale factors
         if "XToYHTo6B" in dataset and any(c in corrections for c in ["xbbtag_particleNetMD", "all"]):
-            add_ak8_xbbtag_weights(weights, selection, xbbtag_sf_ak8, fatjets_SR, fatjets)
+            add_ak8_xbbtag_weights(weights, selection, xbbtag_sf_ak8, xbbtag_eff_ak8, fatjets_SR, fatjets)
     #---------------------------------------------
     # embed the (di)jet arrays inside the events array
     events["fatjets_SR"] = fatjets_SR
