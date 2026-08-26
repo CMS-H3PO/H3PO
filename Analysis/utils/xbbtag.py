@@ -98,22 +98,28 @@ def get_ak8_xbbtag_weights_boosted(pass_mask, fail_mask, sf, eff):
     eff1 = eff[:,0]
     eff2 = eff[:,1]
     eff3 = eff[:,2]
-    
+
     # SFs for the leading 3 fat jets
     SF1 = sf[:,0]
     SF2 = sf[:,1]
     SF3 = sf[:,2]
-    
+
     # MC probability for the fail category
     prob_fail_MC = (1 - eff1) * (1 - eff2) * (1 - eff3)
     # DATA probability for the fail category (per-jet probabilitites restricted between 0. and 1.)
     prob_fail_DATA = ak_clip((1 - SF1*eff1), 0., 1.) * ak_clip((1 - SF2*eff2), 0., 1.) * ak_clip((1 - SF3*eff3), 0., 1.)
 
+    fail_den = ak.where(prob_fail_MC > 0, prob_fail_MC, 1.)
+    w_fail_ratio = prob_fail_DATA / fail_den
+
     # weights for the fail category
-    w_fail = ak.where(fail_mask, prob_fail_DATA / prob_fail_MC, 1.)
+    w_fail = ak.where(fail_mask & (prob_fail_MC > 0), w_fail_ratio, 1.)
+
+    pass_den = ak.where(prob_fail_MC < 1, 1 - prob_fail_MC, 1.)
+    w_pass_ratio = (1 - prob_fail_DATA) / pass_den
 
     # weights for the pass category
-    w_pass = ak.where(pass_mask, (1 - prob_fail_DATA) / (1 - prob_fail_MC), 1.)
+    w_pass = ak.where(pass_mask & (prob_fail_MC < 1), w_pass_ratio, 1.)
 
     return w_pass * w_fail
 
@@ -136,11 +142,17 @@ def get_ak8_xbbtag_weights_semiboosted(pass_mask, fail_mask, sf, eff):
     # DATA probability for the fail category (per-jet probabilitites restricted between 0. and 1.)
     prob_fail_DATA = ak_clip((1 - SF1*eff1), 0., 1.) * ak_clip((1 - SF2*eff2), 0., 1.)
 
+    fail_den = ak.where(prob_fail_MC > 0, prob_fail_MC, 1.)
+    w_fail_ratio = prob_fail_DATA / fail_den
+
     # weights for the fail category
-    w_fail = ak.where(fail_mask, prob_fail_DATA / prob_fail_MC, 1.)
+    w_fail = ak.where(fail_mask & (prob_fail_MC > 0), w_fail_ratio, 1.)
+
+    pass_den = ak.where(prob_fail_MC < 1, 1 - prob_fail_MC, 1.)
+    w_pass_ratio = (1 - prob_fail_DATA) / pass_den
 
     # weights for the pass category
-    w_pass = ak.where(pass_mask, (1 - prob_fail_DATA) / (1 - prob_fail_MC), 1.)
+    w_pass = ak.where(pass_mask & (prob_fail_MC < 1), w_pass_ratio, 1.)
 
     return w_pass * w_fail
 
