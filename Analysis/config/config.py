@@ -40,14 +40,14 @@ def get_pog_json(obj, year):
 local_jsons = {
     "top_pt": {
         # year      JSON                  CorrectionSet
-        "Default": ["config/toppt.json",  "top_pt_weight"]
+        "Default": ["../data/toppt.json",  "top_pt_weight"]
     },
     "jmsr": {
         # year      JSON                          CorrectionSets
-        "2016APV": ["config/jmsr_AK8_2016.json",  ["jms","jmr"]],
-        "2016":    ["config/jmsr_AK8_2016.json",  ["jms","jmr"]],
-        "2017":    ["config/jmsr_AK8_2017.json",  ["jms","jmr"]],
-        "2018":    ["config/jmsr_AK8_2018.json",  ["jms","jmr"]]
+        "2016APV": ["../data/jmsr/jmsr_AK8_2016.json",  ["jms","jmr"]],
+        "2016":    ["../data/jmsr/jmsr_AK8_2016.json",  ["jms","jmr"]],
+        "2017":    ["../data/jmsr/jmsr_AK8_2017.json",  ["jms","jmr"]],
+        "2018":    ["../data/jmsr/jmsr_AK8_2018.json",  ["jms","jmr"]]
     },
     "xbbtag_particleNetMD_XbbvsQCD_eff_XToYHTo6B": {
         # year             JSON                                                                          CorrectionSet
