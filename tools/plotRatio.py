@@ -99,6 +99,9 @@ def main():
     parser.add_argument("--save_histo", dest="save_histo", action='store_true',
                         help="Save the final ratio histogram",
                         default=False)
+    parser.add_argument("--binomial", dest="binomial", action='store_true',
+                        help="Compute binomial errors",
+                        default=False)
 
     (options, args) = parser.parse_known_args()
 
@@ -114,9 +117,15 @@ def main():
     den = get_histo("denominator", inputFile, options.den)
 
     ratio = copy.deepcopy(num)
+    if options.output:
+        ratio.SetNameTitle(options.output, options.output)
+    else:
+        ratio.SetTitle("ratio")
 
-    ratio.SetTitle("ratio")
-    ratio.Divide(den)
+    if options.binomial:
+        ratio.Divide(num, den, 1., 1., "B")
+    else:
+        ratio.Divide(den)
 
     # create canvas
     c = r.TCanvas("c", "",1200,800)
@@ -125,11 +134,27 @@ def main():
     ratio.Draw("COLZTEXT")
     c.Update() # forces the canvas to repaint. Otherwise, you might get an empty canvas displayed in the interacive mode
 
-    if options.save_histo:
-        ratio.SaveAs( options.output + '.root' )
-
     if options.output:
         c.SaveAs( options.output + '.' + options.fmt )
+
+        if options.save_histo:
+            ratio.SaveAs( options.output + '.root' )
+            # Create the output ROOT file
+            fout = r.TFile(options.output + '.root', "RECREATE")
+
+            # Update names and titles
+            name = options.output + '_num'
+            num.SetNameTitle(name, name)
+            name = options.output + '_den'
+            den.SetNameTitle(name, name)
+
+            # Write all histograms to it
+            num.Write()
+            den.Write()
+            ratio.Write()
+
+            # Close the file
+            fout.Close()
 
     if not options.batch:
         input('Press enter to exit...')
