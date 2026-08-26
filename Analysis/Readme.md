@@ -148,4 +148,41 @@ By default, the combined filed will be stored in `/STORE/HHH/Histograms/Run2/lat
 python combine_years.py -h
 ```
 
+# Processing tips and tricks
+
+```
+export CONDOR_OUTPUT=~/HHH
+```
+If some jobs were held, check which ones by running
+```
+grep -ri held --include="*.log" ${CONDOR_OUTPUT}/condor_jobs_*20260821*/ | sort -V
+```
+If you want to produce a list of job description files for the held jobs (for later use with sed or condor_submit commanda), run
+```
+grep -ri held --include="*.log" ${CONDOR_OUTPUT}/condor_jobs_*20260821*/ | sort -V | cut -d: -f1 | sed 's|logs/tmp-|jobs/job_desc-|g' | sed 's|\.log|\.txt|g'
+```
+If some jobs were held again, check which ones by running
+```
+grep -ri held --include="*.log" ${CONDOR_OUTPUT}/condor_jobs_*20260821*/ | sort -V | cut -d: -f1 | uniq -d
+```
+(grep for lines containing 'held'; keep only the file names; print only the duplicates)
+
+If some jobs were held more than once, check which ones by running
+```
+grep -ri held --include="*.log" ${CONDOR_OUTPUT}/condor_jobs_*20260821*/ | sort -V | cut -d: -f1 | uniq -d -c
+```
+(grep for lines containing 'held'; keep only the file names; print only the duplicates and prefix lines by the number of occurrences)
+
+Remove jobs before resubmitting
+```
+condor_rm $USER
+```
+Example `sed` and `condor_submit` commands:
+```
+sed -i 's/RequestMemory = 8000/RequestMemory = 20000/g' ${CONDOR_OUTPUT}/condor_jobs_XbbEffMaps_2017_a50db1b_20260821/jobs/job_desc-XToYHTo6B_MX-1000_MY-600_0.txt
+```
+```
+condor_submit ${CONDOR_OUTPUT}/condor_jobs_XbbEffMaps_2017_a50db1b_20260821/jobs/job_desc-XToYHTo6B_MX-1000_MY-600_0.txt
+```
+
 [*] `voms-proxy-init -rfc -voms cms -valid 168:00`
