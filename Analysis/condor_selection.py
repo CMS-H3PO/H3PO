@@ -41,6 +41,9 @@ if __name__ == '__main__':
     parser.add_argument("--dry_run", dest="dry_run", action="store_true",
                         help="Dry run without submitting Condor jobs (default: %(default)s)",
                         default=False)
+    parser.add_argument("--date_only", dest="date_only", action="store_true",
+                        help="Keep the date only and exclude time from the time stamp (default: %(default)s)",
+                        default=False)
     parser.add_argument("--no_timestamp", dest="no_timestamp", action="store_true",
                         help="Don't append the time stamp to the output directory name (default: %(default)s)",
                         default=False)
@@ -87,7 +90,7 @@ if __name__ == '__main__':
     initial_dir = H3_DIR
     timestamp = ''
     if not options.no_timestamp:
-        timestamp = '_' + datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = '_' + ( datetime.datetime.now().strftime("%Y%m%d") if options.date_only else datetime.datetime.now().strftime("%Y%m%d_%H%M%S") )
     condor_dir = options.output.rstrip('/') + timestamp
     if not options.output.startswith('/'):
         condor_dir = join(initial_dir, condor_dir)
@@ -110,6 +113,7 @@ if __name__ == '__main__':
             continue
         dataset_path = join(datasets[options.year][dataset], options.year, dataset)
         num_of_jobs[dataset] = 0
+        print(f'Preparing jobs for {dataset}')
         for i, file in enumerate(listdir(dataset_path)):
             file_path = join(dataset_path, file)
             if not isfile(file_path):

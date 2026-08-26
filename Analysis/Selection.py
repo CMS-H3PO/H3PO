@@ -3,6 +3,7 @@ from coffea.nanoevents import NanoEventsFactory, NanoAODSchema
 from coffea.analysis_tools import PackedSelection
 from coffea.analysis_tools import Weights
 import numpy as np
+from config.cuts import *
 from utils.utils import *
 from utils.jerc import *
 from utils.pileup import *
@@ -18,26 +19,6 @@ from utils.btag import *
 NanoAODSchema.warn_missing_crossrefs = False
 jerc = JERC()
 
-#---------------------------------------------
-# Selection cuts
-#---------------------------------------------
-higgs_mass = 125.
-delta_r_cut = 0.8
-min_jet_mass = 60.
-max_jet_mass = 250.
-
-# FatJet cuts
-ptcut = 250.
-etacut = 2.5
-mass_cut = [100.,150.]
-pNet_wp = "L"
-
-# Resolved Higgs candidate jet cuts
-res_ptcut = 30.
-res_etacut = 2.5
-res_mass_cut = [90.,150.]
-res_deepJet_wp = "L"
-#---------------------------------------------
 
 def closest(masses):
     delta = abs(higgs_mass - masses)
@@ -115,6 +96,8 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
 
     # AK8 xbb-tag SFs
     xbbtag_sf_ak8 = XbbTagSFAK8(year)
+    # AK8 xbb-tag efficiency
+    xbbtag_eff_ak8 = XbbTagEffAK8(year)
     # AK4 b-tag SFs
     btag_sf_ak4 = BTagSFAK4(year)
     # get a year-dependent WP cut value (https://btv-wiki.docs.cern.ch/ScaleFactors/)
@@ -242,11 +225,14 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
     # select events in the Pass category of the VR semiboosted
     selection.add("VR_semiboosted_Pass", ak.where(VR_sb_evtMask, PassCategory(ak.pad_none(fatjets[:,0:2], 1), pNet_cut), False))
     #---------------------------------------------
-    # apply b-tag scale factors
+    # apply b-tag and Xbb-tag scale factors
     if isMC and apply_corrections:
         # apply ak4 b-tag scale factors
         if any(c in corrections for c in ["btag_deepJet", "all"]):
             add_ak4_btag_weights(weights, selection, btag_sf_ak4, good_dijets_SR, good_dijets_VR)
+        # apply ak8 Xbb-tag scale factors
+        if "XToYHTo6B" in dataset and any(c in corrections for c in ["xbbtag_particleNetMD", "all"]):
+            add_ak8_xbbtag_weights(weights, selection, xbbtag_sf_ak8, xbbtag_eff_ak8, fatjets_SR, fatjets)
     #---------------------------------------------
     # embed the (di)jet arrays inside the events array
     events["fatjets_SR"] = fatjets_SR

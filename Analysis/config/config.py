@@ -48,6 +48,17 @@ local_jsons = {
         "2016":    ["config/jmsr_AK8_2016.json",  ["jms","jmr"]],
         "2017":    ["config/jmsr_AK8_2017.json",  ["jms","jmr"]],
         "2018":    ["config/jmsr_AK8_2018.json",  ["jms","jmr"]]
+    },
+    "xbbtag_particleNetMD_XbbvsQCD_eff_XToYHTo6B": {
+        # year             JSON                                                                          CorrectionSet
+        "2016APV": {"SR": ["../data/xbbtag/xbbtag_particleNetMD_XbbvsQCD_eff_2016APV_SR_XToYHTo6B.json", "xbbtag_particleNetMD_XbbvsQCD_eff_2016APV_SR_XToYHTo6B"],
+                    "VR": ["../data/xbbtag/xbbtag_particleNetMD_XbbvsQCD_eff_2016APV_VR_XToYHTo6B.json", "xbbtag_particleNetMD_XbbvsQCD_eff_2016APV_VR_XToYHTo6B"]},
+        "2016":    {"SR": ["../data/xbbtag/xbbtag_particleNetMD_XbbvsQCD_eff_2016_SR_XToYHTo6B.json",    "xbbtag_particleNetMD_XbbvsQCD_eff_2016_SR_XToYHTo6B"],
+                    "VR": ["../data/xbbtag/xbbtag_particleNetMD_XbbvsQCD_eff_2016_VR_XToYHTo6B.json",    "xbbtag_particleNetMD_XbbvsQCD_eff_2016_VR_XToYHTo6B"]},
+        "2017":    {"SR": ["../data/xbbtag/xbbtag_particleNetMD_XbbvsQCD_eff_2017_SR_XToYHTo6B.json",    "xbbtag_particleNetMD_XbbvsQCD_eff_2017_SR_XToYHTo6B"],
+                    "VR": ["../data/xbbtag/xbbtag_particleNetMD_XbbvsQCD_eff_2017_VR_XToYHTo6B.json",    "xbbtag_particleNetMD_XbbvsQCD_eff_2017_VR_XToYHTo6B"]},
+        "2018":    {"SR": ["../data/xbbtag/xbbtag_particleNetMD_XbbvsQCD_eff_2018_SR_XToYHTo6B.json",    "xbbtag_particleNetMD_XbbvsQCD_eff_2018_SR_XToYHTo6B"],
+                    "VR": ["../data/xbbtag/xbbtag_particleNetMD_XbbvsQCD_eff_2018_VR_XToYHTo6B.json",    "xbbtag_particleNetMD_XbbvsQCD_eff_2018_VR_XToYHTo6B"]}
     }
 }
 

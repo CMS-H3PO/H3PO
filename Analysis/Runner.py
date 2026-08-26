@@ -23,9 +23,15 @@ ht_stop=6000
 eta_bins=100
 eta_start=-5
 eta_stop=5
+fj_eta_bins=10
+fj_eta_start=-2.5
+fj_eta_stop=2.5
+fj_pt_bins=60
+fj_pt_start=0
+fj_pt_stop=3000
 
 
-def fillHistos(channel, suffix, trigSuffix, events, selection, weights, modifier, event_yield, extraHistos, refTrigList=None, trigList=None):
+def fillHistos(channel, suffix, trigSuffix, events, isMC, year, selection, weights, modifier, event_yield, extraHistos, refTrigList=None, trigList=None):
 
     isBoosted = ("semiboosted" not in channel.lower())
 
@@ -196,6 +202,105 @@ def fillHistos(channel, suffix, trigSuffix, events, selection, weights, modifier
         hists["eta_VR_pass"].fill(eta_VR_pass=eta2_VR_pass, weight=weights.weight(**modifier)[VR_pass_evtMask])
         hists["eta_VR_pass"].fill(eta_VR_pass=eta3_VR_pass, weight=weights.weight(**modifier)[VR_pass_evtMask])
 
+        if isMC and refTrigList == None:
+            # define event masks and the fat jet index for selecting the N leading jets (boosted: N=3, semiboosted: N=2)
+            if isBoosted:
+                SR_evtMask = selection.require(**mass_cut_SR_boosted)
+                VR_evtMask = selection.require(**mass_cut_VR_boosted)
+                fj_N = 3
+            else:
+                SR_evtMask = selection.require(**good_dijet_SR_semiboosted)
+                VR_evtMask = selection.require(**good_dijet_VR_semiboosted)
+                fj_N = 2
+
+            # define regions to loop over
+            regions = [
+                ["SR", SR_evtMask],
+                ["VR", VR_evtMask]
+            ]
+
+            # loop over regions
+            for reg in regions:
+                # get events
+                evts = events[reg[1]]
+                # get fat jets
+                fj = getattr(evts, f"fatjets_{reg[0]}")
+                # select the N leading jets
+                fj = fj[:, 0:fj_N]
+
+                # event weights
+                eventWeights = weights.weight(**modifier)[reg[1]]
+                # broadcast event weights to the fat jets
+                fj_weights = ak.broadcast_arrays(eventWeights, fj.pt)[0]
+
+                # define histogram for all fat jets
+                hist_name = f"fatjet_eta_pt_all_{reg[0]}"
+                hists[hist_name] = Hist(
+                    hist.axis.Regular(fj_eta_bins, fj_eta_start, fj_eta_stop, name="eta"),
+                    hist.axis.Regular(fj_pt_bins, fj_pt_start, fj_pt_stop, name="pt"),
+                    storage="weight"
+                )
+
+                # fill histogram for all fat jets
+                hists[hist_name].fill(
+                    eta=ak.flatten(fj.eta),
+                    pt=ak.flatten(fj.pt),
+                    weight=ak.flatten(fj_weights)
+                )
+
+                # AK8 xbb-tag SFs
+                xbbtag_sf_ak8 = XbbTagSFAK8(year)
+                # get a year-dependent WP cut value (https://btv-wiki.docs.cern.ch/ScaleFactors/)
+                pNet_cut = xbbtag_sf_ak8.wp_value(pNet_wp)
+
+                # define histogram for xbb-tagged fat jets
+                hist_name = f"fatjet_eta_pt_xbbTag_{reg[0]}"
+                hists[hist_name] = Hist(
+                    hist.axis.Regular(fj_eta_bins, fj_eta_start, fj_eta_stop, name="eta"),
+                    hist.axis.Regular(fj_pt_bins, fj_pt_start, fj_pt_stop, name="pt"),
+                    storage="weight"
+                )
+
+                # select xbb-tagged fat jets
+                fj_xbbMask = (HbbvsQCD(fj) > pNet_cut)
+                fj_xbb = fj[fj_xbbMask]
+                fj_xbb_weights = fj_weights[fj_xbbMask]
+
+                # fill histogram for xbb-tagged fat jets
+                hists[hist_name].fill(
+                    eta=ak.flatten(fj_xbb.eta),
+                    pt=ak.flatten(fj_xbb.pt),
+                    weight=ak.flatten(fj_xbb_weights)
+                )
+
+                # hadron multiplicities to consider
+                hadMultiplicity = [1, 2, 3]
+
+                # loop over hadron flavors and their multiplicities
+                for had in [["b", "nBHadrons"], ["c", "nCHadrons"]]:
+                    for n in hadMultiplicity:
+                        # define histogram for had-flavored fat jets
+                        had_label = f"ge{n}{had[0]}" if (n == max(hadMultiplicity)) else f"{n}{had[0]}"
+                        hist_name = f"fatjet_eta_pt_{had_label}_{reg[0]}"
+                        hists[hist_name] = Hist(
+                            hist.axis.Regular(fj_eta_bins, fj_eta_start, fj_eta_stop, name="eta"),
+                            hist.axis.Regular(fj_pt_bins, fj_pt_start, fj_pt_stop, name="pt"),
+                            storage="weight"
+                        )
+
+                        # select only had-flavored fat jets with the right hadron multiplicity
+                        fj_nHad = getattr(fj, had[1])
+                        fj_hadMask = (fj_nHad >= n) if (n == max(hadMultiplicity)) else (fj_nHad == n)
+                        fj_had = fj[fj_hadMask]
+                        fj_had_weights = fj_weights[fj_hadMask]
+
+                        # fill histogram for had-flavored fat jets
+                        hists[hist_name].fill(
+                            eta=ak.flatten(fj_had.eta),
+                            pt=ak.flatten(fj_had.pt),
+                            weight=ak.flatten(fj_had_weights)
+                        )
+
     if isBoosted:
         dijet1_mass_SR_fail = (SR_fail_fj[:,0]+SR_fail_fj[:,1]).mass
         dijet2_mass_SR_fail = (SR_fail_fj[:,0]+SR_fail_fj[:,2]).mass
@@ -252,7 +357,7 @@ def fillHistos(channel, suffix, trigSuffix, events, selection, weights, modifier
     return hists
 
 
-def fillAllHistos(outHists, suffix, events, selection, weights, modifier, event_yield, extraHistos, refTrigList=None, trigList=None):
+def fillAllHistos(outHists, suffix, events, isMC, year, selection, weights, modifier, event_yield, extraHistos, refTrigList=None, trigList=None):
 
     trigSuffix = ""
     if refTrigList != None:
@@ -262,8 +367,8 @@ def fillAllHistos(outHists, suffix, events, selection, weights, modifier, event_
         trigSuffix += "Trig"
 
     hists = {}
-    hists["boosted"]     = fillHistos("Boosted",     suffix, trigSuffix, events, selection, weights, modifier, event_yield, extraHistos, refTrigList, trigList)
-    hists["semiboosted"] = fillHistos("Semiboosted", suffix, trigSuffix, events, selection, weights, modifier, event_yield, extraHistos, refTrigList, trigList)
+    hists["boosted"]     = fillHistos("Boosted",     suffix, trigSuffix, events, isMC, year, selection, weights, modifier, event_yield, extraHistos, refTrigList, trigList)
+    hists["semiboosted"] = fillHistos("Semiboosted", suffix, trigSuffix, events, isMC, year, selection, weights, modifier, event_yield, extraHistos, refTrigList, trigList)
 
     channels = ["boosted", "semiboosted"]
     for ch in channels:
@@ -302,7 +407,7 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--corrs", dest="corrections",
                         help="Space-separated list of applied corrections (default: %(default)s). Use 'all' to apply all corrections.",
                         nargs='*',
-                        default=["genweight", "pileup", "top_pt", "jmsr", "l1prefiring", "btag_deepJet"],
+                        default=["genweight", "pileup", "top_pt", "jmsr", "l1prefiring", "btag_deepJet", "xbbtag_particleNetMD"],
                         metavar="CORRS")
     parser.add_argument("--disable_corrs", dest="disable_corrs", action='store_true',
                         help="Disable corrections (default: %(default)s)",
@@ -320,7 +425,7 @@ if __name__ == "__main__":
     corrections=args.corrections
     ofile = os.path.basename(input)
     print(dataset)
-    yearFromInputFile(input)
+    year = yearFromInputFile(input)
 
     # is the dataset being processed MC?
     isMC = ("JetHT" not in dataset)
@@ -445,14 +550,14 @@ if __name__ == "__main__":
             #---------------------------------------------
 
             # fill all histograms
-            fillAllHistos(outHists, suffix, events, selection, weights, modifier, event_yield, args.extra_histos)
+            fillAllHistos(outHists, suffix, events, isMC, year, selection, weights, modifier, event_yield, args.extra_histos)
 
             # if doing trigger efficiency studies
             if args.refTriggerList != None:
-                fillAllHistos(outHists, suffix, events, selection, weights, modifier, event_yield, args.extra_histos, args.refTriggerList)
+                fillAllHistos(outHists, suffix, events, isMC, year, selection, weights, modifier, event_yield, args.extra_histos, args.refTriggerList)
                 # if the analysis trigger(s) are applied as well
                 if args.triggerList != None:
-                    fillAllHistos(outHists, suffix, events, selection, weights, modifier, event_yield, args.extra_histos, args.refTriggerList, args.triggerList)
+                    fillAllHistos(outHists, suffix, events, isMC, year, selection, weights, modifier, event_yield, args.extra_histos, args.refTriggerList, args.triggerList)
 
             # create and fill the cut flow histograms
             for r in regions:
