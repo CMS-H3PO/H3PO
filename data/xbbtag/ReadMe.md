@@ -101,6 +101,8 @@ python condor_selection.py -y 2017 -o ${CONDOR_OUTPUT}/condor_jobs_XbbEffMaps_20
 ```
 python condor_selection.py -y 2018 -o ${CONDOR_OUTPUT}/condor_jobs_XbbEffMaps_2018_${SUFFIX} -m 8000 -t PFHT1050 AK8PFJet500 PFJet500 -d XToYHTo6B --extra_histos --date_only --requirements 'machine != "lorientree05.hep.zef.irb.hr"'
 ```
+(`--requirements 'machine != "lorientree05.hep.zef.irb.hr"'` in the above commands is not strictly necessary but was used to avoid submitting jobs to `lorientree05` which is used for interacive work and at the time of job submission had a lot of RAM already used by other processes).
+
 Once all jobs complete successfully, output histograms need to be combined and numerator and denominator historgrams produced for each year
 ```
 export TIMESTAMP=20260821
