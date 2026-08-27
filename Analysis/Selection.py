@@ -145,7 +145,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
         print("Fat jet mass:", jc)
         fatjets["M"] = FatJetMass(fatjets)
     else:
-        if isMC and "jmsr" in corrections:
+        if isMC and any(c in corrections for c in ["jmsr", "all"]):
             fatjets["M"] = getCalibratedJetMass(fatjets,variation,year) if len(events)>0 else FatJetMass(fatjets)
         else:
             print("Fat jet mass: fromFile")
