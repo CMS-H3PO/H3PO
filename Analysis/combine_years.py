@@ -7,6 +7,8 @@ from argparse import ArgumentParser
 
 
 if __name__ == '__main__':
+    import time
+    start_time = time.time()
     # usage example
     Description = "Example: %(prog)s -y 2016 2016APV 2017 2018"
     
@@ -104,3 +106,5 @@ if __name__ == '__main__':
         
         cmd = "hadd -f {0} {1}".format(f, " ".join(file_paths))
         os.system(cmd)
+
+    print("--- %.2f seconds ---" % (time.time() - start_time))

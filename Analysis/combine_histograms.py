@@ -115,6 +115,8 @@ def keep_dataset(signal_base, dataset, process_list):
 
 
 if __name__ == '__main__':
+    import time
+    start_time = time.time()
     # usage example
     Description = "Example: %(prog)s -i condor_jobs_<timestamp>"
     
@@ -209,3 +211,4 @@ if __name__ == '__main__':
         print ("Processing {0}".format(process))
         combine_histograms(signal_base, process, options.delete_files, options.skip_norm, startsWith=False, mvFiles=True, fit_dir=options.fit_dir)
     print ("Merging process files done")
+    print("--- %.2f seconds ---" % (time.time() - start_time))
