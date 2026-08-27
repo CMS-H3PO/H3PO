@@ -587,4 +587,4 @@ if __name__ == "__main__":
     for k in cutFlowHistos.keys():
         cutFlowHistos[k].Write()
     fout.Close()
-    print("--- %s seconds ---" % (time.time() - start_time))
+    print("--- %.2f seconds ---" % (time.time() - start_time))
