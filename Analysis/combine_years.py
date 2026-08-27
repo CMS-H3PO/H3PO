@@ -40,6 +40,10 @@ if __name__ == '__main__':
                         default="",
                         metavar="SUFFIX")
 
+    parser.add_argument("--date_only", dest="date_only", action="store_true",
+                        help="Keep the date only and exclude time from the time stamp (default: %(default)s)",
+                        default=False)
+
     parser.add_argument("--no_timestamp", dest="no_timestamp", action="store_true",
                         help="Don't prepend the time stamp to the output directory name (default: %(default)s)",
                         default=False)
@@ -60,7 +64,7 @@ if __name__ == '__main__':
     files_set = set()
     out_dir_name = ''
     if not options.use_existing and not options.no_timestamp:
-        out_dir_name += datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        out_dir_name += ( datetime.datetime.now().strftime("%Y%m%d") if options.date_only else datetime.datetime.now().strftime("%Y%m%d_%H%M%S") )
 
     # fill the file dictionary and the file set
     for year in sorted_years:
