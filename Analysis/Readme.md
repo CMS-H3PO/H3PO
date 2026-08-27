@@ -151,7 +151,7 @@ If some jobs were held, check which ones by running
 ```
 grep -ri held --include="*.log" ${CONDOR_OUTPUT}/*${TIMESTAMP}/ | sort -V
 ```
-If you want to produce a list of job description files for the held jobs (for later use with sed or condor_submit commanda), run
+If you want to produce a list of job description files for the held jobs (for later use with sed or condor_submit commands), run
 ```
 grep -ri held --include="*.log" ${CONDOR_OUTPUT}/*${TIMESTAMP}/ | sort -V | cut -d: -f1 | sed 's|logs/tmp-|jobs/job_desc-|g' | sed 's|\.log|\.txt|g'
 ```
@@ -161,7 +161,7 @@ grep -ri held --include="*.log" ${CONDOR_OUTPUT}/*${TIMESTAMP}/ | sort -V | cut 
 ```
 (grep for lines containing 'held'; keep only the file names; print only the duplicates)
 
-If some jobs were held more than once, check which ones by running
+If some jobs were held more than twice, check which ones by running
 ```
 grep -ri held --include="*.log" ${CONDOR_OUTPUT}/*${TIMESTAMP}/ | sort -V | cut -d: -f1 | uniq -d -c
 ```
@@ -173,7 +173,7 @@ condor_rm $USER
 ```
 Example `sed` and `condor_submit` commands:
 ```
-sed -i 's/RequestMemory = 4000/RequestMemory = 20000/g' ${CONDOR_OUTPUT}/${YEAR}_${SUFFIX}_${TIMESTAMP}/jobs/job_desc-XToYHTo6B_MX-1000_MY-600_0.txt
+sed -i 's/RequestMemory = 4000/RequestMemory = 10000/g' ${CONDOR_OUTPUT}/${YEAR}_${SUFFIX}_${TIMESTAMP}/jobs/job_desc-XToYHTo6B_MX-1000_MY-600_0.txt
 ```
 ```
 condor_submit ${CONDOR_OUTPUT}/${YEAR}_${SUFFIX}_${TIMESTAMP}/jobs/job_desc-XToYHTo6B_MX-1000_MY-600_0.txt
