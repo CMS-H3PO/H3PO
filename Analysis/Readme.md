@@ -138,7 +138,7 @@ export YEAR=2018
 ```
 Finally, combine files from all the years
 ```
-python combine_years.py -y 2016APV 2016 2017 2018 -s ${SUFFIX}
+python combine_years.py -y 2016APV 2016 2017 2018 -s ${SUFFIX} --date_only
 ```
 By default, the combined files will be stored in `/STORE/HHH/Histograms/Run2/latest/`. To see all available command-line options, run
 ```
