@@ -507,7 +507,7 @@ if __name__ == "__main__":
         for variation in completeVariations:
             print(f"Variation: {variation}")
             # define suffix for histogram names
-            suffix = ("" if variation=="fromFile" else f"_{variation}")
+            suffix = ("_nominalFromFile" if variation=="fromFile" else f"_{variation}")
 
             # event yield dictionary
             event_yield = {}
