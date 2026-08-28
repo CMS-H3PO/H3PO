@@ -431,7 +431,7 @@ if __name__ == "__main__":
     isMC = ("JetHT" not in dataset)
 
     # supported object-level systematics variations
-    knownObjectVariations = ["jesUp","jesDown","jerUp","jerDown","jmsUp","jmsDown","jmrUp","jmrDown"]
+    knownObjectVariations = (["jesUp","jesDown","jerUp","jerDown","jmsUp","jmsDown","jmrUp","jmrDown"] if apply_corrections else [])
     # supported JCs
     knownJCs = ["nominal", "fromFile"]
     jc = args.jc
