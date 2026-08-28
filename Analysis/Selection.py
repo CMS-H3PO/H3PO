@@ -141,15 +141,11 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
         fatjets = getCalibratedJets(events.FatJet,events.fixedGridRhoFastjetAll,variation,jerc.fatjetFactory,jecTag) if len(events)>0 else events.FatJet
 
     # JMS and JMR corrections
-    if jc == "fromFile" and (variation == jc or "jes" in variation or "jer" in variation):
-        print("Fat jet mass:", jc)
-        fatjets["M"] = FatJetMass(fatjets)
+    if isMC and apply_corrections and any(c in corrections for c in ["jmsr", "all"]):
+        fatjets["M"] = getCalibratedJetMass(fatjets,variation,year) if len(events)>0 else FatJetMass(fatjets)
     else:
-        if isMC and any(c in corrections for c in ["jmsr", "all"]):
-            fatjets["M"] = getCalibratedJetMass(fatjets,variation,year) if len(events)>0 else FatJetMass(fatjets)
-        else:
-            print("Fat jet mass: fromFile")
-            fatjets["M"] = FatJetMass(fatjets)
+        print("Fat jet mass: Default")
+        fatjets["M"] = FatJetMass(fatjets)
 
     # fat jet preselection
     fatjets = fatjets[precut(fatjets)]
