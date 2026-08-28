@@ -466,7 +466,7 @@ if __name__ == "__main__":
     # total number of events
     numberOfEvents = 0.
     if isMC:
-        numberOfEvents = getNumberOfGenEvents(input, (apply_corrections and "genweight" in corrections))
+        numberOfEvents = getNumberOfGenEvents(input, (apply_corrections and any(c in corrections for c in ["genweight", "all"])))
 
         numberOfGenEventsAxis = hist.axis.Integer(0, 1, label="Number of generated events", underflow=False, overflow=False)
         numberOfGenEventsHisto = Hist(numberOfGenEventsAxis)
