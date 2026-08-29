@@ -111,7 +111,7 @@ python condor_selection.py -y 2018 -o ${CONDOR_OUTPUT}/2018_${SUFFIX} -m 4000 -c
 ```
 Once all jobs complete successfully, the following 4 steps need to be done for each year:
 ```
-export TIMESTAMP=20260827
+export TIMESTAMP=20260829
 export YEAR=2016APV
 ```
 1) Create a symbolic link to the output directory to make the commands that follow more generic
