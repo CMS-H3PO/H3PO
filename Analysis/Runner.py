@@ -431,7 +431,8 @@ if __name__ == "__main__":
     isMC = ("JetHT" not in dataset)
 
     # supported object-level systematics variations
-    knownObjectVariations = (["jesUp","jesDown","jerUp","jerDown","jmsUp","jmsDown","jmrUp","jmrDown"] if apply_corrections else [])
+    knownObjectVariations = ["jesUp","jesDown","jerUp","jerDown","jmsUp","jmsDown","jmrUp","jmrDown"]
+    acceptedKnownObjectVariations = (knownObjectVariations if apply_corrections else [])
     # supported JCs
     knownJCs = ["nominal", "fromFile"]
     jc = args.jc
@@ -447,14 +448,17 @@ if __name__ == "__main__":
     eventVariations = []
     if isMC:
         if "all" in args.sysVars:
-            acceptedObjectVariations = copy.deepcopy(knownObjectVariations)
+            acceptedObjectVariations = copy.deepcopy(acceptedKnownObjectVariations)
             eventVariations = ["all"]
         else:
             for v in args.sysVars:
-                if v in knownObjectVariations:
+                if v in acceptedKnownObjectVariations:
                     acceptedObjectVariations.append(v)
                 else:
-                    eventVariations.append(v)
+                    if v in knownObjectVariations:
+                        print(f"Systematics variation '{v}' ignored because 'disable_corrs' is active.")
+                    else:
+                        eventVariations.append(v)
         variations[jc] = eventVariations
         for v in acceptedObjectVariations:
             variations[v] = []
