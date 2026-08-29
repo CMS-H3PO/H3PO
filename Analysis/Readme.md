@@ -145,8 +145,12 @@ By default, the combined files will be stored in `/STORE/HHH/Histograms/Run2/lat
 python combine_years.py -h
 ```
 
-# Processing tips and tricks
+# Tips and tricks
 
+Check if there are any failed jobs by running
+```
+grep -ri 'return value' --include="*.log" ${CONDOR_OUTPUT}/*${TIMESTAMP}/ | grep -vi 'return value 0' | sort -V
+```
 If some jobs were held, check which ones by running
 ```
 grep -ri held --include="*.log" ${CONDOR_OUTPUT}/*${TIMESTAMP}/ | sort -V
