@@ -131,7 +131,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
     else:
         selection.add("Trigger", ak.Array([True] * len(events)))
 
-    # if JEC application is turned off
+    # if JEC re-application is turned off
     if jc == "fromFile" and (variation == jc or "jms" in variation or "jmr" in variation):
         print("JEC tag:", jc)
         fatjets = events.FatJet

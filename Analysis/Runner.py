@@ -388,7 +388,7 @@ if __name__ == "__main__":
     parser.add_argument('-i', '--input', help='Input file')
     parser.add_argument('-o', '--output', help='Output directory')
     parser.add_argument("-j", "--jc", dest="jc",
-                        help="Default jet correction (JC) (default: %(default)s). Use 'fromFile' to turn off the JC application and run faster.",
+                        help="Default jet correction (JC) (default: %(default)s). Use 'fromFile' to turn off the JC re-application and run faster.",
                         default="nominal",
                         metavar="JC")
     parser.add_argument("-s", "--sysVars", dest="sysVars",

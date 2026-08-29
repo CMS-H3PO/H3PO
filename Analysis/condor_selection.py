@@ -48,7 +48,7 @@ if __name__ == '__main__':
                         help="Don't append the time stamp to the output directory name (default: %(default)s)",
                         default=False)
     parser.add_argument("-j", "--jc", dest="jc",
-                        help="Default jet correction (JC) (default: %(default)s). Use 'fromFile' to turn off the JC application and run faster.",
+                        help="Default jet correction (JC) (default: %(default)s). Use 'fromFile' to turn off the JC re-application and run faster.",
                         default=None,
                         metavar="JC")
     parser.add_argument("-s", "--sysVars", dest="sysVars",
