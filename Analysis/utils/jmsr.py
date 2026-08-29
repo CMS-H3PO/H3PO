@@ -16,10 +16,10 @@ def getCalibratedJetMass(fatjets,variation,year):
 
     # get the jet mass scale (JMS) correction
     if("jms" in variation):
-        print("JMS correction: ", variation)
+        print(f"JMS correction: {variation}")
         scale = jms_corr.evaluate(variation[3:].lower())
     else:
-        print("JMS correction: ", "nominal")
+        print("JMS correction: nominal")
         scale = jms_corr.evaluate("nominal")
 
     # apply the JMS correction
@@ -27,10 +27,10 @@ def getCalibratedJetMass(fatjets,variation,year):
 
     # get the jet mass resolution (JMR) correction
     if("jmr" in variation):
-        print("JMR correction: ", variation)
+        print(f"JMS correction: {variation}")
         res = jmr_corr.evaluate(variation[3:].lower())
     else:
-        print("JMR correction: ", "nominal")
+        print("JMR correction: nominal")
         res = jmr_corr.evaluate("nominal")
 
     # deterministic smearing with gen match
