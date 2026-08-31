@@ -387,10 +387,10 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--dataset', help='Dataset name', default="XToYHTo6B_MX-2500_MY-800")
     parser.add_argument('-i', '--input', help='Input file')
     parser.add_argument('-o', '--output', help='Output directory')
-    parser.add_argument("-j", "--jc", dest="jc",
-                        help="Default jet correction (JC) (default: %(default)s). Use 'fromFile' to turn off the JC re-application and run faster.",
+    parser.add_argument("-j", "--jec", dest="jec",
+                        help="Default jet correction (JEC) (default: %(default)s). Use 'fromFile' to turn off the JEC re-application and run faster.",
                         default="nominal",
-                        metavar="JC")
+                        metavar="JEC")
     parser.add_argument("-s", "--sysVars", dest="sysVars",
                         help="Space-separated list of systematics variations (default: %(default)s). Use 'all' to run all systematics variations.",
                         nargs='*',
@@ -433,16 +433,16 @@ if __name__ == "__main__":
     # supported object-level systematics variations
     knownObjectVariations = ["jesUp","jesDown","jerUp","jerDown","jmsUp","jmsDown","jmrUp","jmrDown"]
     acceptedKnownObjectVariations = (knownObjectVariations if apply_corrections else [])
-    # supported JCs
-    knownJCs = ["nominal", "fromFile"]
-    jc = args.jc
-    if jc not in knownJCs:
-        print("Unknown JC specified: '{}'. Defaulting to 'nominal'.".format(jc))
-        jc = knownJCs[0]
+    # supported JECs
+    knownJECs = ["nominal", "fromFile"]
+    jec = args.jec
+    if jec not in knownJECs:
+        print("Unknown JEC specified: '{}'. Defaulting to 'nominal'.".format(jec))
+        jec = knownJECs[0]
 
     # build matrix of systematics variations
     # real data and MC baseline (no systematics variations, just nominal)
-    variations = {jc: []}
+    variations = {jec: []}
     # for MC
     acceptedObjectVariations = []
     eventVariations = []
@@ -459,7 +459,7 @@ if __name__ == "__main__":
                         print(f"Systematics variation '{v}' ignored because 'disable_corrs' is active.")
                     else:
                         eventVariations.append(v)
-        variations[jc] = eventVariations
+        variations[jec] = eventVariations
         for v in acceptedObjectVariations:
             variations[v] = []
 
@@ -485,7 +485,7 @@ if __name__ == "__main__":
     # loop over object-level variations
     for objVar in variations.keys():
         # apply event selection
-        events, selection, weights = Event_selection(input,dataset,isMC,apply_corrections,corrections,jc,variation=objVar,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
+        events, selection, weights = Event_selection(input,dataset,isMC,apply_corrections,corrections,jec,variation=objVar,refTrigList=args.refTriggerList,trigList=args.triggerList,eventsToRead=None)
 
         # establish event-level variations
         acceptedEventVariations = []

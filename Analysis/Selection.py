@@ -82,7 +82,7 @@ def get_dijets(fatjets, jets, selection, region):
     return good_dijets
 
 
-def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
+def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jec,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
     # get events array
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":dataset},entry_stop=eventsToRead).events()
 
@@ -132,8 +132,8 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
         selection.add("Trigger", ak.Array([True] * len(events)))
 
     # if JEC re-application is turned off
-    if jc == "fromFile" and (variation == jc or "jms" in variation or "jmr" in variation):
-        print("JEC tag:", jc)
+    if jec == "fromFile" and (variation == jec or "jms" in variation or "jmr" in variation):
+        print("JEC tag:", jec)
         fatjets = events.FatJet
     else:
         jecTag = jecTagFromFileName(fname)
@@ -180,7 +180,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jc,variatio
     #---------------------------------------------
     # get standard jets
     # if JEC re-application is turned off
-    if jc == "fromFile" and (variation == jc or "jms" in variation or "jmr" in variation):
+    if jec == "fromFile" and (variation == jec or "jms" in variation or "jmr" in variation):
         jets = events.Jet
     else:
         jets = getCalibratedJets(events.Jet,events.fixedGridRhoFastjetAll,variation,jerc.jetFactory,jecTag) if len(events)>0 else events.Jet
