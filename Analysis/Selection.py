@@ -209,7 +209,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jec,variati
     # VR semiboosted
     #---------------------------------------------
     # select events with 2 good leading fat jets and reject overlap with both SRs and the VR boosted
-    VR_sb_evtMask = (ak.num(fatjets[HiggsMassVeto(fatjets[:,0:2])], axis=1)==2) & ~(SR_b_evtMask | SR_sb_evtMask | VR_b_evtMask)
+    VR_sb_evtMask = (ak.num(fatjets[:,0:2][HiggsMassVeto(fatjets[:,0:2])], axis=1)==2) & ~(SR_b_evtMask | SR_sb_evtMask | VR_b_evtMask)
     selection.add("Mass_cut_VR_semiboosted", VR_sb_evtMask)
 
     # get good dijets
