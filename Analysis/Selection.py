@@ -45,7 +45,7 @@ def PassCategory(fatjets, cut):
 
 # this is a jet mask
 def HiggsMassCut(fatjets):
-    return (FatJetMass(fatjets)>=mass_cut[0]) & (FatJetMass(fatjets)<=mass_cut[1])
+    return (fatjets.M>=mass_cut[0]) & (fatjets.M<=mass_cut[1])
 
 # this is a jet mask
 def HiggsMassVeto(fatjets):
