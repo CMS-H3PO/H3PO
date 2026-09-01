@@ -171,9 +171,9 @@ grep -ri held --include="*.log" ${CONDOR_OUTPUT}/*${TIMESTAMP}/ | sort -V | cut 
 ```
 (grep for lines containing 'held'; keep only the file names; print only the duplicates and prefix lines by the number of occurrences)
 
-Remove jobs before resubmitting
+Remove held jobs before resubmitting
 ```
-condor_rm $USER
+condor_rm -constraint 'JobStatus == 5'
 ```
 Example `sed` and `condor_submit` commands:
 ```
