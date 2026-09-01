@@ -66,7 +66,7 @@ def get_histo(info, f, names):
 
 def main():
     # usage example
-    Description = "Example: %(prog)s -i test.root"
+    Description = "Example: %(prog)s -i XToYHTo6B_MX-2500_MY-800_Histograms.root -n fatjet_eta_pt_xbbTag_SR_*boosted_* -d fatjet_eta_pt_all_SR_*boosted_* -o ak8_eta_pt_xbbTagEff_SR"
     
     # input parameters
     parser = ArgumentParser(description=Description)

@@ -1,13 +1,28 @@
 import os
+from argparse import ArgumentParser
 
 
-cfg = {
-    "2016APV" : ["/users/ferencek/HHH/condor_jobs_XbbEffMaps_2016APV_a50db1b_20260820_124034/fit/", "2016APV"],
-    "2016"    : ["/users/ferencek/HHH/condor_jobs_XbbEffMaps_2016_a50db1b_20260820_124100/fit/", "2016"],
-    "2017"    : ["/users/ferencek/HHH/condor_jobs_XbbEffMaps_2017_a50db1b_20260820_124116/fit/", "2017"],
-    "2018"    : ["/users/ferencek/HHH/condor_jobs_XbbEffMaps_2018_a50db1b_20260820_124128/fit/", "2018"]
-}
+# usage example
+Description = "Example: %(prog)s -i path/to/2017/histogram/files/ -o 2017"
 
+# input parameters
+parser = ArgumentParser(description=Description)
+
+parser.add_argument("-i", "--input", dest="input",
+                    help="Input folder",
+                    metavar="INPUT",
+                    required=True
+                    )
+parser.add_argument("-o", "--output", dest="output",
+                    help="Output folder",
+                    metavar="Output",
+                    required=True
+                    )
+
+(options, args) = parser.parse_known_args()
+
+if not os.path.exists(options.output):
+    os.mkdir(options.output)
 
 official_samples_used = [
   (1000, 300), (1000, 600), (1000, 800),
@@ -21,15 +36,13 @@ official_samples_used = [
 ]
 
 
-for year in cfg:
-    for (mX, mY) in official_samples_used:
-        inputFile  = os.path.join( cfg[year][0], f"XToYHTo6B_MX-{mX}_MY-{mY}_Histograms.root" )
-        for r in ["SR", "VR"]:
-            num = f"fatjet_eta_pt_xbbTag_{r}_*boosted_nominal"
-            den = f"fatjet_eta_pt_all_{r}_*boosted_nominal"
-            outputFile = os.path.join( cfg[year][1], f"ak8_eta_pt_xbbTagEff_{r}_XToYHTo6B_MX-{mX}_MY-{mY}" )
+for (mX, mY) in official_samples_used:
+    inputFile  = os.path.join( options.input, f"XToYHTo6B_MX-{mX}_MY-{mY}_Histograms.root" )
+    for r in ["SR", "VR"]:
+        num = f"fatjet_eta_pt_xbbTag_{r}_*boosted_nominal"
+        den = f"fatjet_eta_pt_all_{r}_*boosted_nominal"
+        outputFile = os.path.join( options.output, f"ak8_eta_pt_xbbTagEff_{r}_XToYHTo6B_MX-{mX}_MY-{mY}" )
 
-            cmd = f"python plotRatio.py -i {inputFile} -n {num} -d {den} -o {outputFile} --batch"
-
-            #print(cmd)
-            os.system(cmd)
+        cmd = f"python plotRatio.py -i {inputFile} -n {num} -d {den} -o {outputFile} --batch"
+        print(cmd)
+        os.system(cmd)
