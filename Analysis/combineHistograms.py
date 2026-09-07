@@ -100,7 +100,7 @@ def combine_histograms(signal_base, identifier, deleteFiles=False, skipNorm=Fals
         if deleteFiles:
             remove_root_files(list_of_root_files)
         else:
-            if startsWith and not skipNorm and not "JetHT" in identifier:
+            if startsWith and not skipNorm and not "JetHT" in identifier and not "SingleMuon" in identifier:
                 for root_fname in list_of_root_files:
                     system("mv unscaled_{0} {1}".format(root_fname,root_fname))
         if mvFiles:
@@ -176,7 +176,7 @@ if __name__ == '__main__':
         for dataset in datasets[options.year]:
             if not keep_dataset(signal_base, dataset, process_list):
                 continue
-            if ("JetHT" in dataset):
+            if ("JetHT" in dataset) or ("SingleMuon" in dataset):
                 print ("Skipping {0} during normalization".format(dataset))
                 continue
             print ("Processing {0}".format(dataset))

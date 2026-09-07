@@ -428,7 +428,7 @@ if __name__ == "__main__":
     year = yearFromInputFile(input)
 
     # is the dataset being processed MC?
-    isMC = ("JetHT" not in dataset)
+    isMC = ("JetHT" not in dataset) and ("SingleMuon" not in dataset)
 
     # supported object-level systematics variations
     knownObjectVariations = ["jesUp","jesDown","jerUp","jerDown","jmsUp","jmsDown","jmrUp","jmrDown"]

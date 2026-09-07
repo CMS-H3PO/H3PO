@@ -40,6 +40,45 @@ datasets_data = {
 }
 
 
+datasets_data_SingleMuon = {
+  # year
+  '2016':
+  {
+    # dataset: path
+    "SingleMuon2016F": SKIM_DIR
+  , "SingleMuon2016G": SKIM_DIR
+  , "SingleMuon2016H": SKIM_DIR
+  },
+  '2016APV':
+  {
+    # dataset: path
+    "SingleMuon2016APVver1B": SKIM_DIR
+  , "SingleMuon2016APVver2B": SKIM_DIR
+  , "SingleMuon2016APVC": SKIM_DIR
+  , "SingleMuon2016APVD": SKIM_DIR
+  , "SingleMuon2016APVE": SKIM_DIR
+  , "SingleMuon2016APVF": SKIM_DIR
+  },
+  '2017':
+  {
+    # dataset: path
+    "SingleMuon2017B": SKIM_DIR
+  , "SingleMuon2017C": SKIM_DIR
+  , "SingleMuon2017D": SKIM_DIR
+  , "SingleMuon2017E": SKIM_DIR
+  , "SingleMuon2017F": SKIM_DIR
+  },
+  '2018':
+  {
+    # dataset: path
+    "SingleMuon2018A": SKIM_DIR
+  , "SingleMuon2018B": SKIM_DIR
+  , "SingleMuon2018C": SKIM_DIR
+  , "SingleMuon2018D": SKIM_DIR
+  }
+}
+
+
 datasets_ttbar = {
   # year
   '2016':
@@ -1682,6 +1721,8 @@ datasets_signal = {
 # add it all up
 datasets = datasets_data
 for year in datasets:
+  datasets[year].update(datasets_data_SingleMuon[year])
   datasets[year].update(datasets_ttbar[year])
   datasets[year].update(datasets_qcd[year])
   datasets[year].update(datasets_signal[year])
+
