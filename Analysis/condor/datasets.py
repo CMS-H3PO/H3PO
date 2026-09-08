@@ -113,8 +113,7 @@ datasets_qcd = {
   '2016':
   {
     # dataset: path
-    "QCD500":  SKIM_DIR
-  , "QCD700":  SKIM_DIR
+    "QCD700":  SKIM_DIR
   , "QCD2000": SKIM_DIR
   , "QCD1000": SKIM_DIR
   , "QCD1500": SKIM_DIR
@@ -122,8 +121,7 @@ datasets_qcd = {
   '2016APV':
   {
     # dataset: path
-    "QCD500":  SKIM_DIR
-  , "QCD700":  SKIM_DIR
+    "QCD700":  SKIM_DIR
   , "QCD2000": SKIM_DIR
   , "QCD1000": SKIM_DIR
   , "QCD1500": SKIM_DIR
@@ -131,8 +129,7 @@ datasets_qcd = {
   '2017':
   {
     # dataset: path
-    "QCD500":  SKIM_DIR
-  , "QCD700":  SKIM_DIR
+    "QCD700":  SKIM_DIR
   , "QCD2000": SKIM_DIR
   , "QCD1000": SKIM_DIR
   , "QCD1500": SKIM_DIR
@@ -140,8 +137,7 @@ datasets_qcd = {
   '2018':
   {
     # dataset: path
-    "QCD500":  SKIM_DIR
-  , "QCD700":  SKIM_DIR
+    "QCD700":  SKIM_DIR
   , "QCD2000": SKIM_DIR
   , "QCD1000": SKIM_DIR
   , "QCD1500": SKIM_DIR
