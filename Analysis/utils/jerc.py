@@ -16,12 +16,15 @@ class JERC:
 def jecTagFromFileName(fname):
     year = yearFromInputFile(fname)
     #MC
-    if not "JetHT" in fname:
+    if not ("JetHT" in fname or "SingleMuon" in fname):
         jecTag  = year+"mc"
         return jecTag
     
     #Data
-    era = fname.split("JetHT"+year)[1][0]#E.g.targetting "B" in JetHT2018B: first character in a string AFTER the JetHT$year
+    base = "JetHT"
+    if "SingleMuon" in fname:
+        base = "SingleMuon"
+    era = fname.split(base+year)[1][0]#E.g.targetting "B" in JetHT2018B: first character in a string AFTER the JetHT$year
     if year=="2016APV":
         if era in "BCD":
             return "2016APVRunBCD"
