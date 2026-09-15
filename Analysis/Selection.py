@@ -129,7 +129,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jec,variati
     if trigList != None and refTrigList == None:
         selection.add("Trigger", getTriggerDecision(events, trigList))
     else:
-        selection.add("Trigger", ak.Array([True] * len(events)))
+        selection.add("Trigger", np.full(len(events), True, dtype=bool))
 
     # if JEC re-application is turned off
     if jec == "fromFile" and (variation == jec or "jms" in variation or "jmr" in variation):
