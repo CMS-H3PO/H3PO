@@ -1,2 +1,1 @@
 coffea==0.7.31
-correctionlib==2.6.4
