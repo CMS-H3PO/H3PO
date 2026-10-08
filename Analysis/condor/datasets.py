@@ -36,6 +36,26 @@ datasets_data = {
   , "JetHT2018B": SKIM_DIR
   , "JetHT2018C": SKIM_DIR
   , "JetHT2018D": SKIM_DIR
+  },
+  '2024':
+  {
+    # dataset: path
+    "JetMET0_2024C": SKIM_DIR
+  , "JetMET0_2024D": SKIM_DIR
+  , "JetMET0_2024E": SKIM_DIR
+  , "JetMET0_2024F": SKIM_DIR
+  , "JetMET0_2024G": SKIM_DIR
+  , "JetMET0_2024H": SKIM_DIR
+  , "JetMET0_2024I": SKIM_DIR
+  , "JetMET0_2024I_v2": SKIM_DIR
+  , "JetMET1_2024C": SKIM_DIR
+  , "JetMET1_2024D": SKIM_DIR
+  , "JetMET1_2024E": SKIM_DIR
+  , "JetMET1_2024F": SKIM_DIR
+  , "JetMET1_2024G": SKIM_DIR
+  , "JetMET1_2024H": SKIM_DIR
+  , "JetMET1_2024I": SKIM_DIR
+  , "JetMET1_2024I_v2": SKIM_DIR
   }
 }
 
@@ -75,7 +95,8 @@ datasets_data_SingleMuon = {
   , "SingleMuon2018B": SKIM_DIR
   , "SingleMuon2018C": SKIM_DIR
   , "SingleMuon2018D": SKIM_DIR
-  }
+  },
+  '2024': {}
 }
 
 
@@ -100,6 +121,12 @@ datasets_ttbar = {
   , "TTbarSemileptonic": SKIM_DIR
   },
   '2018':
+  {
+    # dataset: path
+    "TTbarHadronic":     SKIM_DIR
+  , "TTbarSemileptonic": SKIM_DIR
+  },
+  '2024':
   {
     # dataset: path
     "TTbarHadronic":     SKIM_DIR
@@ -141,7 +168,8 @@ datasets_qcd = {
   , "QCD2000": SKIM_DIR
   , "QCD1000": SKIM_DIR
   , "QCD1500": SKIM_DIR
-  }
+  },
+  '2024': {}
 }
  
 
@@ -1711,6 +1739,7 @@ datasets_signal = {
   , "XToYHTo6B_MX-4000_MY-3500":   SKIM_DIR
   , "XToYHTo6B_MX-4000_MY-3800":   SKIM_DIR
   }
+  , '2024': {}
 }
   
 

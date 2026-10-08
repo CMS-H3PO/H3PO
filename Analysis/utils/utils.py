@@ -31,6 +31,8 @@ def yearFromInputFile(inputFile):
         return "2017"
     elif("2018" in inputFile):
         return "2018" 
+    elif("2024" in inputFile):
+        return "2024"
     else:       
         raise ValueError('Could not determine year from input file: {0}'.format(inputFile))
 
