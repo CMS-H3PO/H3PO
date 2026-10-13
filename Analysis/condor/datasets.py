@@ -169,7 +169,19 @@ datasets_qcd = {
   , "QCD1000": SKIM_DIR
   , "QCD1500": SKIM_DIR
   },
-  '2024': {}
+  '2024':
+  {
+    # dataset: path
+    "QCDPt300":  SKIM_DIR
+  , "QCDPt470":  SKIM_DIR
+  , "QCDPt600":  SKIM_DIR
+  , "QCDPt800":  SKIM_DIR
+  , "QCDPt1000": SKIM_DIR
+  , "QCDPt1500": SKIM_DIR
+  , "QCDPt2000": SKIM_DIR
+  , "QCDPt2500": SKIM_DIR
+  , "QCDPt3000": SKIM_DIR
+  }
 }
  
 
