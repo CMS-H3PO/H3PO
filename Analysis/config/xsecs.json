@@ -383,6 +383,20 @@
  "XToYHTo6B_MX-4000_MY-3800": {"xsec": 0.01},
  "lumi":59800
  },
+ "2024":{
+ "QCDPt300": {"xsec": 7581.0},
+ "QCDPt470": {"xsec": 623.3},
+ "QCDPt600": {"xsec": 178.7},
+ "QCDPt800": {"xsec": 30.62},
+ "QCDPt1000": {"xsec": 9.306},
+ "QCDPt1500": {"xsec": 0.5015},
+ "QCDPt2000": {"xsec": 0.04264},
+ "QCDPt2500": {"xsec": 0.004454},
+ "QCDPt3000": {"xsec": 0.0005539},
+ "TTbarHadronic": {"xsec": 419.69},
+ "TTbarSemileptonic": {"xsec": 405.69},
+ "lumi": 109820
+ },
  "Run2":{
  "QCD1000": {"xsec": 1127},
  "QCD1500": {"xsec": 110},

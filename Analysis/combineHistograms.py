@@ -176,7 +176,7 @@ if __name__ == '__main__':
         for dataset in datasets[options.year]:
             if not keep_dataset(signal_base, dataset, process_list):
                 continue
-            if ("JetHT" in dataset) or ("SingleMuon" in dataset):
+            if ("JetHT" in dataset) or ("SingleMuon" in dataset) or ("JetMET" in dataset):
                 print ("Skipping {0} during normalization".format(dataset))
                 continue
             print ("Processing {0}".format(dataset))
