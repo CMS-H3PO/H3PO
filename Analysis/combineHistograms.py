@@ -100,7 +100,7 @@ def combine_histograms(signal_base, identifier, deleteFiles=False, skipNorm=Fals
         if deleteFiles:
             remove_root_files(list_of_root_files)
         else:
-            if startsWith and not skipNorm and not "JetHT" in identifier and not "SingleMuon" in identifier:
+            if startsWith and not skipNorm and not "JetHT" in identifier and not "SingleMuon" in identifier and not "JetMET" in identifier:
                 for root_fname in list_of_root_files:
                     system("mv unscaled_{0} {1}".format(root_fname,root_fname))
         if mvFiles:
