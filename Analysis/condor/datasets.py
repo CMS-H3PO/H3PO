@@ -96,7 +96,26 @@ datasets_data_SingleMuon = {
   , "SingleMuon2018C": SKIM_DIR
   , "SingleMuon2018D": SKIM_DIR
   },
-  '2024': {}
+  '2024':
+  {
+    # dataset: path
+    "Muon0_2024C": SKIM_DIR
+  , "Muon0_2024D": SKIM_DIR
+  , "Muon0_2024E": SKIM_DIR
+  , "Muon0_2024F": SKIM_DIR
+  , "Muon0_2024G": SKIM_DIR
+  , "Muon0_2024H": SKIM_DIR
+  , "Muon0_2024I": SKIM_DIR
+  , "Muon0_2024I_v2": SKIM_DIR
+  , "Muon1_2024C": SKIM_DIR
+  , "Muon1_2024D": SKIM_DIR
+  , "Muon1_2024E": SKIM_DIR
+  , "Muon1_2024F": SKIM_DIR
+  , "Muon1_2024G": SKIM_DIR
+  , "Muon1_2024H": SKIM_DIR
+  , "Muon1_2024I": SKIM_DIR
+  , "Muon1_2024I_v2": SKIM_DIR
+  }
 }
 
 
