@@ -3,7 +3,7 @@
   "corrections": [
     {
       "name": "top_pt_weight",
-      "description": "CMS Top pT reweighting (Run 2 legacy style)",
+      "description": "CMS Top pT reweighting (Run 2 legacy style): https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting",
       "version": 1,
       "inputs": [
         {"name": "pt", "type": "real"},
