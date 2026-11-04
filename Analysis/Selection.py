@@ -82,6 +82,34 @@ def get_dijets(fatjets, jets, selection, region):
     return good_dijets
 
 
+def add_trijet_mass_boosted(events, mask, fatjets):
+    events["Mjjj"] = ak.where(mask, ak.fill_none((fatjets[:,0]+fatjets[:,1]+fatjets[:,2]).mass, -99.), events["Mjjj"])
+
+    return
+
+
+def add_trijet_mass_semiboosted(events, mask, fatjets, dijets):
+    events["Mjjj"] = ak.where(mask, ak.fill_none((fatjets[:,0]+fatjets[:,1]+dijets[:,0]['i0']+dijets[:,0]['i1']).mass, -99.), events["Mjjj"])
+
+    return
+
+
+def add_dijet_masses_boosted(events, mask, fatjets):
+    events["Mjj1"] = ak.where(mask, ak.fill_none((fatjets[:,0]+fatjets[:,1]).mass, -99.), events["Mjj1"])
+    events["Mjj2"] = ak.where(mask, ak.fill_none((fatjets[:,0]+fatjets[:,2]).mass, -99.), events["Mjj2"])
+    events["Mjj3"] = ak.where(mask, ak.fill_none((fatjets[:,1]+fatjets[:,2]).mass, -99.), events["Mjj3"])
+
+    return
+
+
+def add_dijet_masses_semiboosted(events, mask, fatjets, dijets):
+    events["Mjj1"] = ak.where(mask, ak.fill_none((fatjets[:,0]+fatjets[:,1]).mass, -99.), events["Mjj1"])
+    events["Mjj2"] = ak.where(mask, ak.fill_none((fatjets[:,0]+dijets[:,0]['i0']+dijets[:,0]['i1']).mass, -99.), events["Mjj2"])
+    events["Mjj3"] = ak.where(mask, ak.fill_none((fatjets[:,1]+dijets[:,0]['i0']+dijets[:,0]['i1']).mass, -99.), events["Mjj3"])
+
+    return
+
+
 def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jec,variation="nominal",refTrigList=None,trigList=None,eventsToRead=None):
     # get events array
     events = NanoEventsFactory.from_root(fname,schemaclass=NanoAODSchema,metadata={"dataset":dataset},entry_stop=eventsToRead).events()
@@ -230,11 +258,30 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jec,variati
         if "XToYHTo6B" in dataset and any(c in corrections for c in ["xbbtag_particleNetMD", "all"]):
             add_ak8_xbbtag_weights(weights, selection, xbbtag_sf_ak8, xbbtag_eff_ak8, fatjets_SR, fatjets)
     #---------------------------------------------
+    # pad (di)jet collections to be able to compute the trijet and dijet masses
+    fatjets_SR_padded = ak.pad_none(fatjets_SR, 3)
+    fatjets_padded    = ak.pad_none(fatjets, 3)
+    good_dijets_SR_padded = ak.pad_none(good_dijets_SR, 1)
+    good_dijets_VR_padded = ak.pad_none(good_dijets_VR, 1)
+    # add the trijet mass to the events array
+    events["Mjjj"] = ak.Array(np.full(len(events), -99.))
+    add_trijet_mass_boosted(events, SR_b_evtMask, fatjets_SR_padded)
+    add_trijet_mass_boosted(events, VR_b_evtMask, fatjets_padded)
+    add_trijet_mass_semiboosted(events, SR_sb_evtMask, fatjets_SR_padded, good_dijets_SR_padded)
+    add_trijet_mass_semiboosted(events, VR_sb_evtMask, fatjets_padded, good_dijets_VR_padded)
+    # add the dijet masses (all 3 combinations) to the events array
+    events["Mjj1"] = ak.Array(np.full(len(events), -99.))
+    events["Mjj2"] = ak.Array(np.full(len(events), -99.))
+    events["Mjj3"] = ak.Array(np.full(len(events), -99.))
+    add_dijet_masses_boosted(events, SR_b_evtMask, fatjets_SR_padded)
+    add_dijet_masses_boosted(events, VR_b_evtMask, fatjets_padded)
+    add_dijet_masses_semiboosted(events, SR_sb_evtMask, fatjets_SR_padded, good_dijets_SR_padded)
+    add_dijet_masses_semiboosted(events, VR_sb_evtMask, fatjets_padded, good_dijets_VR_padded)
+    #---------------------------------------------
     # embed the (di)jet arrays inside the events array
     events["fatjets_SR"] = fatjets_SR
     events["fatjets_VR"] = fatjets
     events["good_dijets_SR"] = good_dijets_SR
     events["good_dijets_VR"] = good_dijets_VR
-
 
     return events, selection, weights
