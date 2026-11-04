@@ -30,12 +30,14 @@
               "nodetype": "binning",
               "input": "mjjj",
               "edges": [
+                -1000000.0,
                 0.0,
                 2000.0,
                 1000000.0
               ],
               "flow": "clamp",
               "content": [
+                1.0,
                 {
                   "nodetype": "formula",
                   "expression": "[0] / pow(1.0 + exp(-(x - [1])/[2]), [3])",
@@ -60,12 +62,14 @@
               "nodetype": "binning",
               "input": "mjjj",
               "edges": [
+                -1000000.0,
                 0.0,
                 2000.0,
                 1000000.0
               ],
               "flow": "clamp",
               "content": [
+                1.0,
                 {
                   "nodetype": "formula",
                   "expression": "[0] / pow(1.0 + exp(-(x - [1])/[2]), [3])",
@@ -90,12 +94,14 @@
               "nodetype": "binning",
               "input": "mjjj",
               "edges": [
+                -1000000.0,
                 0.0,
                 2000.0,
                 1000000.0
               ],
               "flow": "clamp",
               "content": [
+                1.0,
                 {
                   "nodetype": "formula",
                   "expression": "[0] / pow(1.0 + exp(-(x - [1])/[2]), [3])",
@@ -145,12 +151,14 @@
               "nodetype": "binning",
               "input": "mjjj",
               "edges": [
+                -1000000.0,
                 0.0,
                 2500.0,
                 1000000.0
               ],
               "flow": "clamp",
               "content": [
+                1.0,
                 {
                   "nodetype": "formula",
                   "expression": "[0] / pow(1.0 + exp(-(x - [1])/[2]), [3])",
@@ -175,12 +183,14 @@
               "nodetype": "binning",
               "input": "mjjj",
               "edges": [
+                -1000000.0,
                 0.0,
                 2500.0,
                 1000000.0
               ],
               "flow": "clamp",
               "content": [
+                1.0,
                 {
                   "nodetype": "formula",
                   "expression": "[0] / pow(1.0 + exp(-(x - [1])/[2]), [3])",
@@ -205,12 +215,14 @@
               "nodetype": "binning",
               "input": "mjjj",
               "edges": [
+                -1000000.0,
                 0.0,
                 2500.0,
                 1000000.0
               ],
               "flow": "clamp",
               "content": [
+                1.0,
                 {
                   "nodetype": "formula",
                   "expression": "[0] / pow(1.0 + exp(-(x - [1])/[2]), [3])",
