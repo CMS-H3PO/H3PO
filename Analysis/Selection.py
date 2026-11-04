@@ -15,6 +15,7 @@ from utils.jmsr import *
 from utils.l1prefiring import *
 from utils.xbbtag import *
 from utils.btag import *
+from utils.trigger import *
 
 NanoAODSchema.warn_missing_crossrefs = False
 jerc = JERC()
@@ -131,6 +132,8 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jec,variati
     # get a year-dependent WP cut value (https://btv-wiki.docs.cern.ch/ScaleFactors/)
     pNet_cut       = xbbtag_sf_ak8.wp_value(pNet_wp)
     res_deepJetcut = btag_sf_ak4.wp_value(res_deepJet_wp)
+    # get trigger SFs
+    trigger_sf = TriggerSF(year)
 
     if isMC:
         if apply_corrections:
@@ -277,6 +280,10 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jec,variati
     add_dijet_masses_boosted(events, VR_b_evtMask, fatjets_padded)
     add_dijet_masses_semiboosted(events, SR_sb_evtMask, fatjets_SR_padded, good_dijets_SR_padded)
     add_dijet_masses_semiboosted(events, VR_sb_evtMask, fatjets_padded, good_dijets_VR_padded)
+    #---------------------------------------------
+    # apply trigger scale factors
+    if isMC and apply_corrections and any(c in corrections for c in ["trigger", "all"]):
+        add_trigger_weights(weights, selection, events, trigger_sf)
     #---------------------------------------------
     # embed the (di)jet arrays inside the events array
     events["fatjets_SR"] = fatjets_SR
