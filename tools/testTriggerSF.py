@@ -19,14 +19,14 @@ for year in years:
 
         sf = cset[sf_cset]
 
-        pts = [500.0, 800.0, 1000.0, 1500.0, 2500.0, 3000.0]
+        mjjjs = [-99.0, 500.0, 800.0, 1000.0, 1500.0, 2500.0, 3000.0]
 
-        for pt in pts:
-            sf_nominal = sf.evaluate(pt, "nominal")
-            sf_up      = sf.evaluate(pt, "up")
-            sf_down    = sf.evaluate(pt, "down")
+        for mjjj in mjjjs:
+            sf_nominal = sf.evaluate(mjjj, "nominal")
+            sf_up      = sf.evaluate(mjjj, "up")
+            sf_down    = sf.evaluate(mjjj, "down")
 
-            print("\npT:", pt)
+            print("\nmjjj:", mjjj)
             print("Nominal:", sf_nominal)
             print("Up:", sf_up)
             print("Down:", sf_down)
