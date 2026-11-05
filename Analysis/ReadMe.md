@@ -95,6 +95,7 @@ Commands from the last round of histogram production:
 ```
 export SUFFIX="$(git rev-parse --short HEAD)"
 export CONDOR_OUTPUT=~/HHH/Condor_jobs
+export TIMESTAMP=`date "+%Y%m%d"`
 ```
 Submit Condor jobs
 ```
@@ -111,7 +112,6 @@ python submitJobs.py -y 2018 -o ${CONDOR_OUTPUT}/2018_${SUFFIX} -m 4000 -c all -
 ```
 Once all jobs complete successfully, the following 4 steps need to be done for each year:
 ```
-export TIMESTAMP=20260831
 export YEAR=2016APV
 ```
 1) Create a symbolic link to the output directory to make the commands that follow more generic
