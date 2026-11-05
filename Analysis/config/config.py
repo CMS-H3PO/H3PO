@@ -39,15 +39,22 @@ def get_pog_json(obj, year):
 ################# Local JSONs #####################
 local_jsons = {
     "top_pt": {
-        # year      JSON                  CorrectionSet
+        # year      JSON                   CorrectionSet
         "Default": ["../data/toppt.json",  "top_pt_weight"]
     },
     "jmsr": {
-        # year      JSON                          CorrectionSets
+        # year      JSON                                 CorrectionSets
         "2016APV": ["../data/jmsr/jmsr_AK8_2016.json",  ["jms","jmr"]],
         "2016":    ["../data/jmsr/jmsr_AK8_2016.json",  ["jms","jmr"]],
         "2017":    ["../data/jmsr/jmsr_AK8_2017.json",  ["jms","jmr"]],
         "2018":    ["../data/jmsr/jmsr_AK8_2018.json",  ["jms","jmr"]]
+    },
+    "trigger": {
+        # year      JSON                                              CorrectionSets
+        "2016APV": ["../data/trigger/trigger_sf_2016APV_2016.json",  ["trigger_efficiency_sf_2016APV_2016_boosted", "trigger_efficiency_sf_2016APV_2016_semiboosted"]],
+        "2016":    ["../data/trigger/trigger_sf_2016APV_2016.json",  ["trigger_efficiency_sf_2016APV_2016_boosted", "trigger_efficiency_sf_2016APV_2016_semiboosted"]],
+        "2017":    ["../data/trigger/trigger_sf_2017_2018.json",     ["trigger_efficiency_sf_2017_2018_boosted",    "trigger_efficiency_sf_2017_2018_semiboosted"]],
+        "2018":    ["../data/trigger/trigger_sf_2017_2018.json",     ["trigger_efficiency_sf_2017_2018_boosted",    "trigger_efficiency_sf_2017_2018_semiboosted"]]
     },
     "xbbtag_particleNetMD_XbbvsQCD_eff_XToYHTo6B": {
         # year             JSON                                                                          CorrectionSet

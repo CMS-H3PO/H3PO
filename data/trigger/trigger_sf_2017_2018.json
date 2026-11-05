@@ -1,0 +1,249 @@
+{
+  "schema_version": 2,
+  "description": "Trigger efficiency scale factors",
+  "corrections": [
+    {
+      "name": "trigger_efficiency_sf_2017_2018_boosted",
+      "description": "Trigger SF for the boosted channel in the 2017+2018 period with nominal, up and down variations",
+      "version": 1,
+      "inputs": [
+        {
+          "name": "mjjj",
+          "type": "real"
+        },
+        {
+          "name": "variation",
+          "type": "string"
+        }
+      ],
+      "output": {
+        "name": "weight",
+        "type": "real"
+      },
+      "data": {
+        "nodetype": "category",
+        "input": "variation",
+        "content": [
+          {
+            "key": "nominal",
+            "value": {
+              "nodetype": "binning",
+              "input": "mjjj",
+              "edges": [
+                -1000000.0,
+                0.0,
+                1500.0,
+                1000000.0
+              ],
+              "flow": "clamp",
+              "content": [
+                1.0,
+                {
+                  "nodetype": "formula",
+                  "expression": "2.0 - [0] / pow(1.0 + exp(-(x - [1])/[2]), [3])",
+                  "parser": "TFormula",
+                  "variables": [
+                    "mjjj"
+                  ],
+                  "parameters": [
+                    1.0,
+                    1365.24,
+                    5.73901,
+                    0.003
+                  ]
+                },
+                1.0
+              ]
+            }
+          },
+          {
+            "key": "up",
+            "value": {
+              "nodetype": "binning",
+              "input": "mjjj",
+              "edges": [
+                -1000000.0,
+                0.0,
+                1500.0,
+                1000000.0
+              ],
+              "flow": "clamp",
+              "content": [
+                1.0,
+                {
+                  "nodetype": "formula",
+                  "expression": "2.0 - [0] / pow(1.0 + exp(-(x - [1])/[2]), [3])",
+                  "parser": "TFormula",
+                  "variables": [
+                    "mjjj"
+                  ],
+                  "parameters": [
+                    1.0,
+                    1425.58,
+                    7.20187,
+                    0.005
+                  ]
+                },
+                1.0
+              ]
+            }
+          },
+          {
+            "key": "down",
+            "value": {
+              "nodetype": "binning",
+              "input": "mjjj",
+              "edges": [
+                -1000000.0,
+                0.0,
+                1500.0,
+                1000000.0
+              ],
+              "flow": "clamp",
+              "content": [
+                1.0,
+                {
+                  "nodetype": "formula",
+                  "expression": "2.0 - [0] / pow(1.0 + exp(-(x - [1])/[2]), [3])",
+                  "parser": "TFormula",
+                  "variables": [
+                    "mjjj"
+                  ],
+                  "parameters": [
+                    1.0,
+                    1273.04,
+                    9.79205,
+                    0.0035
+                  ]
+                },
+                1.0
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "trigger_efficiency_sf_2017_2018_semiboosted",
+      "description": "Trigger SF for the semiboosted channel in the 2017+2018 period with nominal, up and down variations",
+      "version": 1,
+      "inputs": [
+        {
+          "name": "mjjj",
+          "type": "real"
+        },
+        {
+          "name": "variation",
+          "type": "string"
+        }
+      ],
+      "output": {
+        "name": "weight",
+        "type": "real"
+      },
+      "data": {
+        "nodetype": "category",
+        "input": "variation",
+        "content": [
+          {
+            "key": "nominal",
+            "value": {
+              "nodetype": "binning",
+              "input": "mjjj",
+              "edges": [
+                -1000000.0,
+                0.0,
+                2000.0,
+                1000000.0
+              ],
+              "flow": "clamp",
+              "content": [
+                1.0,
+                {
+                  "nodetype": "formula",
+                  "expression": "[0] / pow(1.0 + exp(-(x - [1])/[2]), [3])",
+                  "parser": "TFormula",
+                  "variables": [
+                    "mjjj"
+                  ],
+                  "parameters": [
+                    1.0,
+                    770.955,
+                    229.616,
+                    0.305583
+                  ]
+                },
+                1.0
+              ]
+            }
+          },
+          {
+            "key": "up",
+            "value": {
+              "nodetype": "binning",
+              "input": "mjjj",
+              "edges": [
+                -1000000.0,
+                0.0,
+                2000.0,
+                1000000.0
+              ],
+              "flow": "clamp",
+              "content": [
+                1.0,
+                {
+                  "nodetype": "formula",
+                  "expression": "[0] / pow(1.0 + exp(-(x - [1])/[2]), [3])",
+                  "parser": "TFormula",
+                  "variables": [
+                    "mjjj"
+                  ],
+                  "parameters": [
+                    1.0,
+                    1144.62,
+                    23.9254,
+                    0.0106825
+                  ]
+                },
+                1.0
+              ]
+            }
+          },
+          {
+            "key": "down",
+            "value": {
+              "nodetype": "binning",
+              "input": "mjjj",
+              "edges": [
+                -1000000.0,
+                0.0,
+                2000.0,
+                1000000.0
+              ],
+              "flow": "clamp",
+              "content": [
+                1.0,
+                {
+                  "nodetype": "formula",
+                  "expression": "[0] / pow(1.0 + exp(-(x - [1])/[2]), [3])",
+                  "parser": "TFormula",
+                  "variables": [
+                    "mjjj"
+                  ],
+                  "parameters": [
+                    1.0,
+                    250.313,
+                    298.817,
+                    1.68481
+                  ]
+                },
+                1.0
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+

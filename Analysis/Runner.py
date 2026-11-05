@@ -90,60 +90,12 @@ def fillHistos(channel, suffix, trigSuffix, events, isMC, year, selection, weigh
     # histograms dictionary
     hists = {}
 
-    if isBoosted:
-        trijet_mass_SR_fail = (SR_fail_fj[:,0]+SR_fail_fj[:,1]+SR_fail_fj[:,2]).mass
-        trijet_mass_SR_pass = (SR_pass_fj[:,0]+SR_pass_fj[:,1]+SR_pass_fj[:,2]).mass
+    # trijet mass
+    trijet_mass_SR_fail = SR_fail_e["Mjjj"]
+    trijet_mass_SR_pass = SR_pass_e["Mjjj"]
 
-        trijet_mass_VR_fail = (VR_fail_fj[:,0]+VR_fail_fj[:,1]+VR_fail_fj[:,2]).mass
-        trijet_mass_VR_pass = (VR_pass_fj[:,0]+VR_pass_fj[:,1]+VR_pass_fj[:,2]).mass
-
-        if extraHistos:
-            ht_SR_fail = SR_fail_fj[:,0].pt+SR_fail_fj[:,1].pt+SR_fail_fj[:,2].pt
-            ht_SR_pass = SR_pass_fj[:,0].pt+SR_pass_fj[:,1].pt+SR_pass_fj[:,2].pt
-
-            ht_VR_fail = VR_fail_fj[:,0].pt+VR_fail_fj[:,1].pt+VR_fail_fj[:,2].pt
-            ht_VR_pass = VR_pass_fj[:,0].pt+VR_pass_fj[:,1].pt+VR_pass_fj[:,2].pt
-
-            eta1_SR_fail = SR_fail_fj[:,0].eta
-            eta2_SR_fail = SR_fail_fj[:,1].eta
-            eta3_SR_fail = SR_fail_fj[:,2].eta
-            eta1_SR_pass = SR_pass_fj[:,0].eta
-            eta2_SR_pass = SR_pass_fj[:,1].eta
-            eta3_SR_pass = SR_pass_fj[:,2].eta
-
-            eta1_VR_fail = VR_fail_fj[:,0].eta
-            eta2_VR_fail = VR_fail_fj[:,1].eta
-            eta3_VR_fail = VR_fail_fj[:,2].eta
-            eta1_VR_pass = VR_pass_fj[:,0].eta
-            eta2_VR_pass = VR_pass_fj[:,1].eta
-            eta3_VR_pass = VR_pass_fj[:,2].eta
-    else:
-        trijet_mass_SR_fail = (SR_fail_fj[:,0]+SR_fail_fj[:,1]+SR_fail_j[:,0]['i0']+SR_fail_j[:,0]['i1']).mass
-        trijet_mass_SR_pass = (SR_pass_fj[:,0]+SR_pass_fj[:,1]+SR_pass_j[:,0]['i0']+SR_pass_j[:,0]['i1']).mass
-
-        trijet_mass_VR_fail = (VR_fail_fj[:,0]+VR_fail_fj[:,1]+VR_fail_j[:,0]['i0']+VR_fail_j[:,0]['i1']).mass
-        trijet_mass_VR_pass = (VR_pass_fj[:,0]+VR_pass_fj[:,1]+VR_pass_j[:,0]['i0']+VR_pass_j[:,0]['i1']).mass
-
-        if extraHistos:
-            ht_SR_fail = SR_fail_fj[:,0].pt+SR_fail_fj[:,1].pt+(SR_fail_j[:,0]['i0']+SR_fail_j[:,0]['i1']).pt
-            ht_SR_pass = SR_pass_fj[:,0].pt+SR_pass_fj[:,1].pt+(SR_pass_j[:,0]['i0']+SR_pass_j[:,0]['i1']).pt
-
-            ht_VR_fail = VR_fail_fj[:,0].pt+VR_fail_fj[:,1].pt+(VR_fail_j[:,0]['i0']+VR_fail_j[:,0]['i1']).pt
-            ht_VR_pass = VR_pass_fj[:,0].pt+VR_pass_fj[:,1].pt+(VR_pass_j[:,0]['i0']+VR_pass_j[:,0]['i1']).pt
-
-            eta1_SR_fail = SR_fail_fj[:,0].eta
-            eta2_SR_fail = SR_fail_fj[:,1].eta
-            eta3_SR_fail = (SR_fail_j[:,0]['i0']+SR_fail_j[:,0]['i1']).eta
-            eta1_SR_pass = SR_pass_fj[:,0].eta
-            eta2_SR_pass = SR_pass_fj[:,1].eta
-            eta3_SR_pass = (SR_pass_j[:,0]['i0']+SR_pass_j[:,0]['i1']).eta
-
-            eta1_VR_fail = VR_fail_fj[:,0].eta
-            eta2_VR_fail = VR_fail_fj[:,1].eta
-            eta3_VR_fail = (VR_fail_j[:,0]['i0']+VR_fail_j[:,0]['i1']).eta
-            eta1_VR_pass = VR_pass_fj[:,0].eta
-            eta2_VR_pass = VR_pass_fj[:,1].eta
-            eta3_VR_pass = (VR_pass_j[:,0]['i0']+VR_pass_j[:,0]['i1']).eta
+    trijet_mass_VR_fail = VR_fail_e["Mjjj"]
+    trijet_mass_VR_pass = VR_pass_e["Mjjj"]
 
     j3_SR_fail_bin = hist.axis.Regular(label=f"{channel} Signal Fail Trijet Mass [GeV]", name="trijet_mass_SR_fail", bins=j3_bins, start=j3_start, stop=j3_stop)
     hists["j3_SR_fail"] = Hist(j3_SR_fail_bin, storage="weight")
@@ -161,7 +113,82 @@ def fillHistos(channel, suffix, trigSuffix, events, isMC, year, selection, weigh
     hists["j3_VR_pass"] = Hist(j3_VR_pass_bin, storage="weight")
     hists["j3_VR_pass"].fill(trijet_mass_VR_pass=trijet_mass_VR_pass, weight=weights.weight(**modifier)[VR_pass_evtMask])
 
+    # dijets masses (all 3 combinations)
+    dijet1_mass_SR_fail = SR_fail_e["Mjj1"]
+    dijet2_mass_SR_fail = SR_fail_e["Mjj2"]
+    dijet3_mass_SR_fail = SR_fail_e["Mjj3"]
+    dijet1_mass_SR_pass = SR_pass_e["Mjj1"]
+    dijet2_mass_SR_pass = SR_pass_e["Mjj2"]
+    dijet3_mass_SR_pass = SR_pass_e["Mjj3"]
+
+    dijet1_mass_VR_fail = VR_fail_e["Mjj1"]
+    dijet2_mass_VR_fail = VR_fail_e["Mjj2"]
+    dijet3_mass_VR_fail = VR_fail_e["Mjj3"]
+    dijet1_mass_VR_pass = VR_pass_e["Mjj1"]
+    dijet2_mass_VR_pass = VR_pass_e["Mjj2"]
+    dijet3_mass_VR_pass = VR_pass_e["Mjj3"]
+
+    j2_SR_fail_bin = hist.axis.Regular(label=f"{channel} Signal Fail Dijet Mass [GeV]", name="dijet_mass_SR_fail", bins=j2_bins, start=j2_start, stop=j2_stop)
+    hists["mjj_vs_mjjj_SR_fail"] = Hist(j3_SR_fail_bin, j2_SR_fail_bin, storage="weight")
+    hists["mjj_vs_mjjj_SR_fail"].fill(dijet_mass_SR_fail=dijet1_mass_SR_fail, trijet_mass_SR_fail=trijet_mass_SR_fail, weight=weights.weight(**modifier)[SR_fail_evtMask])
+    hists["mjj_vs_mjjj_SR_fail"].fill(dijet_mass_SR_fail=dijet2_mass_SR_fail, trijet_mass_SR_fail=trijet_mass_SR_fail, weight=weights.weight(**modifier)[SR_fail_evtMask])
+    hists["mjj_vs_mjjj_SR_fail"].fill(dijet_mass_SR_fail=dijet3_mass_SR_fail, trijet_mass_SR_fail=trijet_mass_SR_fail, weight=weights.weight(**modifier)[SR_fail_evtMask])
+
+    j2_SR_pass_bin = hist.axis.Regular(label=f"{channel} Signal Pass Dijet Mass [GeV]", name="dijet_mass_SR_pass", bins=j2_bins, start=j2_start, stop=j2_stop)
+    hists["mjj_vs_mjjj_SR_pass"] = Hist(j3_SR_pass_bin, j2_SR_pass_bin, storage="weight")
+    hists["mjj_vs_mjjj_SR_pass"].fill(dijet_mass_SR_pass=dijet1_mass_SR_pass, trijet_mass_SR_pass=trijet_mass_SR_pass, weight=weights.weight(**modifier)[SR_pass_evtMask])
+    hists["mjj_vs_mjjj_SR_pass"].fill(dijet_mass_SR_pass=dijet2_mass_SR_pass, trijet_mass_SR_pass=trijet_mass_SR_pass, weight=weights.weight(**modifier)[SR_pass_evtMask])
+    hists["mjj_vs_mjjj_SR_pass"].fill(dijet_mass_SR_pass=dijet3_mass_SR_pass, trijet_mass_SR_pass=trijet_mass_SR_pass, weight=weights.weight(**modifier)[SR_pass_evtMask])
+
+    j2_VR_fail_bin = hist.axis.Regular(label=f"{channel} Validation Fail Dijet Mass [GeV]", name="dijet_mass_VR_fail", bins=j2_bins, start=j2_start, stop=j2_stop)
+    hists["mjj_vs_mjjj_VR_fail"] = Hist(j3_VR_fail_bin, j2_VR_fail_bin, storage="weight")
+    hists["mjj_vs_mjjj_VR_fail"].fill(dijet_mass_VR_fail=dijet1_mass_VR_fail, trijet_mass_VR_fail=trijet_mass_VR_fail, weight=weights.weight(**modifier)[VR_fail_evtMask])
+    hists["mjj_vs_mjjj_VR_fail"].fill(dijet_mass_VR_fail=dijet2_mass_VR_fail, trijet_mass_VR_fail=trijet_mass_VR_fail, weight=weights.weight(**modifier)[VR_fail_evtMask])
+    hists["mjj_vs_mjjj_VR_fail"].fill(dijet_mass_VR_fail=dijet3_mass_VR_fail, trijet_mass_VR_fail=trijet_mass_VR_fail, weight=weights.weight(**modifier)[VR_fail_evtMask])
+
+    j2_VR_pass_bin = hist.axis.Regular(label=f"{channel} Validation Pass Dijet Mass [GeV]", name="dijet_mass_VR_pass", bins=j2_bins, start=j2_start, stop=j2_stop)
+    hists["mjj_vs_mjjj_VR_pass"] = Hist(j3_VR_pass_bin, j2_VR_pass_bin, storage="weight")
+    hists["mjj_vs_mjjj_VR_pass"].fill(dijet_mass_VR_pass=dijet1_mass_VR_pass, trijet_mass_VR_pass=trijet_mass_VR_pass, weight=weights.weight(**modifier)[VR_pass_evtMask])
+    hists["mjj_vs_mjjj_VR_pass"].fill(dijet_mass_VR_pass=dijet2_mass_VR_pass, trijet_mass_VR_pass=trijet_mass_VR_pass, weight=weights.weight(**modifier)[VR_pass_evtMask])
+    hists["mjj_vs_mjjj_VR_pass"].fill(dijet_mass_VR_pass=dijet3_mass_VR_pass, trijet_mass_VR_pass=trijet_mass_VR_pass, weight=weights.weight(**modifier)[VR_pass_evtMask])
+
+
     if extraHistos:
+        eta1_SR_fail = SR_fail_fj[:,0].eta
+        eta2_SR_fail = SR_fail_fj[:,1].eta
+        eta1_SR_pass = SR_pass_fj[:,0].eta
+        eta2_SR_pass = SR_pass_fj[:,1].eta
+
+        eta1_VR_fail = VR_fail_fj[:,0].eta
+        eta2_VR_fail = VR_fail_fj[:,1].eta
+        eta1_VR_pass = VR_pass_fj[:,0].eta
+        eta2_VR_pass = VR_pass_fj[:,1].eta
+
+        if isBoosted:
+            ht_SR_fail = SR_fail_fj[:,0].pt+SR_fail_fj[:,1].pt+SR_fail_fj[:,2].pt
+            ht_SR_pass = SR_pass_fj[:,0].pt+SR_pass_fj[:,1].pt+SR_pass_fj[:,2].pt
+
+            ht_VR_fail = VR_fail_fj[:,0].pt+VR_fail_fj[:,1].pt+VR_fail_fj[:,2].pt
+            ht_VR_pass = VR_pass_fj[:,0].pt+VR_pass_fj[:,1].pt+VR_pass_fj[:,2].pt
+
+            eta3_SR_fail = SR_fail_fj[:,2].eta
+            eta3_SR_pass = SR_pass_fj[:,2].eta
+
+            eta3_VR_fail = VR_fail_fj[:,2].eta
+            eta3_VR_pass = VR_pass_fj[:,2].eta
+        else:
+            ht_SR_fail = SR_fail_fj[:,0].pt+SR_fail_fj[:,1].pt+(SR_fail_j[:,0]['i0']+SR_fail_j[:,0]['i1']).pt
+            ht_SR_pass = SR_pass_fj[:,0].pt+SR_pass_fj[:,1].pt+(SR_pass_j[:,0]['i0']+SR_pass_j[:,0]['i1']).pt
+
+            ht_VR_fail = VR_fail_fj[:,0].pt+VR_fail_fj[:,1].pt+(VR_fail_j[:,0]['i0']+VR_fail_j[:,0]['i1']).pt
+            ht_VR_pass = VR_pass_fj[:,0].pt+VR_pass_fj[:,1].pt+(VR_pass_j[:,0]['i0']+VR_pass_j[:,0]['i1']).pt
+
+            eta3_SR_fail = (SR_fail_j[:,0]['i0']+SR_fail_j[:,0]['i1']).eta
+            eta3_SR_pass = (SR_pass_j[:,0]['i0']+SR_pass_j[:,0]['i1']).eta
+
+            eta3_VR_fail = (VR_fail_j[:,0]['i0']+VR_fail_j[:,0]['i1']).eta
+            eta3_VR_pass = (VR_pass_j[:,0]['i0']+VR_pass_j[:,0]['i1']).eta
+
         ht_SR_fail_bin = hist.axis.Regular(label=f"{channel} Signal Fail H_{{T}} [GeV]", name="ht_SR_fail", bins=ht_bins, start=ht_start, stop=ht_stop)
         hists["ht_vs_mjjj_SR_fail"] = Hist(j3_SR_fail_bin, ht_SR_fail_bin, storage="weight")
         hists["ht_vs_mjjj_SR_fail"].fill(ht_SR_fail=ht_SR_fail, trijet_mass_SR_fail=trijet_mass_SR_fail, weight=weights.weight(**modifier)[SR_fail_evtMask])
@@ -301,59 +328,6 @@ def fillHistos(channel, suffix, trigSuffix, events, isMC, year, selection, weigh
                             weight=ak.flatten(fj_had_weights)
                         )
 
-    if isBoosted:
-        dijet1_mass_SR_fail = (SR_fail_fj[:,0]+SR_fail_fj[:,1]).mass
-        dijet2_mass_SR_fail = (SR_fail_fj[:,0]+SR_fail_fj[:,2]).mass
-        dijet3_mass_SR_fail = (SR_fail_fj[:,1]+SR_fail_fj[:,2]).mass
-        dijet1_mass_SR_pass = (SR_pass_fj[:,0]+SR_pass_fj[:,1]).mass
-        dijet2_mass_SR_pass = (SR_pass_fj[:,0]+SR_pass_fj[:,2]).mass
-        dijet3_mass_SR_pass = (SR_pass_fj[:,1]+SR_pass_fj[:,2]).mass
-
-        dijet1_mass_VR_fail = (VR_fail_fj[:,0]+VR_fail_fj[:,1]).mass
-        dijet2_mass_VR_fail = (VR_fail_fj[:,0]+VR_fail_fj[:,2]).mass
-        dijet3_mass_VR_fail = (VR_fail_fj[:,1]+VR_fail_fj[:,2]).mass
-        dijet1_mass_VR_pass = (VR_pass_fj[:,0]+VR_pass_fj[:,1]).mass
-        dijet2_mass_VR_pass = (VR_pass_fj[:,0]+VR_pass_fj[:,2]).mass
-        dijet3_mass_VR_pass = (VR_pass_fj[:,1]+VR_pass_fj[:,2]).mass
-    else:
-        dijet1_mass_SR_fail = (SR_fail_fj[:,0]+SR_fail_fj[:,1]).mass
-        dijet2_mass_SR_fail = (SR_fail_fj[:,0]+SR_fail_j[:,0]['i0']+SR_fail_j[:,0]['i1']).mass
-        dijet3_mass_SR_fail = (SR_fail_fj[:,1]+SR_fail_j[:,0]['i0']+SR_fail_j[:,0]['i1']).mass
-        dijet1_mass_SR_pass = (SR_pass_fj[:,0]+SR_pass_fj[:,1]).mass
-        dijet2_mass_SR_pass = (SR_pass_fj[:,0]+SR_pass_j[:,0]['i0']+SR_pass_j[:,0]['i1']).mass
-        dijet3_mass_SR_pass = (SR_pass_fj[:,1]+SR_pass_j[:,0]['i0']+SR_pass_j[:,0]['i1']).mass
-
-        dijet1_mass_VR_fail = (VR_fail_fj[:,0]+VR_fail_fj[:,1]).mass
-        dijet2_mass_VR_fail = (VR_fail_fj[:,0]+VR_fail_j[:,0]['i0']+VR_fail_j[:,0]['i1']).mass
-        dijet3_mass_VR_fail = (VR_fail_fj[:,1]+VR_fail_j[:,0]['i0']+VR_fail_j[:,0]['i1']).mass
-        dijet1_mass_VR_pass = (VR_pass_fj[:,0]+VR_pass_fj[:,1]).mass
-        dijet2_mass_VR_pass = (VR_pass_fj[:,0]+VR_pass_j[:,0]['i0']+VR_pass_j[:,0]['i1']).mass
-        dijet3_mass_VR_pass = (VR_pass_fj[:,1]+VR_pass_j[:,0]['i0']+VR_pass_j[:,0]['i1']).mass
-
-    j2_SR_fail_bin = hist.axis.Regular(label=f"{channel} Signal Fail Dijet Mass [GeV]", name="dijet_mass_SR_fail", bins=j2_bins, start=j2_start, stop=j2_stop)
-    hists["mjj_vs_mjjj_SR_fail"] = Hist(j3_SR_fail_bin, j2_SR_fail_bin, storage="weight")
-    hists["mjj_vs_mjjj_SR_fail"].fill(dijet_mass_SR_fail=dijet1_mass_SR_fail, trijet_mass_SR_fail=trijet_mass_SR_fail, weight=weights.weight(**modifier)[SR_fail_evtMask])
-    hists["mjj_vs_mjjj_SR_fail"].fill(dijet_mass_SR_fail=dijet2_mass_SR_fail, trijet_mass_SR_fail=trijet_mass_SR_fail, weight=weights.weight(**modifier)[SR_fail_evtMask])
-    hists["mjj_vs_mjjj_SR_fail"].fill(dijet_mass_SR_fail=dijet3_mass_SR_fail, trijet_mass_SR_fail=trijet_mass_SR_fail, weight=weights.weight(**modifier)[SR_fail_evtMask])
-
-    j2_SR_pass_bin = hist.axis.Regular(label=f"{channel} Signal Pass Dijet Mass [GeV]", name="dijet_mass_SR_pass", bins=j2_bins, start=j2_start, stop=j2_stop)
-    hists["mjj_vs_mjjj_SR_pass"] = Hist(j3_SR_pass_bin, j2_SR_pass_bin, storage="weight")
-    hists["mjj_vs_mjjj_SR_pass"].fill(dijet_mass_SR_pass=dijet1_mass_SR_pass, trijet_mass_SR_pass=trijet_mass_SR_pass, weight=weights.weight(**modifier)[SR_pass_evtMask])
-    hists["mjj_vs_mjjj_SR_pass"].fill(dijet_mass_SR_pass=dijet2_mass_SR_pass, trijet_mass_SR_pass=trijet_mass_SR_pass, weight=weights.weight(**modifier)[SR_pass_evtMask])
-    hists["mjj_vs_mjjj_SR_pass"].fill(dijet_mass_SR_pass=dijet3_mass_SR_pass, trijet_mass_SR_pass=trijet_mass_SR_pass, weight=weights.weight(**modifier)[SR_pass_evtMask])
-
-    j2_VR_fail_bin = hist.axis.Regular(label=f"{channel} Validation Fail Dijet Mass [GeV]", name="dijet_mass_VR_fail", bins=j2_bins, start=j2_start, stop=j2_stop)
-    hists["mjj_vs_mjjj_VR_fail"] = Hist(j3_VR_fail_bin, j2_VR_fail_bin, storage="weight")
-    hists["mjj_vs_mjjj_VR_fail"].fill(dijet_mass_VR_fail=dijet1_mass_VR_fail, trijet_mass_VR_fail=trijet_mass_VR_fail, weight=weights.weight(**modifier)[VR_fail_evtMask])
-    hists["mjj_vs_mjjj_VR_fail"].fill(dijet_mass_VR_fail=dijet2_mass_VR_fail, trijet_mass_VR_fail=trijet_mass_VR_fail, weight=weights.weight(**modifier)[VR_fail_evtMask])
-    hists["mjj_vs_mjjj_VR_fail"].fill(dijet_mass_VR_fail=dijet3_mass_VR_fail, trijet_mass_VR_fail=trijet_mass_VR_fail, weight=weights.weight(**modifier)[VR_fail_evtMask])
-
-    j2_VR_pass_bin = hist.axis.Regular(label=f"{channel} Validation Pass Dijet Mass [GeV]", name="dijet_mass_VR_pass", bins=j2_bins, start=j2_start, stop=j2_stop)
-    hists["mjj_vs_mjjj_VR_pass"] = Hist(j3_VR_pass_bin, j2_VR_pass_bin, storage="weight")
-    hists["mjj_vs_mjjj_VR_pass"].fill(dijet_mass_VR_pass=dijet1_mass_VR_pass, trijet_mass_VR_pass=trijet_mass_VR_pass, weight=weights.weight(**modifier)[VR_pass_evtMask])
-    hists["mjj_vs_mjjj_VR_pass"].fill(dijet_mass_VR_pass=dijet2_mass_VR_pass, trijet_mass_VR_pass=trijet_mass_VR_pass, weight=weights.weight(**modifier)[VR_pass_evtMask])
-    hists["mjj_vs_mjjj_VR_pass"].fill(dijet_mass_VR_pass=dijet3_mass_VR_pass, trijet_mass_VR_pass=trijet_mass_VR_pass, weight=weights.weight(**modifier)[VR_pass_evtMask])
-
     return hists
 
 
@@ -407,7 +381,7 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--corrs", dest="corrections",
                         help="Space-separated list of applied corrections (default: %(default)s). Use 'all' to apply all corrections.",
                         nargs='*',
-                        default=["genweight", "pileup", "top_pt", "jmsr", "l1prefiring", "btag_deepJet", "xbbtag_particleNetMD"],
+                        default=["genweight", "pileup", "top_pt", "jmsr", "l1prefiring", "btag_deepJet", "xbbtag_particleNetMD", "trigger"],
                         metavar="CORRS")
     parser.add_argument("--disable_corrs", dest="disable_corrs", action='store_true',
                         help="Disable corrections (default: %(default)s)",
