@@ -32,7 +32,7 @@ for r in remote_files:
       print(f'{r} already transferred')
       continue
   
-    m = re.search(r'XToYHTo6B_MX-(\d+)_MY-(\d+)', r)
+    m = re.search(r'MX-(\d+)-MY-(\d+)', r)
     if m is None:
         raise ValueError(f'Cannot find MX/MY in {r}')
     mx, my = m.group(1), m.group(2)
