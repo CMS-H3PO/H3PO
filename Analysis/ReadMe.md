@@ -151,36 +151,26 @@ Check if there are any failed jobs by running
 ```
 grep -ri 'return value' --include="*.log" ${CONDOR_OUTPUT}/*${TIMESTAMP}/ | grep -vi 'return value 0' | sort -V
 ```
+Check on which machines the failed jobs were running
+```
+grep -ril 'return value' --include="*.log" ${CONDOR_OUTPUT}/*${TIMESTAMP}/ |
+while read -r file; do
+    grep -qi 'return value 0' "$file" || grep 'SlotName:' "$file"
+done | sort | uniq -c
+```
 If some jobs were held, check which ones by running
 ```
-grep -ri held --include="*.log" ${CONDOR_OUTPUT}/*${TIMESTAMP}/ | sort -V
+python resubmitHeldJobs.py "${CONDOR_OUTPUT}/*${TIMESTAMP}/" -n 1 --dry-run
 ```
-If you want to produce a list of job description files for the held jobs (for later use with sed or condor_submit commands), run
+If you want to resubmit the held jobs with the memory requirement increased to 10000 MB, run
 ```
-grep -ri held --include="*.log" ${CONDOR_OUTPUT}/*${TIMESTAMP}/ | sort -V | cut -d: -f1 | sed 's|logs/tmp-|jobs/job_desc-|g' | sed 's|\.log|\.txt|g'
+python resubmitHeldJobs.py "${CONDOR_OUTPUT}/*${TIMESTAMP}/" -n 1 -m 10000
 ```
-If some jobs were held again, check which ones by running
+If some jobs were held again, resubmit them with the memory requirement further increased to 20000 MB
 ```
-grep -ri held --include="*.log" ${CONDOR_OUTPUT}/*${TIMESTAMP}/ | sort -V | cut -d: -f1 | uniq -d
+python resubmitHeldJobs.py "${CONDOR_OUTPUT}/*${TIMESTAMP}/" -n 2 -m 20000
 ```
-(grep for lines containing 'held'; keep only the file names; print only the duplicates)
+The same logic applies to jobs held more than twice with appropriately set `-n` and `-m` arguments.
 
-If some jobs were held more than twice, check which ones by running
-```
-grep -ri held --include="*.log" ${CONDOR_OUTPUT}/*${TIMESTAMP}/ | sort -V | cut -d: -f1 | uniq -d -c
-```
-(grep for lines containing 'held'; keep only the file names; print only the duplicates and prefix lines by the number of occurrences)
-
-Remove held jobs before resubmitting
-```
-condor_rm -constraint 'JobStatus == 5'
-```
-Example `sed` and `condor_submit` commands:
-```
-sed -i 's/RequestMemory = 4000/RequestMemory = 10000/g' ${CONDOR_OUTPUT}/${YEAR}_${SUFFIX}_${TIMESTAMP}/jobs/job_desc-XToYHTo6B_MX-1000_MY-600_0.txt
-```
-```
-condor_submit ${CONDOR_OUTPUT}/${YEAR}_${SUFFIX}_${TIMESTAMP}/jobs/job_desc-XToYHTo6B_MX-1000_MY-600_0.txt
-```
 
 [*] `voms-proxy-init -rfc -voms cms -valid 168:00`
