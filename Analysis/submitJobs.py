@@ -82,7 +82,7 @@ if __name__ == '__main__':
                         default="2000",
                         metavar="MEMORY")
     parser.add_argument("--requirements", dest="requirements",
-                        help="Additional job requirements",
+                        help="Additional job requirements (e.g. 'machine != \"lorientree05.hep.zef.irb.hr\"' to avoid running jobs on a specific machine, etc.)",
                         metavar="REQUIREMENTS")
 
     (options, args) = parser.parse_known_args()
