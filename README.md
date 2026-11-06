@@ -6,6 +6,7 @@ source /cvmfs/cms.cern.ch/cmsset_default.sh
 export SCRAM_ARCH=el9_amd64_gcc12
 cmsrel CMSSW_15_0_21
 cd CMSSW_15_0_21
+scram b enable-multi-targets
 cmsenv
 cd -
 
