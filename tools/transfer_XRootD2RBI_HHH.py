@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import subprocess
 from datetime import datetime
@@ -31,13 +32,12 @@ for r in remote_files:
       print(f'{r} already transferred')
       continue
   
-    split = r.split('_')
-    #print(split[2])
-    #print(split[3])
-    mx = split[2]
-    my = split[3]
+    m = re.search(r'XToYHTo6B_MX-(\d+)_MY-(\d+)', r)
+    if m is None:
+        raise ValueError(f'Cannot find MX/MY in {r}')
+    mx, my = m.group(1), m.group(2)
     
-    dest = f'/STORE/HHH/skims/{year}/XToYHTo6B_{mx}_{my}'
+    dest = f'/STORE/HHH/skims/{year}/XToYHTo6B_MX-{mx}_MY-{my}'
     
     if not os.path.exists(dest):
         cmd = f"mkdir -p {dest}"
