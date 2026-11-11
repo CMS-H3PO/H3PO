@@ -191,7 +191,7 @@
  "XToYHTo6B_MX-4000_MY-3000": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-3500": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-3800": {"xsec": 0.01},
- "lumi":19500
+ "lumi":19510
  },
 "2017":{
  "QCD1000": {"xsec": 1127.0}, 
@@ -286,7 +286,7 @@
  "XToYHTo6B_MX-4000_MY-3000": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-3500": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-3800": {"xsec": 0.01},
- "lumi":41500
+ "lumi":42070
 },
  "2018":{
  "QCD1000": {"xsec": 1127},
@@ -381,7 +381,7 @@
  "XToYHTo6B_MX-4000_MY-3000": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-3500": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-3800": {"xsec": 0.01},
- "lumi":59800
+ "lumi":59560
  },
  "Run2":{
  "QCD1000": {"xsec": 1127},
@@ -476,6 +476,6 @@
  "XToYHTo6B_MX-4000_MY-3000": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-3500": {"xsec": 0.01},
  "XToYHTo6B_MX-4000_MY-3800": {"xsec": 0.01},
- "lumi":137600
+ "lumi":137940
  }
 }
