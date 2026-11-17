@@ -11,23 +11,32 @@ pog_jsons = {
         "2016APV": ["LUM/Run2-2016preVFP-UL-NanoAODv9/2021-09-10/puWeights.json.gz",  "Collisions16_UltraLegacy_goldenJSON"],
         "2016":    ["LUM/Run2-2016postVFP-UL-NanoAODv9/2021-09-10/puWeights.json.gz", "Collisions16_UltraLegacy_goldenJSON"],
         "2017":    ["LUM/Run2-2017-UL-NanoAODv9/2021-09-10/puWeights.json.gz",        "Collisions17_UltraLegacy_goldenJSON"],
-        "2018":    ["LUM/Run2-2018-UL-NanoAODv9/2021-09-10/puWeights.json.gz",        "Collisions18_UltraLegacy_goldenJSON"]
+        "2018":    ["LUM/Run2-2018-UL-NanoAODv9/2021-09-10/puWeights.json.gz",        "Collisions18_UltraLegacy_goldenJSON"],
+        "2024":    ["LUM/Run3-24CDEReprocessingFGHIPrompt-Summer24-NanoAODv15/latest/puWeights_CDEFGHI.json.gz",        "Collisions24_CDEFGHI_goldenJSON"]
     },
     "btag_deepJet": {
         # year      JSON                                                             CorrectionSets
         "2016APV": ["BTV/Run2-2016preVFP-UL-NanoAODv9/2025-08-19/btagging.json.gz",  ["deepJet_comb", "deepJet_incl", "deepJet_wp_values"]],
         "2016":    ["BTV/Run2-2016postVFP-UL-NanoAODv9/2025-08-19/btagging.json.gz", ["deepJet_comb", "deepJet_incl", "deepJet_wp_values"]],
         "2017":    ["BTV/Run2-2017-UL-NanoAODv9/2025-08-19/btagging.json.gz",        ["deepJet_comb", "deepJet_incl", "deepJet_wp_values"]],
-        "2018":    ["BTV/Run2-2018-UL-NanoAODv9/2025-08-19/btagging.json.gz",        ["deepJet_comb", "deepJet_incl", "deepJet_wp_values"]]
+        "2018":    ["BTV/Run2-2018-UL-NanoAODv9/2025-08-19/btagging.json.gz",        ["deepJet_comb", "deepJet_incl", "deepJet_wp_values"]],
+        "2024":    ["BTV/Run3-24CDEReprocessingFGHIPrompt-Summer24-NanoAODv15/latest/btagging.json.gz",        ["UParTAK4_comb", "UParTAK4_light", "UParTAK4_wp_values"]]
     },
     "xbbtag_particleNetMD_XbbvsQCD": {
         # year      JSON                                                                      CorrectionSets
         "2016APV": ["BTV/Run2-2016preVFP-UL-NanoAODv9/2025-08-19/ak8_xbbcc_tagging.json.gz",  ["particleNetMD_XbbvsQCD_comb", "particleNetMD_XbbvsQCD_wp_values"]],
         "2016":    ["BTV/Run2-2016postVFP-UL-NanoAODv9/2025-08-19/ak8_xbbcc_tagging.json.gz", ["particleNetMD_XbbvsQCD_comb", "particleNetMD_XbbvsQCD_wp_values"]],
         "2017":    ["BTV/Run2-2017-UL-NanoAODv9/2025-08-19/ak8_xbbcc_tagging.json.gz",        ["particleNetMD_XbbvsQCD_comb", "particleNetMD_XbbvsQCD_wp_values"]],
-        "2018":    ["BTV/Run2-2018-UL-NanoAODv9/2025-08-19/ak8_xbbcc_tagging.json.gz",        ["particleNetMD_XbbvsQCD_comb", "particleNetMD_XbbvsQCD_wp_values"]]
-    }
+        "2018":    ["BTV/Run2-2018-UL-NanoAODv9/2025-08-19/ak8_xbbcc_tagging.json.gz",        ["particleNetMD_XbbvsQCD_comb", "particleNetMD_XbbvsQCD_wp_values"]],
+    },
 }
+
+# Xbb tagger per year: ParticleNetMD for Run 2, GloParT for Run 3 (2024)
+xbb_tagger = {"2016APV": "particleNetMD", "2016": "particleNetMD", "2017": "particleNetMD", "2018": "particleNetMD", "2024": "GloParT"}
+
+
+def get_xbb_tagger(year):
+    return xbb_tagger[year]
 
 
 def get_pog_json(obj, year):
@@ -48,6 +57,11 @@ local_jsons = {
         "2016":    ["../data/jmsr/jmsr_AK8_2016.json",  ["jms","jmr"]],
         "2017":    ["../data/jmsr/jmsr_AK8_2017.json",  ["jms","jmr"]],
         "2018":    ["../data/jmsr/jmsr_AK8_2018.json",  ["jms","jmr"]]
+    },
+    # GloParT 2024 SF: no official payload on CVMFS yet, so a local JSON built from the BTV Z(bb) table is used (WP 'L' = LP)
+    "xbbtag_GloParT_XbbvsQCD": {
+        # year   JSON                                                        CorrectionSets
+        "2024": ["../data/xbbtag/xbbtag_GloParT_XbbvsQCD_SF_2024.json", ["GloParT_XbbvsQCD_comb", "GloParT_XbbvsQCD_wp_values"]]
     },
     "xbbtag_particleNetMD_XbbvsQCD_eff_XToYHTo6B": {
         # year             JSON                                                                          CorrectionSet

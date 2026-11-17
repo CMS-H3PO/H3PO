@@ -1,0 +1,110 @@
+{
+ "schema_version": 2,
+ "description": "LOCAL GloParT X->bb vs QCD scale factors for 2024 (NOT an official CMS POG payload). Built from the BTV Z(bb) GloParT results for 2024 (R. Gerosa, 'Results in 2024 for pT in [400,500] GeV' and 'pT > 500 GeV', single WPs VLP/LP/MP/HP/VHP). Only the Z(bb) table is used (no Z(gamma), no mu-tag). Binning: pT [400,500) and [500,inf). Flow 'clamp': pT < 400 GeV uses the [400,500) value (extrapolation). Systematics: 'up' = central + err_up, 'down' = central - err_down (asymmetric errors from the table). Working point 'L' is an alias of 'LP' (analysis default). Replace with the official payload once available.",
+ "corrections": [
+  {
+   "name": "GloParT_XbbvsQCD_wp_values",
+   "description": "GloParT X->bb vs QCD score thresholds of the single WPs (VLP>0.80, LP>0.85, MP>0.90, HP>0.95, VHP>0.98). 'L' is an alias of 'LP'.",
+   "version": 2,
+   "inputs": [
+    {
+     "name": "working_point",
+     "type": "string",
+     "description": "VLP/L/LP/MP/HP/VHP"
+    }
+   ],
+   "output": {
+    "name": "wp",
+    "type": "real"
+   },
+   "data": {
+    "nodetype": "category",
+    "input": "working_point",
+    "content": [
+     {"key": "VLP", "value": 0.80},
+     {"key": "L",   "value": 0.85},
+     {"key": "LP",  "value": 0.85},
+     {"key": "MP",  "value": 0.90},
+     {"key": "HP",  "value": 0.95},
+     {"key": "VHP", "value": 0.98}
+    ]
+   }
+  },
+  {
+   "name": "GloParT_XbbvsQCD_comb",
+   "description": "GloParT X->bb vs QCD single-WP scale factors for 2024 from the Z(bb) method, pT [400,500) and >500 GeV. Preliminary values from the BTV deck. 'L' is an alias of 'LP'.",
+   "version": 2,
+   "inputs": [
+    {
+     "name": "systematic",
+     "type": "string",
+     "description": "central/up/down"
+    },
+    {
+     "name": "working_point",
+     "type": "string",
+     "description": "VLP/L/LP/MP/HP/VHP"
+    },
+    {
+     "name": "pt",
+     "type": "real"
+    }
+   ],
+   "output": {
+    "name": "weight",
+    "type": "real"
+   },
+   "data": {
+    "nodetype": "category",
+    "input": "systematic",
+    "content": [
+     {
+      "key": "central",
+      "value": {
+       "nodetype": "category",
+       "input": "working_point",
+       "content": [
+        {"key": "VLP", "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [0.91, 1.07], "flow": "clamp"}},
+        {"key": "L",   "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [0.93, 1.04], "flow": "clamp"}},
+        {"key": "LP",  "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [0.93, 1.04], "flow": "clamp"}},
+        {"key": "MP",  "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [0.93, 1.01], "flow": "clamp"}},
+        {"key": "HP",  "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [0.90, 0.97], "flow": "clamp"}},
+        {"key": "VHP", "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [0.90, 0.99], "flow": "clamp"}}
+       ]
+      }
+     },
+     {
+      "key": "up",
+      "value": {
+       "nodetype": "category",
+       "input": "working_point",
+       "content": [
+        {"key": "VLP", "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [1.02, 1.19], "flow": "clamp"}},
+        {"key": "L",   "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [1.04, 1.13], "flow": "clamp"}},
+        {"key": "LP",  "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [1.04, 1.13], "flow": "clamp"}},
+        {"key": "MP",  "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [1.03, 1.10], "flow": "clamp"}},
+        {"key": "HP",  "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [0.98, 1.05], "flow": "clamp"}},
+        {"key": "VHP", "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [0.97, 1.07], "flow": "clamp"}}
+       ]
+      }
+     },
+     {
+      "key": "down",
+      "value": {
+       "nodetype": "category",
+       "input": "working_point",
+       "content": [
+        {"key": "VLP", "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [0.82, 0.97], "flow": "clamp"}},
+        {"key": "L",   "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [0.84, 0.96], "flow": "clamp"}},
+        {"key": "LP",  "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [0.84, 0.96], "flow": "clamp"}},
+        {"key": "MP",  "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [0.85, 0.93], "flow": "clamp"}},
+        {"key": "HP",  "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [0.83, 0.90], "flow": "clamp"}},
+        {"key": "VHP", "value": {"nodetype": "binning", "input": "pt", "edges": [400.0, 500.0, 100000.0], "content": [0.84, 0.92], "flow": "clamp"}}
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

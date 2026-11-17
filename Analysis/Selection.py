@@ -27,21 +27,24 @@ def closest(masses):
     return is_closest
 
 
-def HbbvsQCD(fatjet):
-    score = (fatjet.particleNetMD_Xbb/(fatjet.particleNetMD_Xbb+fatjet.particleNetMD_QCD))
-    return score
+def HbbvsQCD(fatjet, year):
+    if get_xbb_tagger(year) == "GloParT":
+        xbb, qcd = fatjet.GloParT_Xbb, fatjet.GloParT_QCD  # branch names unverified
+    else:
+        xbb, qcd = fatjet.particleNetMD_Xbb, fatjet.particleNetMD_QCD
+    return xbb/(xbb+qcd)
 
 # this is a jet mask
 def precut(fatjets):
     return (fatjets.pt>ptcut) & (np.absolute(fatjets.eta)<etacut) & (fatjets.msoftdrop>min_jet_mass) & (fatjets.msoftdrop<max_jet_mass)
 
 
-def PassCategory(fatjets, cut):
+def PassCategory(fatjets, cut, year):
     # sort the fat jets in the descending pNet HbbvsQCD score
-    sorted_fatjets = fatjets[ak.argsort(-HbbvsQCD(fatjets),axis=-1)]
+    sorted_fatjets = fatjets[ak.argsort(-HbbvsQCD(fatjets, year),axis=-1)]
 
     # pass category: at least 1 fat jets passing the pNet cut
-    return (HbbvsQCD(sorted_fatjets[:,0])>cut)
+    return (HbbvsQCD(sorted_fatjets[:,0], year)>cut)
 
 # this is a jet mask
 def HiggsMassCut(fatjets):
@@ -167,7 +170,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jec,variati
     selection.add("Mass_cut_SR_boosted", SR_b_evtMask)
 
     # select events in the Pass category of the SR boosted. Pass on only the 3 leading fat jets (to avoid events passing or failing due to the 4th or higher leading fat jet)
-    selection.add("SR_boosted_Pass", ak.where(SR_b_evtMask, PassCategory(ak.pad_none(fatjets_SR, 3)[:,0:3], pNet_cut), False))
+    selection.add("SR_boosted_Pass", ak.where(SR_b_evtMask, PassCategory(ak.pad_none(fatjets_SR, 3)[:,0:3], pNet_cut, year), False))
     #---------------------------------------------
     # VR boosted
     #---------------------------------------------
@@ -176,7 +179,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jec,variati
     selection.add("Mass_cut_VR_boosted", VR_b_evtMask)
 
     # select events in the Pass category of the VR boosted. Pass on only the 3 leading fat jets (to avoid events passing or failing due to the pNet score of the 4th or higher leading fat jet)
-    selection.add("VR_boosted_Pass", ak.where(VR_b_evtMask, PassCategory(ak.pad_none(fatjets, 3)[:,0:3], pNet_cut), False))
+    selection.add("VR_boosted_Pass", ak.where(VR_b_evtMask, PassCategory(ak.pad_none(fatjets, 3)[:,0:3], pNet_cut, year), False))
     #---------------------------------------------
     # get standard jets
     # if JEC re-application is turned off
@@ -204,7 +207,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jec,variati
     selection.add("Good_dijet_SR_semiboosted", ak.num(good_dijets_SR, axis=1)>0)
 
     # select events in the Pass category of the SR semiboosted
-    selection.add("SR_semiboosted_Pass", ak.where(SR_sb_evtMask, PassCategory(ak.pad_none(fatjets_SR, 1), pNet_cut), False))
+    selection.add("SR_semiboosted_Pass", ak.where(SR_sb_evtMask, PassCategory(ak.pad_none(fatjets_SR, 1), pNet_cut, year), False))
     #---------------------------------------------
     # VR semiboosted
     #---------------------------------------------
@@ -219,7 +222,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jec,variati
     selection.add("Good_dijet_VR_semiboosted", ak.num(good_dijets_VR, axis=1)>0)
 
     # select events in the Pass category of the VR semiboosted
-    selection.add("VR_semiboosted_Pass", ak.where(VR_sb_evtMask, PassCategory(ak.pad_none(fatjets[:,0:2], 1), pNet_cut), False))
+    selection.add("VR_semiboosted_Pass", ak.where(VR_sb_evtMask, PassCategory(ak.pad_none(fatjets[:,0:2], 1), pNet_cut, year), False))
     #---------------------------------------------
     # apply b-tag and Xbb-tag scale factors
     if isMC and apply_corrections:
@@ -227,7 +230,7 @@ def Event_selection(fname,dataset,isMC,apply_corrections,corrections,jec,variati
         if any(c in corrections for c in ["btag_deepJet", "all"]):
             add_ak4_btag_weights(weights, selection, btag_sf_ak4, good_dijets_SR, good_dijets_VR)
         # apply ak8 Xbb-tag scale factors
-        if "XToYHTo6B" in dataset and any(c in corrections for c in ["xbbtag_particleNetMD", "all"]):
+        if "XToYHTo6B" in dataset and any(c in corrections for c in ["xbbtag_" + get_xbb_tagger(year), "all"]):
             add_ak8_xbbtag_weights(weights, selection, xbbtag_sf_ak8, xbbtag_eff_ak8, fatjets_SR, fatjets)
     #---------------------------------------------
     # embed the (di)jet arrays inside the events array

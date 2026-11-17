@@ -12,7 +12,13 @@ class XbbTagSFAK8:
 
     def __init__(self, year):
 
-        json = get_pog_json("xbbtag_particleNetMD_XbbvsQCD", year)
+        tagger = get_xbb_tagger(year)
+
+        # GloParT (2024) reads the local payload; ParticleNetMD keeps the CVMFS POG payload
+        if tagger == "GloParT":
+            json = get_local_json(f"xbbtag_{tagger}_XbbvsQCD", year)
+        else:
+            json = get_pog_json(f"xbbtag_{tagger}_XbbvsQCD", year)
 
         cset = correctionlib.CorrectionSet.from_file(json[0])
 

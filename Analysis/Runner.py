@@ -262,7 +262,7 @@ def fillHistos(channel, suffix, trigSuffix, events, isMC, year, selection, weigh
                 )
 
                 # select xbb-tagged fat jets
-                fj_xbbMask = (HbbvsQCD(fj) > pNet_cut)
+                fj_xbbMask = (HbbvsQCD(fj, year) > pNet_cut)
                 fj_xbb = fj[fj_xbbMask]
                 fj_xbb_weights = fj_weights[fj_xbbMask]
 
@@ -407,7 +407,7 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--corrs", dest="corrections",
                         help="Space-separated list of applied corrections (default: %(default)s). Use 'all' to apply all corrections.",
                         nargs='*',
-                        default=["genweight", "pileup", "top_pt", "jmsr", "l1prefiring", "btag_deepJet", "xbbtag_particleNetMD"],
+                        default=["genweight", "pileup", "top_pt", "jmsr", "l1prefiring", "btag_deepJet", "xbbtag_particleNetMD", "xbbtag_GloParT"],
                         metavar="CORRS")
     parser.add_argument("--disable_corrs", dest="disable_corrs", action='store_true',
                         help="Disable corrections (default: %(default)s)",
